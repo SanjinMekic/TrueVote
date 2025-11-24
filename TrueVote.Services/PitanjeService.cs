@@ -20,6 +20,10 @@ namespace TrueVote.Services
 
         public override IQueryable<Pitanje> AddFilter(PitanjeSearchObject search, IQueryable<Pitanje> query)
         {
+            if (!string.IsNullOrEmpty(search.PitanjeText))
+            {
+                query = query.Where(p => p.PitanjeText.Contains(search.PitanjeText));
+            }
             return query.Include(p => p.Kategorija);
         }
     }

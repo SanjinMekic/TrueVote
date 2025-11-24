@@ -16,5 +16,15 @@ namespace TrueVote.Services
         public StrankaService(BirackiSistemContext context, IMapper mapper) : base(context, mapper)
         {
         }
+
+        public override IQueryable<Stranka> AddFilter(StrankaSearchObject search, IQueryable<Stranka> query)
+        {
+            if (!string.IsNullOrEmpty(search.Naziv))
+            {
+                query = query.Where(s => s.Naziv.Contains(search.Naziv));
+            }
+
+            return query;   
+        }
     }
 }

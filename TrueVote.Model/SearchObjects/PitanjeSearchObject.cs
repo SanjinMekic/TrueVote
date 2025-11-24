@@ -6,5 +6,6 @@ namespace TrueVote.Model.SearchObjects
 {
     public class PitanjeSearchObject : BaseSearchObject
     {
+        public string? PitanjeText { get; set; }
     }
 }

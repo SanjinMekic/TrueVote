@@ -26,6 +26,26 @@ namespace TrueVote.Services
 
         public override IQueryable<Korisnik> AddFilter(KorisnikSearchObject search, IQueryable<Korisnik> query)
         {
+            if (!string.IsNullOrEmpty(search.Ime))
+            {
+                query = query.Where(k => k.Ime.Contains(search.Ime));
+            }
+            if (!string.IsNullOrEmpty(search.Prezime))
+            {
+                query = query.Where(k => k.Prezime.Contains(search.Prezime));
+            }
+            if (!string.IsNullOrEmpty(search.Email))
+            {
+                query = query.Where(k => k.Email == search.Email);
+            }
+            if (!string.IsNullOrEmpty(search.KorisnickoIme))
+            {
+                query = query.Where(k => k.KorisnickoIme == search.KorisnickoIme);
+            }
+            if (!string.IsNullOrEmpty(search.OpstinaNaziv))
+            {
+                query = query.Where(k => k.Opstina.Naziv.Contains(search.OpstinaNaziv));
+            }
             return query
                 .Include(k => k.Opstina)
                     .ThenInclude(o => o.Grad)

@@ -16,5 +16,15 @@ namespace TrueVote.Services
         public UlogaService(BirackiSistemContext context, IMapper mapper) : base(context, mapper)
         {
         }
+
+        public override IQueryable<Uloga> AddFilter(UlogaSearchObject search, IQueryable<Uloga> query)
+        {
+            if (!string.IsNullOrEmpty(search.Naziv))
+            {
+                query = query.Where(u => u.Naziv.Contains(search.Naziv));
+            }
+
+            return query;
+        }
     }
 }

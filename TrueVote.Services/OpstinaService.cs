@@ -20,6 +20,14 @@ namespace TrueVote.Services
 
         public override IQueryable<Opstina> AddFilter(OpstinaSearchObject search, IQueryable<Opstina> query)
         {
+            if (!string.IsNullOrEmpty(search.Naziv))
+            {
+                query = query.Where(o => o.Naziv.Contains(search.Naziv));
+            }
+            if (search.GradId.HasValue)
+            {
+                query = query.Where(o => o.GradId == search.GradId);
+            }
             return query.Include(o => o.Grad).ThenInclude(g => g.Drzava);
         }
     }

@@ -6,5 +6,6 @@ namespace TrueVote.Model.SearchObjects
 {
     public class StrankaSearchObject : BaseSearchObject
     {
+        public string? Naziv { get; set; }
     }
 }

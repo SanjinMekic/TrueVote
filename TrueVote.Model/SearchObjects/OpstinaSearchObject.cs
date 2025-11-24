@@ -6,5 +6,7 @@ namespace TrueVote.Model.SearchObjects
 {
     public class OpstinaSearchObject : BaseSearchObject
     {
+        public string? Naziv { get; set; }
+        public int? GradId { get; set; }
     }
 }
