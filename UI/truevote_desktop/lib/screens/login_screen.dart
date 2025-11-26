@@ -1,5 +1,4 @@
 import 'package:truevote_desktop/providers/auth_provider.dart';
-import 'package:truevote_desktop/models/korisnik.dart';
 import 'package:truevote_desktop/screens/pocetna_screen.dart';
 import 'package:truevote_desktop/layouts/master_screen.dart';
 import 'package:flutter/material.dart';

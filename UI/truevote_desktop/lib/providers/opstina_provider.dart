@@ -1,6 +1,3 @@
-import 'package:truevote_desktop/models/drzava.dart';
-import 'package:truevote_desktop/models/grad.dart';
-import 'package:truevote_desktop/models/korisnik.dart';
 import 'package:truevote_desktop/models/opstina.dart';
 import 'package:truevote_desktop/providers/base_provider.dart';
 

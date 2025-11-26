@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:truevote_desktop/providers/auth_provider.dart';
+import 'package:truevote_desktop/screens/geografska_administracija_drzava_screen.dart';
+import 'package:truevote_desktop/screens/geografska_administracija_gradova_screen.dart';
+import 'package:truevote_desktop/screens/geografska_administracija_opstina_screen.dart';
 import 'package:truevote_desktop/screens/login_screen.dart';
 
 class MasterScreen extends StatelessWidget {
@@ -24,18 +27,20 @@ class MasterScreen extends StatelessWidget {
     return Scaffold(
       backgroundColor: const Color(0xFFF2F6FF),
       appBar: AppBar(
-  title: Text(
-    title,
-    style: const TextStyle(
-      color: Colors.white,
-      fontSize: 22,
-      fontWeight: FontWeight.bold,
-    ),
-  ),
-  backgroundColor: Colors.blueAccent,
-  elevation: 8,
-  iconTheme: const IconThemeData(color: Colors.white), // Ikona hamburgera bijela
-),
+        title: Text(
+          title,
+          style: const TextStyle(
+            color: Colors.white,
+            fontSize: 22,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        backgroundColor: Colors.blueAccent,
+        elevation: 8,
+        iconTheme: const IconThemeData(
+          color: Colors.white,
+        ), // Ikona hamburgera bijela
+      ),
       drawer: Drawer(
         shape: const RoundedRectangleBorder(
           borderRadius: BorderRadius.horizontal(right: Radius.circular(32)),
@@ -69,7 +74,11 @@ class MasterScreen extends StatelessWidget {
                             ],
                           ),
                           padding: const EdgeInsets.all(8),
-                          child: const Icon(Icons.person, size: 40, color: Colors.blueAccent),
+                          child: const Icon(
+                            Icons.person,
+                            size: 40,
+                            color: Colors.blueAccent,
+                          ),
                         ),
                         const SizedBox(height: 12),
                         Text(
@@ -84,42 +93,92 @@ class MasterScreen extends StatelessWidget {
                         const SizedBox(height: 4),
                         Text(
                           korisnickoIme,
-                          style: TextStyle(
-                            color: Colors.white70,
-                            fontSize: 16,
-                          ),
+                          style: TextStyle(color: Colors.white70, fontSize: 16),
                         ),
                       ],
                     ),
                   ),
                   ListTile(
-                    leading: Icon(Icons.home_outlined, color: Colors.blueAccent),
-                    title: Text("Početna", style: TextStyle(fontWeight: FontWeight.w600)),
+                    leading: Icon(
+                      Icons.home_outlined,
+                      color: Colors.blueAccent,
+                    ),
+                    title: Text(
+                      "Početna",
+                      style: TextStyle(fontWeight: FontWeight.w600),
+                    ),
                     onTap: () {
                       Navigator.pop(context);
                       // Dodaj navigaciju na početnu stranicu
                     },
                   ),
                   ListTile(
-                    leading: Icon(Icons.location_city, color: Colors.blueAccent),
-                    title: Text("Geografska administracija", style: TextStyle(fontWeight: FontWeight.w600)),
+                    leading: Icon(
+                      Icons.flag,
+                      color: Colors.blueAccent,
+                    ),
+                    title: Text(
+                      "Administracija država",
+                      style: TextStyle(fontWeight: FontWeight.w600),
+                    ),
                     onTap: () {
                       Navigator.pop(context);
-                      // Dodaj navigaciju na korisnike
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (context) =>
+                              const GeografskaAdministracijaScreen(),
+                        ),
+                      );
                     },
                   ),
                   ListTile(
-                    leading: Icon(Icons.settings_outlined, color: Colors.blueAccent),
-                    title: Text("Postavke", style: TextStyle(fontWeight: FontWeight.w600)),
+                    leading: Icon(
+                      Icons.location_city,
+                      color: Colors.blueAccent,
+                    ),
+                    title: Text(
+                      "Administracija gradova",
+                      style: TextStyle(fontWeight: FontWeight.w600),
+                    ),
                     onTap: () {
                       Navigator.pop(context);
-                      // Dodaj navigaciju na postavke
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (context) =>
+                              const GeografskaAdministracijaGradScreen(),
+                        ),
+                      );
                     },
                   ),
-                  const SizedBox(height: 12),
+                  ListTile(
+                    leading: Icon(
+                      Icons.map,
+                      color: Colors.blueAccent,
+                    ),
+                    title: Text(
+                      "Administracija opština",
+                      style: TextStyle(fontWeight: FontWeight.w600),
+                    ),
+                    onTap: () {
+                      Navigator.pop(context);
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (context) =>
+                              const GeografskaAdministracijaOpstinaScreen(),
+                        ),
+                      );
+                    },
+                  ),
+                 const Divider(),
                   ListTile(
                     leading: Icon(Icons.logout, color: Colors.redAccent),
-                    title: Text("Odjava", style: TextStyle(fontWeight: FontWeight.w600, color: Colors.redAccent)),
+                    title: Text(
+                      "Odjava",
+                      style: TextStyle(
+                        fontWeight: FontWeight.w600,
+                        color: Colors.redAccent,
+                      ),
+                    ),
                     onTap: () {
                       Navigator.pop(context);
                       _logout(context);
@@ -132,7 +191,11 @@ class MasterScreen extends StatelessWidget {
               top: 12,
               right: 12,
               child: IconButton(
-                icon: const Icon(Icons.close, size: 28, color: Colors.white), // Promijenjeno u bijelu boju
+                icon: const Icon(
+                  Icons.close,
+                  size: 28,
+                  color: Colors.white,
+                ), // Promijenjeno u bijelu boju
                 onPressed: () {
                   Navigator.pop(context);
                 },
@@ -142,10 +205,7 @@ class MasterScreen extends StatelessWidget {
           ],
         ),
       ),
-      body: Container(
-        padding: const EdgeInsets.all(24),
-        child: child,
-      ),
+      body: Container(padding: const EdgeInsets.all(24), child: child),
     );
   }
 }

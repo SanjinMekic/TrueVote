@@ -24,9 +24,13 @@ namespace TrueVote.Services
             {
                 query = query.Where(o => o.Naziv.Contains(search.Naziv));
             }
-            if (search.GradId.HasValue)
+            if (!string.IsNullOrEmpty(search.GradNaziv))
             {
-                query = query.Where(o => o.GradId == search.GradId);
+                query = query.Where(o => o.Grad.Naziv.Contains(search.GradNaziv));
+            }
+            if (!string.IsNullOrEmpty(search.DrzavaNaziv))
+            {
+                query = query.Where(o => o.Grad.Drzava.Naziv.Contains(search.DrzavaNaziv));
             }
             return query.Include(o => o.Grad).ThenInclude(g => g.Drzava);
         }
