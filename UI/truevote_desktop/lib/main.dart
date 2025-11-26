@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:truevote_desktop/providers/auth_provider.dart';
+import 'package:truevote_desktop/providers/drzava_provider.dart';
+import 'package:truevote_desktop/providers/grad_provider.dart';
 import 'package:truevote_desktop/providers/korisnik_provider.dart';
+import 'package:truevote_desktop/providers/opstina_provider.dart';
 import 'package:truevote_desktop/screens/login_screen.dart';
 
 void main() {
@@ -13,6 +16,15 @@ void main() {
         ),
         ChangeNotifierProvider<KorisnikProvider>(
           create: (_) => KorisnikProvider(),
+        ),
+        ChangeNotifierProvider<DrzavaProvider>(
+          create: (_) => DrzavaProvider(),
+        ),
+        ChangeNotifierProvider<GradProvider>(
+          create: (_) => GradProvider(),
+        ),
+        ChangeNotifierProvider<OpstinaProvider>(
+          create: (_) => OpstinaProvider(),
         ),
       ],
       child: const MyApp(),

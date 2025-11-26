@@ -101,8 +101,8 @@ class MasterScreen extends StatelessWidget {
                     },
                   ),
                   ListTile(
-                    leading: Icon(Icons.people_outline, color: Colors.blueAccent),
-                    title: Text("Korisnici", style: TextStyle(fontWeight: FontWeight.w600)),
+                    leading: Icon(Icons.location_city, color: Colors.blueAccent),
+                    title: Text("Geografska administracija", style: TextStyle(fontWeight: FontWeight.w600)),
                     onTap: () {
                       Navigator.pop(context);
                       // Dodaj navigaciju na korisnike
