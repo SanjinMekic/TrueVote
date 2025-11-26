@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:truevote_desktop/providers/auth_provider.dart';
+import 'package:truevote_desktop/screens/administracija_stranki_screen.dart';
 import 'package:truevote_desktop/screens/geografska_administracija_drzava_screen.dart';
 import 'package:truevote_desktop/screens/geografska_administracija_gradova_screen.dart';
 import 'package:truevote_desktop/screens/geografska_administracija_opstina_screen.dart';
@@ -165,6 +166,25 @@ class MasterScreen extends StatelessWidget {
                         MaterialPageRoute(
                           builder: (context) =>
                               const GeografskaAdministracijaOpstinaScreen(),
+                        ),
+                      );
+                    },
+                  ),
+                  ListTile(
+                    leading: Icon(
+                      Icons.how_to_vote,
+                      color: Colors.blueAccent,
+                    ),
+                    title: Text(
+                      "Administracija stranki",
+                      style: TextStyle(fontWeight: FontWeight.w600),
+                    ),
+                    onTap: () {
+                      Navigator.pop(context);
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (context) =>
+                              const StrankaScreen(),
                         ),
                       );
                     },

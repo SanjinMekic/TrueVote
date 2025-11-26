@@ -47,7 +47,7 @@ public partial class BirackiSistemContext : DbContext
     {
         modelBuilder.Entity<Drzava>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__Drzava__3214EC07FBEC9316");
+            entity.HasKey(e => e.Id).HasName("PK__Drzava__3214EC07AA8E0E1C");
 
             entity.ToTable("Drzava");
 
@@ -56,7 +56,7 @@ public partial class BirackiSistemContext : DbContext
 
         modelBuilder.Entity<Glas>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__Glas__3214EC07395AAAC3");
+            entity.HasKey(e => e.Id).HasName("PK__Glas__3214EC070818A74F");
 
             entity.Property(e => e.VrijemeGlasanja).HasColumnType("datetime");
 
@@ -73,7 +73,7 @@ public partial class BirackiSistemContext : DbContext
 
         modelBuilder.Entity<Grad>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__Grad__3214EC0707C94DCE");
+            entity.HasKey(e => e.Id).HasName("PK__Grad__3214EC0722945824");
 
             entity.ToTable("Grad");
 
@@ -87,7 +87,7 @@ public partial class BirackiSistemContext : DbContext
 
         modelBuilder.Entity<Izbor>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__Izbor__3214EC0726C6E06A");
+            entity.HasKey(e => e.Id).HasName("PK__Izbor__3214EC079BC29C4D");
 
             entity.ToTable("Izbor");
 
@@ -103,7 +103,7 @@ public partial class BirackiSistemContext : DbContext
 
         modelBuilder.Entity<Kandidat>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__Kandidat__3214EC07C590DCBE");
+            entity.HasKey(e => e.Id).HasName("PK__Kandidat__3214EC07C51266A8");
 
             entity.ToTable("Kandidat");
 
@@ -122,7 +122,7 @@ public partial class BirackiSistemContext : DbContext
 
         modelBuilder.Entity<Kategorija>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__Kategori__3214EC0733E57331");
+            entity.HasKey(e => e.Id).HasName("PK__Kategori__3214EC07B1AEA960");
 
             entity.ToTable("Kategorija");
 
@@ -132,11 +132,11 @@ public partial class BirackiSistemContext : DbContext
 
         modelBuilder.Entity<Korisnik>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__Korisnik__3214EC073E29F501");
+            entity.HasKey(e => e.Id).HasName("PK__Korisnik__3214EC0717F8FBD3");
 
             entity.ToTable("Korisnik");
 
-            entity.HasIndex(e => e.KorisnickoIme, "UQ__Korisnik__992E6F92C6242163").IsUnique();
+            entity.HasIndex(e => e.KorisnickoIme, "UQ__Korisnik__992E6F9271FBBA38").IsUnique();
 
             entity.Property(e => e.Email).HasMaxLength(200);
             entity.Property(e => e.Ime).HasMaxLength(100);
@@ -161,7 +161,7 @@ public partial class BirackiSistemContext : DbContext
 
         modelBuilder.Entity<Opstina>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__Opstina__3214EC0759A3E8C5");
+            entity.HasKey(e => e.Id).HasName("PK__Opstina__3214EC0717D4F764");
 
             entity.ToTable("Opstina");
 
@@ -175,7 +175,7 @@ public partial class BirackiSistemContext : DbContext
 
         modelBuilder.Entity<Pitanje>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__Pitanje__3214EC079B39CC50");
+            entity.HasKey(e => e.Id).HasName("PK__Pitanje__3214EC077A8128D6");
 
             entity.ToTable("Pitanje");
 
@@ -192,16 +192,20 @@ public partial class BirackiSistemContext : DbContext
 
         modelBuilder.Entity<Stranka>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__Stranka__3214EC07A2FA5291");
+            entity.HasKey(e => e.Id).HasName("PK__Stranka__3214EC07CD3D8227");
 
             entity.ToTable("Stranka");
 
+            entity.Property(e => e.DatumOsnivanja).HasColumnType("date");
             entity.Property(e => e.Naziv).HasMaxLength(100);
+            entity.Property(e => e.Opis).HasMaxLength(500);
+            entity.Property(e => e.Sjediste).HasMaxLength(200);
+            entity.Property(e => e.WebUrl).HasMaxLength(200);
         });
 
         modelBuilder.Entity<TipIzbora>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__TipIzbor__3214EC07DD2253C5");
+            entity.HasKey(e => e.Id).HasName("PK__TipIzbor__3214EC07453BB640");
 
             entity.ToTable("TipIzbora");
 
@@ -215,7 +219,7 @@ public partial class BirackiSistemContext : DbContext
 
         modelBuilder.Entity<Uloga>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__Uloga__3214EC0759E1E0C9");
+            entity.HasKey(e => e.Id).HasName("PK__Uloga__3214EC07239C77DB");
 
             entity.ToTable("Uloga");
 
