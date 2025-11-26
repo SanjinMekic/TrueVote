@@ -8,6 +8,5 @@ namespace TrueVote.Model.Requests
     {
         public int? KorisnikId { get; set; }
         public int? KandidatId { get; set; }
-        public DateTime? VrijemeGlasanja { get; set; }
     }
 }

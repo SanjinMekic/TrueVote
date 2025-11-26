@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using TrueVote.Model.Exceptions;
 using TrueVote.Model.Requests;
 using TrueVote.Model.Responses;
 using TrueVote.Model.SearchObjects;
@@ -40,6 +41,56 @@ namespace TrueVote.Services
                 .ThenInclude(ti => ti.Opstina)
                 .ThenInclude(o => o.Grad)
                 .ThenInclude(g => g.Drzava);
+        }
+
+        public override void BeforeInsert(IzborInsetRequest request, Izbor entity)
+        {
+            ValidateIzbor(request.TipIzboraId, request.DatumPocetka, request.DatumKraja, request.Status, null);
+        }
+
+        public override void BeforeUpdate(IzborUpdateRequest request, Izbor entity)
+        {
+            ValidateIzbor(
+                request.TipIzboraId ?? entity.TipIzboraId,
+                request.DatumPocetka ?? entity.DatumPocetka,
+                request.DatumKraja ?? entity.DatumKraja,
+                request.Status ?? entity.Status,
+                entity.Id
+            );
+        }
+
+        private void ValidateIzbor(int tipIzboraId, DateTime datumPocetka, DateTime datumKraja, string status, int? izborId)
+        {
+            // 1. Tip izbora mora postojati
+            var tip = Context.TipIzboras.FirstOrDefault(x => x.Id == tipIzboraId);
+            if (tip == null)
+                throw new UserException("Tip izbora ne postoji.");
+
+            // 2. Datum pocetka < datum kraja
+            if (datumPocetka >= datumKraja)
+                throw new UserException("Datum početka mora biti prije datuma kraja.");
+
+            // 3. Izbor se ne može kreirati u prošlosti
+            if (datumKraja < DateTime.Now)
+                throw new UserException("Datum kraja ne može biti u prošlosti.");
+
+            // 4. Validan status
+            var validStatuses = new[] { "Planned", "Active", "Finished" };
+            if (!validStatuses.Contains(status))
+                throw new UserException("Nevalidan status izbora.");
+
+            // 5. Ne smije postojati drugi izbor istog tipa koji se vremenski preklapa
+            var conflicting = Context.Izbors
+                .Where(x => x.TipIzboraId == tipIzboraId &&
+                    (izborId == null || x.Id != izborId) &&
+                    (
+                        (datumPocetka >= x.DatumPocetka && datumPocetka <= x.DatumKraja) ||
+                        (datumKraja >= x.DatumPocetka && datumKraja <= x.DatumKraja)
+                    )
+                 ).Any();
+
+            if (conflicting)
+                throw new UserException("Već postoji izbor ovog tipa u istom vremenskom periodu.");
         }
     }
 }
