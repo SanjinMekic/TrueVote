@@ -6,6 +6,7 @@ import 'package:truevote_desktop/providers/grad_provider.dart';
 import 'package:truevote_desktop/providers/korisnik_provider.dart';
 import 'package:truevote_desktop/providers/opstina_provider.dart';
 import 'package:truevote_desktop/providers/stranka_provider.dart';
+import 'package:truevote_desktop/providers/uloga_provider.dart';
 import 'package:truevote_desktop/screens/login_screen.dart';
 
 void main() {
@@ -29,6 +30,9 @@ void main() {
         ),
         ChangeNotifierProvider<StrankaProvider>(
           create: (_) => StrankaProvider(),
+        ),
+        ChangeNotifierProvider<UlogaProvider>(
+          create: (_) => UlogaProvider(),
         ),
       ],
       child: const MyApp(),

@@ -15,5 +15,7 @@ public partial class Pitanje
 
     public DateTime DatumKreiranja { get; set; }
 
+    public bool Obrisan { get; set; }
+
     public virtual Kategorija Kategorija { get; set; } = null!;
 }

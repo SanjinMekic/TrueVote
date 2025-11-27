@@ -51,15 +51,38 @@ namespace TrueVote.Services
         public virtual void Delete(int id)
         {
             var set = Context.Set<TDbEntity>();
-
             var entity = set.Find(id);
 
             if (entity == null)
-            {
                 throw new Exception("Entity not found");
-            }
 
-            set.Remove(entity);
+            // Provjera da li TDbEntity ima svojstvo Obrisan
+            var prop = entity.GetType().GetProperty("Obrisan");
+
+            if (prop == null)
+                throw new Exception("Ova entitetska klasa nema 'Obrisan' polje — soft delete nije moguće.");
+
+            // Postavljanje vrijednosti
+            prop.SetValue(entity, true);
+
+            Context.SaveChanges();
+        }
+
+        public virtual void Restore(int id)
+        {
+            var set = Context.Set<TDbEntity>();
+            var entity = set.Find(id);
+
+            if (entity == null)
+                throw new Exception("Entity not found");
+
+            var prop = entity.GetType().GetProperty("Obrisan");
+
+            if (prop == null)
+                throw new Exception("Ova entitetska klasa nema 'Obrisan' polje — restore nije moguće.");
+
+            prop.SetValue(entity, false);
+
             Context.SaveChanges();
         }
     }

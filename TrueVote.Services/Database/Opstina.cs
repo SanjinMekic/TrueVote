@@ -11,6 +11,8 @@ public partial class Opstina
 
     public int GradId { get; set; }
 
+    public bool Obrisan { get; set; }
+
     public virtual Grad Grad { get; set; } = null!;
 
     public virtual ICollection<Korisnik> Korisniks { get; set; } = new List<Korisnik>();

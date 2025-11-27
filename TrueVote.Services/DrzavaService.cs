@@ -19,6 +19,8 @@ namespace TrueVote.Services
 
         public override IQueryable<Drzava> AddFilter(DrzavaSearchObject search, IQueryable<Drzava> query)
         {
+            query = base.AddFilter(search, query);
+
             if (!string.IsNullOrEmpty(search.Naziv))
             {
                 query = query.Where(d => d.Naziv.Contains(search.Naziv));

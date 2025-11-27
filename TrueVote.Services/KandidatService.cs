@@ -21,6 +21,8 @@ namespace TrueVote.Services
 
         public override IQueryable<Kandidat> AddFilter(KandidatSearchObject search, IQueryable<Kandidat> query)
         {
+            query = base.AddFilter(search, query);
+
             if (!string.IsNullOrEmpty(search.Ime))
             {
                 query = query.Where(k => k.Ime.Contains(search.Ime));

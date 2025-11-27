@@ -20,6 +20,8 @@ namespace TrueVote.Services
 
         public override IQueryable<Stranka> AddFilter(StrankaSearchObject search, IQueryable<Stranka> query)
         {
+            query = base.AddFilter(search, query);
+
             if (!string.IsNullOrEmpty(search.Naziv))
             {
                 query = query.Where(s => s.Naziv.Contains(search.Naziv));

@@ -20,6 +20,8 @@ namespace TrueVote.Services
 
         public override IQueryable<Grad> AddFilter(GradSearchObject search, IQueryable<Grad> query)
         {
+            query = base.AddFilter(search, query);
+
             if (!string.IsNullOrEmpty(search.Naziv))
             {
                 return query.Where(g => g.Naziv.Contains(search.Naziv)).Include(g => g.Drzava);

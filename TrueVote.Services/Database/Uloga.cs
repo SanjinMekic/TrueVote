@@ -9,5 +9,7 @@ public partial class Uloga
 
     public string Naziv { get; set; } = null!;
 
+    public bool Obrisan { get; set; }
+
     public virtual ICollection<Korisnik> Korisniks { get; set; } = new List<Korisnik>();
 }

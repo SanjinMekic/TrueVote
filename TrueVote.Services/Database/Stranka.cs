@@ -21,5 +21,7 @@ public partial class Stranka
 
     public byte[]? Logo { get; set; }
 
+    public bool Obrisan { get; set; }
+
     public virtual ICollection<Kandidat> Kandidats { get; set; } = new List<Kandidat>();
 }

@@ -11,5 +11,7 @@ public partial class Kategorija
 
     public string? Opis { get; set; }
 
+    public bool Obrisan { get; set; }
+
     public virtual ICollection<Pitanje> Pitanjes { get; set; } = new List<Pitanje>();
 }

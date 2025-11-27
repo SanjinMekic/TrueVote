@@ -15,6 +15,8 @@ public partial class Izbor
 
     public string Status { get; set; } = null!;
 
+    public bool Obrisan { get; set; }
+
     public virtual ICollection<Kandidat> Kandidats { get; set; } = new List<Kandidat>();
 
     public virtual TipIzbora TipIzbora { get; set; } = null!;

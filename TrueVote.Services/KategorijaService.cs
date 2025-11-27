@@ -19,6 +19,8 @@ namespace TrueVote.Services
 
         public override IQueryable<Kategorija> AddFilter(KategorijaSearchObject search, IQueryable<Kategorija> query)
         {
+            query = base.AddFilter(search, query);
+
             if (!string.IsNullOrEmpty(search.Naziv))
             {
                 query = query.Where(k => k.Naziv.Contains(search.Naziv));

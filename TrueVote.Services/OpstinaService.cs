@@ -20,6 +20,8 @@ namespace TrueVote.Services
 
         public override IQueryable<Opstina> AddFilter(OpstinaSearchObject search, IQueryable<Opstina> query)
         {
+            query = base.AddFilter(search, query);
+
             if (!string.IsNullOrEmpty(search.Naziv))
             {
                 query = query.Where(o => o.Naziv.Contains(search.Naziv));

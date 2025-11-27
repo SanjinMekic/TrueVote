@@ -1,10 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:truevote_desktop/providers/auth_provider.dart';
+import 'package:truevote_desktop/providers/korisnik_provider.dart';
+import 'package:truevote_desktop/models/korisnik.dart';
 import 'package:truevote_desktop/screens/administracija_stranki_screen.dart';
 import 'package:truevote_desktop/screens/geografska_administracija_drzava_screen.dart';
 import 'package:truevote_desktop/screens/geografska_administracija_gradova_screen.dart';
 import 'package:truevote_desktop/screens/geografska_administracija_opstina_screen.dart';
 import 'package:truevote_desktop/screens/login_screen.dart';
+import 'package:truevote_desktop/screens/upravljanje_nalozima_screen.dart';
+import 'dart:convert';
 
 class MasterScreen extends StatelessWidget {
   final String title;
@@ -19,6 +24,75 @@ class MasterScreen extends StatelessWidget {
     Navigator.of(context).pushAndRemoveUntil(
       MaterialPageRoute(builder: (context) => const LoginPage()),
       (route) => false,
+    );
+  }
+
+  Widget _buildUserAvatar(BuildContext context) {
+    final korisnikId = AuthProvider.korisnikId;
+    if (korisnikId == null) {
+      return _defaultAvatar();
+    }
+    return FutureBuilder<Korisnik>(
+      future: Provider.of<KorisnikProvider>(context, listen: false).getById(korisnikId),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState != ConnectionState.done) {
+          return _defaultAvatar();
+        }
+        final korisnik = snapshot.data;
+        if (korisnik == null || korisnik.slika == null || korisnik.slika!.isEmpty) {
+          return _defaultAvatar();
+        }
+        try {
+          final bytes = base64Decode(korisnik.slika!);
+          return Container(
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              color: Colors.white,
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.blueAccent.withOpacity(0.2),
+                  blurRadius: 8,
+                  offset: const Offset(0, 4),
+                ),
+              ],
+            ),
+            padding: const EdgeInsets.all(8),
+            child: ClipOval(
+              child: Image.memory(
+                bytes,
+                width: 40,
+                height: 40,
+                fit: BoxFit.cover,
+                errorBuilder: (context, error, stackTrace) => _defaultAvatar(),
+              ),
+            ),
+          );
+        } catch (e) {
+          return _defaultAvatar();
+        }
+      },
+    );
+  }
+
+  Widget _defaultAvatar() {
+    return Container(
+      decoration: BoxDecoration(
+        shape: BoxShape.circle,
+        color: Colors.white,
+        boxShadow: [
+          BoxShadow(
+            color: Colors.blueAccent.withOpacity(0.2),
+            blurRadius: 8,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      padding: const EdgeInsets.all(8),
+      child: const Icon(
+        Icons.person,
+        size: 40,
+        color: Colors.blueAccent,
+      ),
     );
   }
 
@@ -40,7 +114,7 @@ class MasterScreen extends StatelessWidget {
         elevation: 8,
         iconTheme: const IconThemeData(
           color: Colors.white,
-        ), // Ikona hamburgera bijela
+        ),
       ),
       drawer: Drawer(
         shape: const RoundedRectangleBorder(
@@ -62,25 +136,7 @@ class MasterScreen extends StatelessWidget {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Container(
-                          decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            color: Colors.white,
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.blueAccent.withOpacity(0.2),
-                                blurRadius: 8,
-                                offset: const Offset(0, 4),
-                              ),
-                            ],
-                          ),
-                          padding: const EdgeInsets.all(8),
-                          child: const Icon(
-                            Icons.person,
-                            size: 40,
-                            color: Colors.blueAccent,
-                          ),
-                        ),
+                        _buildUserAvatar(context),
                         const SizedBox(height: 12),
                         Text(
                           "TrueVote",
@@ -189,6 +245,25 @@ class MasterScreen extends StatelessWidget {
                       );
                     },
                   ),
+                  ListTile(
+                    leading: Icon(
+                      Icons.how_to_vote,
+                      color: Colors.blueAccent,
+                    ),
+                    title: Text(
+                      "Upravljanje nalozima",
+                      style: TextStyle(fontWeight: FontWeight.w600),
+                    ),
+                    onTap: () {
+                      Navigator.pop(context);
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (context) =>
+                              const UpravljanjeNalozimaScreen(),
+                        ),
+                      );
+                    },
+                  ),
                  const Divider(),
                   ListTile(
                     leading: Icon(Icons.logout, color: Colors.redAccent),
@@ -215,7 +290,7 @@ class MasterScreen extends StatelessWidget {
                   Icons.close,
                   size: 28,
                   color: Colors.white,
-                ), // Promijenjeno u bijelu boju
+                ),
                 onPressed: () {
                   Navigator.pop(context);
                 },

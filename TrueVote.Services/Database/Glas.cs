@@ -13,6 +13,8 @@ public partial class Glas
 
     public DateTime VrijemeGlasanja { get; set; }
 
+    public bool Obrisan { get; set; }
+
     public virtual Kandidat Kandidat { get; set; } = null!;
 
     public virtual Korisnik Korisnik { get; set; } = null!;

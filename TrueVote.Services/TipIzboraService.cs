@@ -20,6 +20,8 @@ namespace TrueVote.Services
 
         public override IQueryable<TipIzbora> AddFilter(TipIzboraSearchObject search, IQueryable<TipIzbora> query)
         {
+            query = base.AddFilter(search, query);
+
             return query.Include(ti => ti.Opstina).ThenInclude(o => o.Grad).ThenInclude(g => g.Drzava);
         }
     }

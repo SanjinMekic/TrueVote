@@ -17,6 +17,8 @@ public partial class Kandidat
 
     public byte[]? Slika { get; set; }
 
+    public bool Obrisan { get; set; }
+
     public virtual ICollection<Glas> Glas { get; set; } = new List<Glas>();
 
     public virtual Izbor Izbor { get; set; } = null!;

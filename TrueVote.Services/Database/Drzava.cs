@@ -9,5 +9,7 @@ public partial class Drzava
 
     public string Naziv { get; set; } = null!;
 
+    public bool Obrisan { get; set; }
+
     public virtual ICollection<Grad> Grads { get; set; } = new List<Grad>();
 }

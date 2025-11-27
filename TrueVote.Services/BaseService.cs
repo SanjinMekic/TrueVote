@@ -1,4 +1,5 @@
 ﻿using MapsterMapper;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -46,20 +47,41 @@ namespace TrueVote.Services
         }
         public virtual IQueryable<TDbEntity> AddFilter(TSearch search, IQueryable<TDbEntity> query)
         {
+            var prop = typeof(TDbEntity).GetProperty("Obrisan");
+
+            if (prop != null)
+            {
+                query = query.Where(e => EF.Property<bool>(e, "Obrisan") == false);
+            }
+
             return query;
         }
         public virtual TModel GetById(int id)
         {
-            var entity = Context.Set<TDbEntity>().Find(id);
+            var set = Context.Set<TDbEntity>();
+
+            var prop = typeof(TDbEntity).GetProperty("Obrisan");
+
+            TDbEntity entity;
+
+            if (prop != null)
+            {
+                entity = set
+                    .Where(e => EF.Property<int>(e, "Id") == id &&
+                                EF.Property<bool>(e, "Obrisan") == false)
+                    .FirstOrDefault();
+            }
+            else
+            {
+                entity = set.Find(id);
+            }
 
             if (entity != null)
             {
                 return Mapper.Map<TModel>(entity);
             }
-            else
-            {
-                return null;
-            }
+
+            return null;
         }
     }
 }

@@ -21,6 +21,8 @@ namespace TrueVote.Services
 
         public override IQueryable<Izbor> AddFilter(IzborSearchObject search, IQueryable<Izbor> query)
         {
+            query = base.AddFilter(search, query);
+
             if (!string.IsNullOrEmpty(search.Status))
             {
                 query = query.Where(i => i.Status == search.Status);

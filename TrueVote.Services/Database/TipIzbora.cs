@@ -15,6 +15,8 @@ public partial class TipIzbora
 
     public int OpstinaId { get; set; }
 
+    public bool Obrisan { get; set; }
+
     public virtual ICollection<Izbor> Izbors { get; set; } = new List<Izbor>();
 
     public virtual Opstina Opstina { get; set; } = null!;
