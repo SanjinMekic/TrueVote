@@ -256,6 +256,9 @@ namespace TrueVote.Services
             if (hash != entity.PasswordHash)
                 return null;
 
+            if (entity.Obrisan == true)
+                return null;
+
             return this.Mapper.Map<KorisnikResponse>(entity);
         }
 
