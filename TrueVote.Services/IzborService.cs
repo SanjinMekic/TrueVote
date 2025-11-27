@@ -63,21 +63,17 @@ namespace TrueVote.Services
 
         private void ValidateIzbor(int tipIzboraId, DateTime datumPocetka, DateTime datumKraja, string status, int? izborId)
         {
-            // 1. Tip izbora mora postojati
             var tip = Context.TipIzboras.FirstOrDefault(x => x.Id == tipIzboraId);
             if (tip == null)
                 throw new UserException("Tip izbora ne postoji.");
 
-            // 2. Datum pocetka < datum kraja
-            if (datumPocetka >= datumKraja)
+            if (datumPocetka > datumKraja)
                 throw new UserException("Datum početka mora biti prije datuma kraja.");
 
-            // 3. Izbor se ne može kreirati u prošlosti
-            if (datumKraja < DateTime.Now)
-                throw new UserException("Datum kraja ne može biti u prošlosti.");
+            if (datumKraja < datumPocetka)
+                throw new UserException("Datum kraja ne može biti manji od datuma početka.");
 
-            // 4. Validan status
-            var validStatuses = new[] { "Planned", "Active", "Finished" };
+            var validStatuses = new[] { "Planiran", "U toku", "Završen" };
             if (!validStatuses.Contains(status))
                 throw new UserException("Nevalidan status izbora.");
 
@@ -92,7 +88,8 @@ namespace TrueVote.Services
                  ).Any();
 
             if (conflicting)
-                throw new UserException("Već postoji izbor ovog tipa u istom vremenskom periodu.");
+                throw new UserException("U bazi postoji izbor ovog tipa u istom vremenskom periodu.");
         }
+
     }
 }

@@ -3,12 +3,14 @@ import 'package:provider/provider.dart';
 import 'package:truevote_desktop/providers/auth_provider.dart';
 import 'package:truevote_desktop/providers/drzava_provider.dart';
 import 'package:truevote_desktop/providers/grad_provider.dart';
+import 'package:truevote_desktop/providers/izbor_provider.dart';
 import 'package:truevote_desktop/providers/kategorija_provider.dart';
 import 'package:truevote_desktop/providers/korisnik_provider.dart';
 import 'package:truevote_desktop/providers/opstina_provider.dart';
 import 'package:truevote_desktop/providers/pitanje_provider.dart';
 import 'package:truevote_desktop/providers/report_provider.dart';
 import 'package:truevote_desktop/providers/stranka_provider.dart';
+import 'package:truevote_desktop/providers/tip_izbora_provider.dart';
 import 'package:truevote_desktop/providers/uloga_provider.dart';
 import 'package:truevote_desktop/screens/login_screen.dart';
 
@@ -45,6 +47,12 @@ void main() {
         ),
         ChangeNotifierProvider<ReportProvider>(
           create: (_) => ReportProvider(),
+        ),
+        ChangeNotifierProvider<TipIzboraProvider>(
+          create: (_) => TipIzboraProvider(),
+        ),
+        ChangeNotifierProvider<IzborProvider>(
+          create: (_) => IzborProvider(),
         ),
       ],
       child: const MyApp(),

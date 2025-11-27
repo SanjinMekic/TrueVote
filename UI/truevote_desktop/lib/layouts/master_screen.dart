@@ -3,7 +3,9 @@ import 'package:provider/provider.dart';
 import 'package:truevote_desktop/providers/auth_provider.dart';
 import 'package:truevote_desktop/providers/korisnik_provider.dart';
 import 'package:truevote_desktop/models/korisnik.dart';
+import 'package:truevote_desktop/screens/administracija_izbora_screen.dart';
 import 'package:truevote_desktop/screens/administracija_stranki_screen.dart';
+import 'package:truevote_desktop/screens/administracija_tipova_izbora_screen.dart';
 import 'package:truevote_desktop/screens/faq_screen.dart';
 import 'package:truevote_desktop/screens/geografska_administracija_drzava_screen.dart';
 import 'package:truevote_desktop/screens/geografska_administracija_gradova_screen.dart';
@@ -230,7 +232,7 @@ class MasterScreen extends StatelessWidget {
                   ),
                   ListTile(
                     leading: Icon(
-                      Icons.how_to_vote,
+                      Icons.account_balance,
                       color: Colors.blueAccent,
                     ),
                     title: Text(
@@ -249,7 +251,7 @@ class MasterScreen extends StatelessWidget {
                   ),
                   ListTile(
                     leading: Icon(
-                      Icons.how_to_vote,
+                      Icons.manage_accounts,
                       color: Colors.blueAccent,
                     ),
                     title: Text(
@@ -268,7 +270,7 @@ class MasterScreen extends StatelessWidget {
                   ),
                    ListTile(
                     leading: Icon(
-                      Icons.how_to_vote,
+                      Icons.question_answer,
                       color: Colors.blueAccent,
                     ),
                     title: Text(
@@ -288,6 +290,44 @@ class MasterScreen extends StatelessWidget {
                   ListTile(
                     leading: Icon(
                       Icons.how_to_vote,
+                      color: Colors.blueAccent,
+                    ),
+                    title: Text(
+                      "Administracija tipova izbora",
+                      style: TextStyle(fontWeight: FontWeight.w600),
+                    ),
+                    onTap: () {
+                      Navigator.pop(context);
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (context) =>
+                              const AdministracijaTipovaIzboraScreen(),
+                        ),
+                      );
+                    },
+                  ),
+                  ListTile(
+                    leading: Icon(
+                      Icons.how_to_vote,
+                      color: Colors.blueAccent,
+                    ),
+                    title: Text(
+                      "Administracija izbora",
+                      style: TextStyle(fontWeight: FontWeight.w600),
+                    ),
+                    onTap: () {
+                      Navigator.pop(context);
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (context) =>
+                              const AdministracijaIzboraScreen(),
+                        ),
+                      );
+                    },
+                  ),
+                  ListTile(
+                    leading: Icon(
+                      Icons.bar_chart,
                       color: Colors.blueAccent,
                     ),
                     title: Text(
