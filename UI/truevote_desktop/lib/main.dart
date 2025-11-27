@@ -7,6 +7,7 @@ import 'package:truevote_desktop/providers/kategorija_provider.dart';
 import 'package:truevote_desktop/providers/korisnik_provider.dart';
 import 'package:truevote_desktop/providers/opstina_provider.dart';
 import 'package:truevote_desktop/providers/pitanje_provider.dart';
+import 'package:truevote_desktop/providers/report_provider.dart';
 import 'package:truevote_desktop/providers/stranka_provider.dart';
 import 'package:truevote_desktop/providers/uloga_provider.dart';
 import 'package:truevote_desktop/screens/login_screen.dart';
@@ -41,6 +42,9 @@ void main() {
         ),
         ChangeNotifierProvider<PitanjeProvider>(
           create: (_) => PitanjeProvider(),
+        ),
+        ChangeNotifierProvider<ReportProvider>(
+          create: (_) => ReportProvider(),
         ),
       ],
       child: const MyApp(),

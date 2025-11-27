@@ -22,6 +22,7 @@ builder.Services.AddTransient<IKandidatService, KandidatService>();
 builder.Services.AddTransient<IOpstinaService, OpstinaService>();
 builder.Services.AddTransient<IGlasService, GlasService>();
 builder.Services.AddTransient<IIzborService, IzborService>();
+builder.Services.AddTransient<IReportService, ReportService>();
 builder.Services.AddHttpContextAccessor();
 
 // Registracija DbContext
