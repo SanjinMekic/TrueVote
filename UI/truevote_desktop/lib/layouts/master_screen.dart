@@ -8,6 +8,7 @@ import 'package:truevote_desktop/screens/faq_screen.dart';
 import 'package:truevote_desktop/screens/geografska_administracija_drzava_screen.dart';
 import 'package:truevote_desktop/screens/geografska_administracija_gradova_screen.dart';
 import 'package:truevote_desktop/screens/geografska_administracija_opstina_screen.dart';
+import 'package:truevote_desktop/screens/grafovi_screen.dart';
 import 'package:truevote_desktop/screens/login_screen.dart';
 import 'package:truevote_desktop/screens/upravljanje_nalozima_screen.dart';
 import 'dart:convert';
@@ -280,6 +281,25 @@ class MasterScreen extends StatelessWidget {
                         MaterialPageRoute(
                           builder: (context) =>
                               const UpravljanjeFAQScreen(),
+                        ),
+                      );
+                    },
+                  ),
+                  ListTile(
+                    leading: Icon(
+                      Icons.how_to_vote,
+                      color: Colors.blueAccent,
+                    ),
+                    title: Text(
+                      "Grafovi",
+                      style: TextStyle(fontWeight: FontWeight.w600),
+                    ),
+                    onTap: () {
+                      Navigator.pop(context);
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (context) =>
+                               GrafoviScreen(),
                         ),
                       );
                     },
