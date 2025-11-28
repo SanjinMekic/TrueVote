@@ -75,10 +75,63 @@ class _UpravljanjeNalozimaScreenState extends State<UpravljanjeNalozimaScreen> {
     });
   }
 
-  Future<void> _deleteKorisnik(int id) async {
+  Future<void> _tryDeleteKorisnik(Korisnik korisnik) async {
     final provider = Provider.of<KorisnikProvider>(context, listen: false);
-    await provider.delete(id);
-    setState(() {});
+    bool canDelete = false;
+    String? error;
+
+    try {
+      canDelete = await provider.canDelete(korisnik.id);
+    } catch (e) {
+      error = "Greška pri provjeri mogućnosti brisanja.";
+    }
+
+    if (!canDelete) {
+      await showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: const Text("Brisanje nije dozvoljeno"),
+          content: Text(
+            "Korisnik '${korisnik.ime ?? ''} ${korisnik.prezime ?? ''}' je već glasao na izborima i ne može biti obrisan.",
+            style: const TextStyle(color: Colors.red),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child: const Text("U redu"),
+            ),
+          ],
+        ),
+      );
+      return;
+    }
+
+    final confirm = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text("Potvrda brisanja"),
+        content: Text(
+          "Da li ste sigurni da želite obrisati '${korisnik.ime ?? ''} ${korisnik.prezime ?? ''}'?",
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(false),
+            child: const Text("Otkaži"),
+          ),
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(true),
+            child: const Text(
+              "Obriši",
+              style: TextStyle(color: Colors.red),
+            ),
+          ),
+        ],
+      ),
+    );
+    if (confirm == true) {
+      await provider.delete(korisnik.id);
+      setState(() {}); // Refresh FutureBuilder
+    }
   }
 
   void _openKorisnikForm({Korisnik? korisnik}) async {
@@ -188,33 +241,7 @@ class _UpravljanjeNalozimaScreenState extends State<UpravljanjeNalozimaScreen> {
                 IconButton(
                   icon: const Icon(Icons.delete, color: Colors.redAccent),
                   tooltip: "Obriši",
-                  onPressed: () async {
-                    final confirm = await showDialog<bool>(
-                      context: context,
-                      builder: (context) => AlertDialog(
-                        title: const Text("Potvrda brisanja"),
-                        content: Text(
-                          "Da li ste sigurni da želite obrisati '${korisnik.ime ?? ''} ${korisnik.prezime ?? ''}'?",
-                        ),
-                        actions: [
-                          TextButton(
-                            onPressed: () => Navigator.of(context).pop(false),
-                            child: const Text("Otkaži"),
-                          ),
-                          TextButton(
-                            onPressed: () => Navigator.of(context).pop(true),
-                            child: const Text(
-                              "Obriši",
-                              style: TextStyle(color: Colors.red),
-                            ),
-                          ),
-                        ],
-                      ),
-                    );
-                    if (confirm == true) {
-                      await _deleteKorisnik(korisnik.id);
-                    }
-                  },
+                  onPressed: () => _tryDeleteKorisnik(korisnik),
                 ),
               ],
             ),

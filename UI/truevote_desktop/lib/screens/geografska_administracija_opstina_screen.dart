@@ -272,6 +272,65 @@ class _GeografskaAdministracijaOpstinaScreenState extends State<GeografskaAdmini
     setState(() {}); // Refresh FutureBuilder
   }
 
+  Future<void> _tryDeleteOpstina(Opstina opstina) async {
+    final provider = Provider.of<OpstinaProvider>(context, listen: false);
+    bool canDelete = false;
+    String? error;
+
+    try {
+      canDelete = await provider.canDelete(opstina.id);
+    } catch (e) {
+      error = "Greška pri provjeri mogućnosti brisanja.";
+    }
+
+    if (!canDelete) {
+      await showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: const Text("Brisanje nije dozvoljeno"),
+          content: Text(
+            "Opština '${opstina.naziv ?? ''}' je povezana sa korisnicima ili tipovima izbora i ne može biti obrisana.",
+            style: const TextStyle(color: Colors.red),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child: const Text("U redu"),
+            ),
+          ],
+        ),
+      );
+      return;
+    }
+
+    final confirm = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text("Potvrda brisanja"),
+        content: Text(
+          "Da li ste sigurni da želite obrisati '${opstina.naziv ?? ''}'?",
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(false),
+            child: const Text("Otkaži"),
+          ),
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(true),
+            child: const Text(
+              "Obriši",
+              style: TextStyle(color: Colors.red),
+            ),
+          ),
+        ],
+      ),
+    );
+    if (confirm == true) {
+      await provider.delete(opstina.id);
+      setState(() {}); // Refresh FutureBuilder
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return MasterScreen(
@@ -402,35 +461,7 @@ class _GeografskaAdministracijaOpstinaScreenState extends State<GeografskaAdmini
                                 IconButton(
                                   icon: const Icon(Icons.delete, color: Colors.redAccent),
                                   tooltip: "Obriši",
-                                  onPressed: () async {
-                                    final confirm = await showDialog<bool>(
-                                      context: context,
-                                      builder: (context) => AlertDialog(
-                                        title: const Text("Potvrda brisanja"),
-                                        content: Text(
-                                          "Da li ste sigurni da želite obrisati '${opstina.naziv ?? ''}'?",
-                                        ),
-                                        actions: [
-                                          TextButton(
-                                            onPressed: () => Navigator.of(context).pop(false),
-                                            child: const Text("Otkaži"),
-                                          ),
-                                          TextButton(
-                                            onPressed: () => Navigator.of(context).pop(true),
-                                            child: const Text(
-                                              "Obriši",
-                                              style: TextStyle(color: Colors.red),
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    );
-                                    if (confirm == true) {
-                                      final provider = Provider.of<OpstinaProvider>(context, listen: false);
-                                      await provider.delete(opstina.id);
-                                      setState(() {}); // Refresh FutureBuilder
-                                    }
-                                  },
+                                  onPressed: () => _tryDeleteOpstina(opstina),
                                 ),
                               ],
                             ),

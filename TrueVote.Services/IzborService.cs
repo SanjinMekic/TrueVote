@@ -91,5 +91,25 @@ namespace TrueVote.Services
                 throw new UserException("U bazi postoji izbor ovog tipa u istom vremenskom periodu.");
         }
 
+        public bool CanDelete(int id)
+        {
+            //Postoje li kandidati za ovaj izbor?
+            bool imaKandidata = Context.Kandidats
+                .Any(k => k.IzborId == id && k.Obrisan == false);
+
+            if (imaKandidata)
+                return false;
+
+            //Postoje li glasovi za ovaj izbor?
+            bool imaGlasova = Context.Glas
+                .Include(g => g.Kandidat)
+                .Any(g => g.Kandidat.IzborId == id && g.Obrisan == false);
+
+            if (imaGlasova)
+                return false;
+
+            return true;
+        }
+
     }
 }

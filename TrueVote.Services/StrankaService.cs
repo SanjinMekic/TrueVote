@@ -94,5 +94,16 @@ namespace TrueVote.Services
 
             return model;
         }
+
+        public bool CanDelete(int id)
+        {
+            var imaKandidata = Context.Kandidats
+                .Any(k => k.StrankaId == id && k.Obrisan == false);
+
+            if (imaKandidata)
+                return false;
+
+            return true;
+        }
     }
 }

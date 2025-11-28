@@ -283,5 +283,15 @@ namespace TrueVote.Services
         {
             return await Context.Korisniks.AnyAsync(u => u.KorisnickoIme == korisnickoIme);
         }
+
+        public bool CanDelete(int id)
+        {
+            bool imaGlasova = Context.Glas.Any(g => g.KorisnikId == id && g.Obrisan == false);
+
+            if (imaGlasova)
+                return false;
+
+            return true;
+        }
     }
 }

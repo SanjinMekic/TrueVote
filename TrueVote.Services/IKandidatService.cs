@@ -11,5 +11,6 @@ namespace TrueVote.Services
 {
     public interface IKandidatService : ICRUDService<KandidatResponse, KandidatSearchObject, KandidatInsertRequest, KandidatUpdateRequest>
     {
+        bool CanDelete(int id);
     }
 }

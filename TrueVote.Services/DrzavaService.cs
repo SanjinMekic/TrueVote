@@ -28,5 +28,13 @@ namespace TrueVote.Services
 
             return query;
         }
+
+        public bool CanDelete(int id)
+        {
+            bool imaGradova = Context.Grads
+                .Any(g => g.DrzavaId == id && g.Obrisan == false);
+
+            return !imaGradova;
+        }
     }
 }

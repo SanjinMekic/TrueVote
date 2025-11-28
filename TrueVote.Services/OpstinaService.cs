@@ -36,5 +36,24 @@ namespace TrueVote.Services
             }
             return query.Include(o => o.Grad).ThenInclude(g => g.Drzava);
         }
+
+        public bool CanDelete(int id)
+        {
+            // ima li korisnika
+            bool imaKorisnika = Context.Korisniks
+                .Any(k => k.OpstinaId == id && !k.Obrisan);
+
+            if (imaKorisnika)
+                return false;
+
+            // ima li tipova izbora
+            bool imaTipovaIzbora = Context.TipIzboras
+                .Any(t => t.OpstinaId == id && !t.Obrisan);
+
+            if (imaTipovaIzbora)
+                return false;
+
+            return true;
+        }
     }
 }

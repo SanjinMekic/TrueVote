@@ -4,6 +4,7 @@ import 'package:truevote_desktop/providers/auth_provider.dart';
 import 'package:truevote_desktop/providers/korisnik_provider.dart';
 import 'package:truevote_desktop/models/korisnik.dart';
 import 'package:truevote_desktop/screens/administracija_izbora_screen.dart';
+import 'package:truevote_desktop/screens/administracija_kandidata_screen.dart';
 import 'package:truevote_desktop/screens/administracija_stranki_screen.dart';
 import 'package:truevote_desktop/screens/administracija_tipova_izbora_screen.dart';
 import 'package:truevote_desktop/screens/faq_screen.dart';
@@ -321,6 +322,25 @@ class MasterScreen extends StatelessWidget {
                         MaterialPageRoute(
                           builder: (context) =>
                               const AdministracijaIzboraScreen(),
+                        ),
+                      );
+                    },
+                  ),
+                  ListTile(
+                    leading: Icon(
+                      Icons.how_to_vote,
+                      color: Colors.blueAccent,
+                    ),
+                    title: Text(
+                      "Administracija kandidata",
+                      style: TextStyle(fontWeight: FontWeight.w600),
+                    ),
+                    onTap: () {
+                      Navigator.pop(context);
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (context) =>
+                              const AdministracijaKandidataScreen(),
                         ),
                       );
                     },

@@ -13,5 +13,6 @@ namespace TrueVote.Services
     public interface IKorisnikService : ICRUDService<KorisnikResponse, KorisnikSearchObject, KorisnikInsertRequest, KorisnikUpdateRequest>
     {
         KorisnikResponse Login(string username, string password);
+        bool CanDelete(int id);
     }
 }

@@ -11,5 +11,6 @@ namespace TrueVote.Services
 {
     public interface ITipIzboraService : ICRUDService<TipIzboraResponse, TipIzboraSearchObject, TipIzboraInsertRequest, TipIzboraUpdateRequest>
     {
+        bool CanDelete(int id);
     }
 }

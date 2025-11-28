@@ -11,5 +11,6 @@ namespace TrueVote.Services
 {
     public interface IOpstinaService : ICRUDService<OpstinaResponse, OpstinaSearchObject, OpstinaInsertRequest, OpstinaUpdateRequest>
     {
+        bool CanDelete(int id);
     }
 }

@@ -1,5 +1,6 @@
 ﻿using MapsterMapper;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.ML;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -31,6 +32,14 @@ namespace TrueVote.Services
                 return query.Include(g => g.Drzava).Where(g => g.Drzava.Naziv.Contains(search.DrzavaNaziv));
             }
             return query.Include(g => g.Drzava);
+        }
+
+        public bool CanDelete(int id)
+        {
+            var imaOpstina = Context.Opstinas
+                .Any(o => o.GradId == id && o.Obrisan == false);
+
+            return !imaOpstina;
         }
     }
 }

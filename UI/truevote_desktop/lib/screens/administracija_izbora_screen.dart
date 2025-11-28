@@ -51,6 +51,7 @@ class _AdministracijaIzboraScreenState extends State<AdministracijaIzboraScreen>
 
     DateTime today = DateTime.now();
     DateTime todayDate = DateTime(today.year, today.month, today.day);
+    DateTime minPocetniDatum = todayDate.add(const Duration(days: 2)); // 2 dana poslije danas
 
     String _calculateStatus(DateTime? datumPocetka) {
       if (datumPocetka == null) return "";
@@ -150,8 +151,8 @@ class _AdministracijaIzboraScreenState extends State<AdministracijaIzboraScreen>
                                 onTap: () async {
                                   final picked = await showDatePicker(
                                     context: context,
-                                    initialDate: _datumPocetka ?? todayDate,
-                                    firstDate: todayDate,
+                                    initialDate: _datumPocetka ?? minPocetniDatum,
+                                    firstDate: minPocetniDatum,
                                     lastDate: DateTime(2100),
                                   );
                                   if (picked != null) {
@@ -284,9 +285,9 @@ class _AdministracijaIzboraScreenState extends State<AdministracijaIzboraScreen>
                               });
                               return;
                             }
-                            if (_datumPocetka!.isBefore(todayDate)) {
+                            if (_datumPocetka!.isBefore(minPocetniDatum)) {
                               setState(() {
-                                _error = "Datum početka ne može biti u prošlosti.";
+                                _error = "Datum početka mora biti najmanje 2 dana nakon današnjeg datuma.";
                               });
                               return;
                             }
@@ -457,6 +458,65 @@ class _AdministracijaIzboraScreenState extends State<AdministracijaIzboraScreen>
     });
   }
 
+  Future<void> _tryDeleteIzbor(Izbor izbor) async {
+    final provider = Provider.of<IzborProvider>(context, listen: false);
+    bool canDelete = false;
+    String? error;
+
+    try {
+      canDelete = await provider.canDelete(izbor.id);
+    } catch (e) {
+      error = "Greška pri provjeri mogućnosti brisanja.";
+    }
+
+    if (!canDelete) {
+      await showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: const Text("Brisanje nije dozvoljeno"),
+          content: Text(
+            "Izbor je povezan sa kandidatima ili ima glasove i ne može biti obrisan.",
+            style: const TextStyle(color: Colors.red),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child: const Text("U redu"),
+            ),
+          ],
+        ),
+      );
+      return;
+    }
+
+    final confirm = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text("Potvrda brisanja"),
+        content: Text(
+          "Da li ste sigurni da želite obrisati izbor za '${izbor.tipIzbora?.naziv ?? ''}'?",
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(false),
+            child: const Text("Otkaži"),
+          ),
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(true),
+            child: const Text(
+              "Obriši",
+              style: TextStyle(color: Colors.red),
+            ),
+          ),
+        ],
+      ),
+    );
+    if (confirm == true) {
+      await provider.delete(izbor.id);
+      setState(() {}); // Refresh FutureBuilder
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return MasterScreen(
@@ -546,35 +606,7 @@ class _AdministracijaIzboraScreenState extends State<AdministracijaIzboraScreen>
                                     IconButton(
                                       icon: const Icon(Icons.delete, color: Colors.redAccent),
                                       tooltip: "Obriši",
-                                      onPressed: () async {
-                                        final confirm = await showDialog<bool>(
-                                          context: context,
-                                          builder: (context) => AlertDialog(
-                                            title: const Text("Potvrda brisanja"),
-                                            content: Text(
-                                              "Da li ste sigurni da želite obrisati izbor za '${izbor.tipIzbora?.naziv ?? ''}'?",
-                                            ),
-                                            actions: [
-                                              TextButton(
-                                                onPressed: () => Navigator.of(context).pop(false),
-                                                child: const Text("Otkaži"),
-                                              ),
-                                              TextButton(
-                                                onPressed: () => Navigator.of(context).pop(true),
-                                                child: const Text(
-                                                  "Obriši",
-                                                  style: TextStyle(color: Colors.red),
-                                                ),
-                                              ),
-                                            ],
-                                          ),
-                                        );
-                                        if (confirm == true) {
-                                          final provider = Provider.of<IzborProvider>(context, listen: false);
-                                          await provider.delete(izbor.id);
-                                          setState(() {}); // Refresh FutureBuilder
-                                        }
-                                      },
+                                      onPressed: () => _tryDeleteIzbor(izbor),
                                     ),
                                   ],
                                 )

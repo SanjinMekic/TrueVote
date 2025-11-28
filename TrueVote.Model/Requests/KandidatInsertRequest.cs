@@ -10,6 +10,6 @@ namespace TrueVote.Model.Requests
         public string Prezime { get; set; }
         public int? StrankaId { get; set; }
         public int IzborId { get; set; }
-        public string? Slika { get; set; }
+        public string? SlikaBase64 { get; set; }
     }
 }

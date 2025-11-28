@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using TrueVote.Model.Exceptions;
+using TrueVote.Model.Models;
 using TrueVote.Model.Requests;
 using TrueVote.Model.Responses;
 using TrueVote.Model.SearchObjects;
@@ -35,11 +36,49 @@ namespace TrueVote.Services
             {
                 query = query.Where(k => k.Stranka != null && k.Stranka.Naziv.Contains(search.StrankaNaziv));
             }
-            if (search.IzborId.HasValue)
+            if (!string.IsNullOrEmpty(search.IzborNaziv))
             {
-                query = query.Where(k => k.IzborId == search.IzborId);
+                query = query.Where(k => k.Izbor.TipIzbora.Naziv.Contains(search.IzborNaziv));
             }
-            return query.Include(k => k.Izbor).Include(k => k.Stranka);
+            return query.Include(k => k.Izbor).ThenInclude(i => i.TipIzbora).ThenInclude(ti => ti.Opstina).ThenInclude(o => o.Grad).ThenInclude(g => g.Drzava).Include(k => k.Stranka);
+        }
+
+        public override PagedResult<KandidatResponse> GetPaged(KandidatSearchObject search)
+        {
+            var paged = base.GetPaged(search);
+
+            foreach (var item in paged.ResultList)
+            {
+                var entity = Context.Set<Kandidat>().Find(item.Id);
+
+                if (entity != null)
+                {
+                    item.Slika = entity.Slika != null
+                        ? Convert.ToBase64String(entity.Slika)
+                        : null;
+                }
+            }
+
+            return paged;
+        }
+
+        public override KandidatResponse GetById(int id)
+        {
+            var entity = Context.Set<Kandidat>()
+                .Include(k => k.Stranka)
+                .Include(k => k.Izbor).ThenInclude(i => i.TipIzbora)
+                .FirstOrDefault(k => k.Id == id);
+
+            if (entity == null)
+                return null;
+
+            var model = Mapper.Map<KandidatResponse>(entity);
+
+            model.Slika = entity.Slika != null
+                ? Convert.ToBase64String(entity.Slika)
+                : null;
+
+            return model;
         }
 
         public override void BeforeInsert(KandidatInsertRequest request, Kandidat entity)
@@ -53,11 +92,11 @@ namespace TrueVote.Services
             );
 
             // Base64 → byte[]
-            if (!string.IsNullOrEmpty(request.Slika))
+            if (!string.IsNullOrEmpty(request.SlikaBase64))
             {
                 try
                 {
-                    entity.Slika = Convert.FromBase64String(request.Slika);
+                    entity.Slika = Convert.FromBase64String(request.SlikaBase64);
                 }
                 catch
                 {
@@ -82,11 +121,11 @@ namespace TrueVote.Services
             );
 
             // Ako je poslata nova slika
-            if (!string.IsNullOrEmpty(request.Slika))
+            if (!string.IsNullOrEmpty(request.SlikaBase64))
             {
                 try
                 {
-                    entity.Slika = Convert.FromBase64String(request.Slika);
+                    entity.Slika = Convert.FromBase64String(request.SlikaBase64);
                 }
                 catch
                 {
@@ -112,7 +151,7 @@ namespace TrueVote.Services
                 throw new UserException("Izbor ne postoji.");
 
             // 2. Izbor mora biti u statusu Planned
-            if (izbor.Status != "Planned")
+            if (izbor.Status != "Planiran")
                 throw new UserException("Kandidate možete dodavati samo dok je izbor u statusu 'Planned'.");
 
             // 3. Stranka mora postojati (ako je navedena)
@@ -132,6 +171,22 @@ namespace TrueVote.Services
 
             if (duplicate)
                 throw new UserException("Kandidat sa istim imenom i prezimenom već postoji na ovom izboru.");
+        }
+
+        public bool CanDelete(int id)
+        {
+            var kandidat = Context.Kandidats.Find(id);
+
+            if (kandidat == null)
+                return false;
+
+            //Da li kandidat ima glasove
+            bool imaGlasova = Context.Glas.Any(g => g.KandidatId == id && g.Obrisan == false);
+
+            if (imaGlasova)
+                return false;
+
+            return true;
         }
     }
 }

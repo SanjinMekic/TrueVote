@@ -11,5 +11,6 @@ namespace TrueVote.Services
 {
     public interface IStrankaService : ICRUDService<StrankaResponse, StrankaSearchObject, StrankaInsertRequest, StrankaUpdateRequest>
     {
+        bool CanDelete(int id);
     }
 }

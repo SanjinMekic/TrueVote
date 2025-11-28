@@ -11,5 +11,6 @@ namespace TrueVote.Services
 {
     public interface IDrzavaService : ICRUDService<DrzavaResponse, DrzavaSearchObject, DrzavaInsertRequest, DrzavaUpdateRequest>
     {
+        bool CanDelete(int id);
     }
 }

@@ -1,15 +1,15 @@
 import 'dart:convert';
 
 import 'package:http/http.dart' as http;
-import 'package:truevote_desktop/models/tip_izbora.dart';
+import 'package:truevote_desktop/models/kandidat.dart';
 import 'package:truevote_desktop/providers/base_provider.dart';
 
-class TipIzboraProvider extends BaseProvider<TipIzbora> {
-  TipIzboraProvider() : super("TipIzbora");
+class KandidatProvider extends BaseProvider<Kandidat> {
+  KandidatProvider() : super("Kandidat");
 
   @override
-  TipIzbora fromJson(data) {
-    return TipIzbora.fromJson(data);
+  Kandidat fromJson(data) {
+    return Kandidat.fromJson(data);
   }
 
   Future<bool> canDelete(int id) async {
@@ -20,7 +20,7 @@ class TipIzboraProvider extends BaseProvider<TipIzbora> {
       final data = jsonDecode(response.body);
       return data['canDelete'] == true;
     } else {
-      throw Exception('Greška pri provjeri brisanja tipa izbora');
+      throw Exception('Greška pri provjeri brisanja kandidata');
     }
   }
 }

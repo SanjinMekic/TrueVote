@@ -4,6 +4,7 @@ import 'package:truevote_desktop/providers/auth_provider.dart';
 import 'package:truevote_desktop/providers/drzava_provider.dart';
 import 'package:truevote_desktop/providers/grad_provider.dart';
 import 'package:truevote_desktop/providers/izbor_provider.dart';
+import 'package:truevote_desktop/providers/kandidat_provider.dart';
 import 'package:truevote_desktop/providers/kategorija_provider.dart';
 import 'package:truevote_desktop/providers/korisnik_provider.dart';
 import 'package:truevote_desktop/providers/opstina_provider.dart';
@@ -53,6 +54,9 @@ void main() {
         ),
         ChangeNotifierProvider<IzborProvider>(
           create: (_) => IzborProvider(),
+        ),
+        ChangeNotifierProvider<KandidatProvider>(
+          create: (_) => KandidatProvider(),
         ),
       ],
       child: const MyApp(),

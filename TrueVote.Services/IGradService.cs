@@ -11,5 +11,6 @@ namespace TrueVote.Services
 {
     public interface IGradService : ICRUDService<GradResponse, GradSearchObject, GradInsertRequest, GradUpdateRequest>
     {
+        bool CanDelete(int id);
     }
 }

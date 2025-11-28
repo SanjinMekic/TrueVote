@@ -11,5 +11,6 @@ namespace TrueVote.Services
 {
     public interface IIzborService : ICRUDService<IzborResponse, IzborSearchObject, IzborInsetRequest, IzborUpdateRequest>
     {
+        bool CanDelete(int id);
     }
 }

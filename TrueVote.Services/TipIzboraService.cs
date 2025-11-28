@@ -24,5 +24,19 @@ namespace TrueVote.Services
 
             return query.Include(ti => ti.Opstina).ThenInclude(o => o.Grad).ThenInclude(g => g.Drzava);
         }
+
+        public bool CanDelete(int id)
+        {
+            var tip = Context.TipIzboras.Include(t => t.Izbors)
+                                        .FirstOrDefault(t => t.Id == id && t.Obrisan == false);
+
+            if (tip == null)
+                return false;
+
+            if (tip.Izbors.Any(i => !i.Obrisan))
+                return false;
+
+            return true;
+        }
     }
 }

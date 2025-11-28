@@ -9,6 +9,6 @@ namespace TrueVote.Model.SearchObjects
         public string? Ime { get; set; }
         public string? Prezime { get; set; }
         public string? StrankaNaziv { get; set; }
-        public int? IzborId { get; set; }
+        public string? IzborNaziv { get; set; }
     }
 }

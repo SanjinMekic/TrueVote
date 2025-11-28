@@ -16,7 +16,7 @@ namespace TrueVote.Model.Responses
 
         public int IzborId { get; set; }
 
-        public byte[] Slika { get; set; }
+        public string Slika { get; set; }
 
         public IzborResponse Izbor { get; set; }
 

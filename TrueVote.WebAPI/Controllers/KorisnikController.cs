@@ -26,5 +26,11 @@ namespace TrueVote.WebAPI.Controllers
             }
             return Ok(user);
         }
+
+        [HttpGet("{id}/can-delete")]
+        public ActionResult<bool> CanDelete(int id)
+        {
+            return Ok(new { canDelete = _service.CanDelete(id) });
+        }
     }
 }
