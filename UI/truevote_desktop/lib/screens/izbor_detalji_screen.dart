@@ -25,6 +25,7 @@ class IzborDetaljiScreen extends StatefulWidget {
 class _IzborDetaljiScreenState extends State<IzborDetaljiScreen> {
   late Future<List<dynamic>> _kandidatiFuture;
   final GlobalKey _chartKey = GlobalKey();
+  bool _showPdfButton = false;
 
   @override
   void initState() {
@@ -384,7 +385,6 @@ class _IzborDetaljiScreenState extends State<IzborDetaljiScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Informacije o izboru iznad grafa
               _buildIzborInfo(widget.izbor),
               const SizedBox(height: 18),
               const Text(
@@ -396,7 +396,6 @@ class _IzborDetaljiScreenState extends State<IzborDetaljiScreen> {
                 ),
               ),
               const SizedBox(height: 16),
-              // Legenda iznad grafa
               Wrap(
                 spacing: 18,
                 runSpacing: 8,
@@ -449,7 +448,6 @@ class _IzborDetaljiScreenState extends State<IzborDetaljiScreen> {
                           showTitles: true,
                           reservedSize: 40,
                           getTitlesWidget: (value, meta) {
-                            // Prikazuj samo cijele brojeve
                             if (value % 1 != 0) return const SizedBox();
                             return Text(
                               value.toInt().toString(),
@@ -588,13 +586,15 @@ class _IzborDetaljiScreenState extends State<IzborDetaljiScreen> {
         backgroundColor: Colors.blueAccent,
         elevation: 8,
         iconTheme: const IconThemeData(color: Colors.white),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.picture_as_pdf, color: Colors.white),
-            tooltip: "Spasi graf kao PDF",
-            onPressed: () => _saveChartToDesktop(context),
-          ),
-        ],
+        actions: _showPdfButton
+            ? [
+                IconButton(
+                  icon: const Icon(Icons.picture_as_pdf, color: Colors.white),
+                  tooltip: "Spasi graf kao PDF",
+                  onPressed: () => _saveChartToDesktop(context),
+                ),
+              ]
+            : [],
       ),
       backgroundColor: const Color(0xFFF2F6FF),
       body: Padding(
@@ -616,6 +616,11 @@ class _IzborDetaljiScreenState extends State<IzborDetaljiScreen> {
                 future: _kandidatiFuture,
                 builder: (context, snapshot) {
                   if (snapshot.connectionState == ConnectionState.waiting) {
+                    if (_showPdfButton) {
+                      setState(() {
+                        _showPdfButton = false;
+                      });
+                    }
                     return const Center(
                       child: CircularProgressIndicator(
                         color: Colors.blueAccent,
@@ -623,6 +628,11 @@ class _IzborDetaljiScreenState extends State<IzborDetaljiScreen> {
                     );
                   }
                   if (snapshot.hasError) {
+                    if (_showPdfButton) {
+                      setState(() {
+                        _showPdfButton = false;
+                      });
+                    }
                     return const Center(
                       child: Text(
                         "Greška pri učitavanju kandidata.",
@@ -634,7 +644,15 @@ class _IzborDetaljiScreenState extends State<IzborDetaljiScreen> {
                     );
                   }
                   final kandidati = snapshot.data ?? [];
-                  if (kandidati.isEmpty) {
+                  final hasKandidati = kandidati.isNotEmpty;
+                  if (_showPdfButton != hasKandidati) {
+                    WidgetsBinding.instance.addPostFrameCallback((_) {
+                      setState(() {
+                        _showPdfButton = hasKandidati;
+                      });
+                    });
+                  }
+                  if (!hasKandidati) {
                     return const Center(
                       child: Text(
                         "Nema kandidata za ovaj izbor.",
@@ -644,7 +662,6 @@ class _IzborDetaljiScreenState extends State<IzborDetaljiScreen> {
                   }
                   return LayoutBuilder(
                     builder: (context, constraints) {
-                      // Ako ima puno kandidata, neka svaki ima min 70px širine
                       final minWidth = kandidati.length * 70.0;
                       final width = constraints.maxWidth > minWidth
                           ? constraints.maxWidth
