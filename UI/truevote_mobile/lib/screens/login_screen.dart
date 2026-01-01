@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:flutter/services.dart';
 import '../providers/auth_provider.dart';
 import '../providers/korisnik_provider.dart';
 import '../layouts/master_screen.dart';
@@ -253,8 +254,7 @@ class _PinDialogState extends State<_PinDialog> {
     super.dispose();
   }
 
-  String get _pin =>
-      _pinControllers.map((c) => c.text).join();
+  String get _pin => _pinControllers.map((c) => c.text).join();
 
   Future<void> _submitPin() async {
     setState(() {
@@ -292,68 +292,102 @@ class _PinDialogState extends State<_PinDialog> {
 
   @override
   Widget build(BuildContext context) {
+    // Rješenje za visinu: koristi SingleChildScrollView i minHeight
     return AlertDialog(
-      title: const Text(
-        "Dobrodošli!",
-        style: TextStyle(color: Colors.blueAccent, fontWeight: FontWeight.bold),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+      contentPadding: const EdgeInsets.fromLTRB(24, 20, 24, 10),
+      title: Column(
+        children: [
+          const Icon(Icons.lock, color: Colors.blueAccent, size: 40),
+          const SizedBox(height: 8),
+          Text(
+            "Dobrodošli u TrueVote!",
+            style: TextStyle(
+              color: Colors.blueAccent.shade700,
+              fontWeight: FontWeight.bold,
+              fontSize: 22,
+            ),
+            textAlign: TextAlign.center,
+          ),
+        ],
       ),
-      content: Form(
-        key: _formKey,
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            const Text(
-              "Molimo unesite svoj četveroznamenkasti PIN za nastavak.",
-              style: TextStyle(fontSize: 16),
-              textAlign: TextAlign.center,
-            ),
-            const SizedBox(height: 18),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: List.generate(4, (i) {
-                return Container(
-                  width: 40,
-                  margin: const EdgeInsets.symmetric(horizontal: 6),
-                  child: TextFormField(
-                    controller: _pinControllers[i],
-                    keyboardType: TextInputType.number,
-                    textAlign: TextAlign.center,
-                    maxLength: 1,
-                    obscureText: true,
-                    style: const TextStyle(fontSize: 24, letterSpacing: 8),
-                    decoration: InputDecoration(
-                      counterText: "",
-                      enabledBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(8),
-                        borderSide: const BorderSide(color: Colors.blueAccent),
+      content: SingleChildScrollView(
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(minHeight: 220),
+          child: Form(
+            key: _formKey,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const SizedBox(height: 8),
+                Text(
+                  "Prije nastavka, potrebno je da kreirate svoj sigurnosni PIN.\n\n"
+                  "Ovaj četveroznamenkasti broj koristićete prilikom glasanja. "
+                  "PIN je važan za sigurnost vašeg glasa i pristup glasanju, zato ga pažljivo zapamtite!",
+                  style: TextStyle(fontSize: 15, color: Colors.black87),
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(height: 22),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: List.generate(4, (i) {
+                    return Container(
+                      width: 44,
+                      margin: const EdgeInsets.symmetric(horizontal: 6),
+                      child: TextFormField(
+                        controller: _pinControllers[i],
+                        keyboardType: TextInputType.number,
+                        textAlign: TextAlign.center,
+                        maxLength: 1,
+                        obscureText: false,
+                        style: const TextStyle(
+                          fontSize: 28,
+                          letterSpacing: 8,
+                          color: Colors.blueAccent,
+                        ),
+                        inputFormatters: [
+                          FilteringTextInputFormatter.digitsOnly,
+                          LengthLimitingTextInputFormatter(1),
+                        ],
+                        decoration: InputDecoration(
+                          counterText: "",
+                          contentPadding: const EdgeInsets.symmetric(vertical: 12),
+                          enabledBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(10),
+                            borderSide: const BorderSide(color: Colors.blueAccent),
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(10),
+                            borderSide: const BorderSide(color: Colors.blueAccent, width: 2),
+                          ),
+                        ),
+                        onChanged: (value) {
+                          if (value.length == 1) _focusNext(i);
+                          setState(() {}); // Refresh for visible value
+                        },
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return "";
+                          }
+                          if (!RegExp(r'^\d$').hasMatch(value)) {
+                            return "";
+                          }
+                          return null;
+                        },
                       ),
-                      focusedBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(8),
-                        borderSide: const BorderSide(color: Colors.blueAccent, width: 2),
-                      ),
-                    ),
-                    onChanged: (_) => _focusNext(i),
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return "";
-                      }
-                      if (!RegExp(r'^\d$').hasMatch(value)) {
-                        return "";
-                      }
-                      return null;
-                    },
+                    );
+                  }),
+                ),
+                if (_error != null) ...[
+                  const SizedBox(height: 14),
+                  Text(
+                    _error!,
+                    style: const TextStyle(color: Colors.red, fontWeight: FontWeight.bold),
                   ),
-                );
-              }),
+                ],
+              ],
             ),
-            if (_error != null) ...[
-              const SizedBox(height: 12),
-              Text(
-                _error!,
-                style: const TextStyle(color: Colors.red, fontWeight: FontWeight.bold),
-              ),
-            ],
-          ],
+          ),
         ),
       ),
       actions: [
