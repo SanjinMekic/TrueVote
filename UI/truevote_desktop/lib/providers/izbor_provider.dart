@@ -23,4 +23,17 @@ class IzborProvider extends BaseProvider<Izbor> {
       throw Exception('Greška pri provjeri brisanja izbora');
     }
   }
+
+   Future<List<dynamic>> getKandidatiByIzbor(int izborId) async {
+    final url = Uri.parse('$baseUrl${endpoint}/$izborId/kandidati');
+    final headers = createHeaders();
+    final response = await http.get(url, headers: headers);
+
+    if (response.statusCode == 200) {
+      final data = jsonDecode(response.body);
+      return data as List<dynamic>;
+    } else {
+      throw Exception('Greška pri dohvatanju kandidata za izbor');
+    }
+  }
 }

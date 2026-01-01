@@ -19,5 +19,12 @@ namespace TrueVote.WebAPI.Controllers
         {
             return Ok(new { canDelete = _service.CanDelete(id) });
         }
+
+        [HttpGet("{izborId}/kandidati")]
+        public async Task<IActionResult> GetKandidati(int izborId)
+        {
+            var result = await _service.GetKandidatiByIzborAsync(izborId);
+            return Ok(result);
+        }
     }
 }

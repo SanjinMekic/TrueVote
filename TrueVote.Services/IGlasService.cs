@@ -11,5 +11,6 @@ namespace TrueVote.Services
 {
     public interface IGlasService : ICRUDService<GlasResponse, GlasSearchObject, GlasInsertRequest, GlasUpdateRequest>
     {
+        Task<int> GetUkupanBrojGlasovaZaKandidataAsync(int kandidatId);
     }
 }

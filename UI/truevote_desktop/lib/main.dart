@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:truevote_desktop/providers/auth_provider.dart';
 import 'package:truevote_desktop/providers/drzava_provider.dart';
+import 'package:truevote_desktop/providers/glas_provider.dart';
 import 'package:truevote_desktop/providers/grad_provider.dart';
 import 'package:truevote_desktop/providers/izbor_provider.dart';
 import 'package:truevote_desktop/providers/kandidat_provider.dart';
@@ -57,6 +58,9 @@ void main() {
         ),
         ChangeNotifierProvider<KandidatProvider>(
           create: (_) => KandidatProvider(),
+        ),
+        ChangeNotifierProvider<GlasProvider>(
+          create: (_) => GlasProvider(),
         ),
       ],
       child: const MyApp(),

@@ -72,5 +72,18 @@ namespace TrueVote.Services
 
             entity.VrijemeGlasanja = DateTime.Now;
         }
+
+        public async Task<int> GetUkupanBrojGlasovaZaKandidataAsync(int kandidatId)
+        {
+            var kandidat = await Context.Kandidats.FindAsync(kandidatId);
+            if (kandidat == null)
+                throw new UserException("Kandidat ne postoji.");
+
+            var brojGlasova = await Context.Glas
+                .Where(g => g.KandidatId == kandidatId && g.Obrisan == false)
+                .CountAsync();
+
+            return brojGlasova;
+        }
     }
 }

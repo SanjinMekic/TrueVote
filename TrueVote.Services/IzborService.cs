@@ -144,5 +144,37 @@ namespace TrueVote.Services
             return true;
         }
 
+        public async Task<List<KandidatResponse>> GetKandidatiByIzborAsync(int izborId)
+        {
+            var izbor = await Context.Izbors.FindAsync(izborId);
+            if (izbor == null)
+                throw new UserException("Izbor ne postoji.");
+
+            var kandidati = await Context.Kandidats
+                .Where(k => k.IzborId == izborId && k.Obrisan == false)
+                .Include(k => k.Stranka)
+                .ToListAsync();
+
+            var result = Mapper.Map<List<KandidatResponse>>(kandidati);
+
+            foreach (var kandidat in result)
+            {
+                var entity = kandidati.First(k => k.Id == kandidat.Id);
+
+                kandidat.Slika = entity.Slika != null
+                    ? Convert.ToBase64String(entity.Slika)
+                    : null;
+
+                if (entity.Stranka != null)
+                {
+                    kandidat.Stranka.Logo = entity.Stranka.Logo != null
+                        ? Convert.ToBase64String(entity.Stranka.Logo)
+                        : null;
+                }
+            }
+
+            return result;
+        }
+
     }
 }

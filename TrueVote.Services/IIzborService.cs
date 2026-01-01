@@ -12,5 +12,6 @@ namespace TrueVote.Services
     public interface IIzborService : ICRUDService<IzborResponse, IzborSearchObject, IzborInsetRequest, IzborUpdateRequest>
     {
         bool CanDelete(int id);
+        Task<List<KandidatResponse>> GetKandidatiByIzborAsync(int izborId);
     }
 }

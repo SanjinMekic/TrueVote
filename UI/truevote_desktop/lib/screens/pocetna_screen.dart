@@ -4,6 +4,7 @@ import 'package:intl/intl.dart';
 import 'package:truevote_desktop/layouts/master_screen.dart';
 import 'package:truevote_desktop/models/izbor.dart';
 import 'package:truevote_desktop/providers/izbor_provider.dart';
+import 'izbor_detalji_screen.dart';
 
 class PocetnaScreen extends StatefulWidget {
   const PocetnaScreen({super.key});
@@ -95,6 +96,24 @@ class _PocetnaScreenState extends State<PocetnaScreen> {
           "Datum: ${izbor.datumPocetka != null ? DateFormat('dd.MM.yyyy HH:mm').format(izbor.datumPocetka!) : '-'}"
           " - ${izbor.datumKraja != null ? DateFormat('dd.MM.yyyy HH:mm').format(izbor.datumKraja!) : '-'}\n"
           "Status: ${izbor.status ?? '-'}",
+        ),
+        trailing: ElevatedButton.icon(
+          icon: const Icon(Icons.info_outline, size: 20),
+          label: const Text("Pogledaj detalje"),
+          style: ElevatedButton.styleFrom(
+            backgroundColor: Colors.blueAccent,
+            foregroundColor: Colors.white,
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+            textStyle: const TextStyle(fontWeight: FontWeight.bold),
+          ),
+          onPressed: () {
+            Navigator.of(context).push(
+              MaterialPageRoute(
+                builder: (_) => IzborDetaljiScreen(izbor: izbor),
+              ),
+            );
+          },
         ),
       ),
     );
