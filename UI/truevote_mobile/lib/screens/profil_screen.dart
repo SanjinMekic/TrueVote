@@ -1,0 +1,232 @@
+import 'dart:convert';
+import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import '../providers/auth_provider.dart';
+import '../providers/korisnik_provider.dart';
+import '../models/korisnik.dart';
+import 'login_screen.dart';
+
+class ProfilScreen extends StatefulWidget {
+  const ProfilScreen({super.key});
+
+  @override
+  State<ProfilScreen> createState() => _ProfilScreenState();
+}
+
+class _ProfilScreenState extends State<ProfilScreen> {
+  Future<Korisnik?>? _korisnikFuture;
+
+  @override
+  void initState() {
+    super.initState();
+    final korisnikId = AuthProvider.korisnikId;
+    if (korisnikId != null) {
+      _korisnikFuture = Provider.of<KorisnikProvider>(context, listen: false).getById(korisnikId);
+    }
+  }
+
+  void _logout() {
+    AuthProvider.username = null;
+    AuthProvider.password = null;
+    AuthProvider.korisnikId = null;
+    Navigator.of(context).pushAndRemoveUntil(
+      MaterialPageRoute(builder: (context) => const LoginScreen()),
+      (route) => false,
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text(
+          "Profil",
+          style: TextStyle(color: Colors.white),
+        ),
+        backgroundColor: Colors.blueAccent,
+        iconTheme: const IconThemeData(color: Colors.white),
+        elevation: 0,
+      ),
+      backgroundColor: const Color(0xFFF2F6FF),
+      body: FutureBuilder<Korisnik?>(
+        future: _korisnikFuture,
+        builder: (context, snapshot) {
+          if (snapshot.connectionState != ConnectionState.done) {
+            return const Center(child: CircularProgressIndicator(color: Colors.blueAccent));
+          }
+          final korisnik = snapshot.data;
+          if (korisnik == null) {
+            return const Center(
+              child: Text(
+                "Nema podataka o korisniku.",
+                style: TextStyle(fontSize: 18, color: Colors.grey),
+              ),
+            );
+          }
+          return SingleChildScrollView(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 32),
+              child: Column(
+                children: [
+                  Stack(
+                    alignment: Alignment.center,
+                    children: [
+                      Container(
+                        width: 120,
+                        height: 120,
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.blueAccent.withOpacity(0.2),
+                              blurRadius: 16,
+                              offset: const Offset(0, 8),
+                            ),
+                          ],
+                          border: Border.all(color: Colors.blueAccent, width: 3),
+                        ),
+                        child: ClipOval(
+                          child: (korisnik.slika != null && korisnik.slika!.isNotEmpty)
+                              ? Image.memory(
+                                  base64Decode(korisnik.slika!),
+                                  fit: BoxFit.cover,
+                                  width: 120,
+                                  height: 120,
+                                )
+                              : Container(
+                                  color: Colors.blueAccent,
+                                  child: const Icon(Icons.person, size: 64, color: Colors.white),
+                                ),
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 24),
+                  Card(
+                    elevation: 6,
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 24, horizontal: 18),
+                      child: Column(
+                        children: [
+                          _buildDisabledInput(
+                            label: "Ime",
+                            value: korisnik.ime ?? "",
+                            icon: Icons.badge_outlined,
+                          ),
+                          const SizedBox(height: 16),
+                          _buildDisabledInput(
+                            label: "Prezime",
+                            value: korisnik.prezime ?? "",
+                            icon: Icons.badge,
+                          ),
+                          const SizedBox(height: 16),
+                          _buildDisabledInput(
+                            label: "Email",
+                            value: korisnik.email ?? "",
+                            icon: Icons.email_outlined,
+                          ),
+                          const SizedBox(height: 16),
+                          _buildDisabledInput(
+                            label: "Korisničko ime",
+                            value: korisnik.korisnickoIme ?? "",
+                            icon: Icons.person_outline,
+                          ),
+                          const SizedBox(height: 16),
+                          _buildDisabledInput(
+                            label: "Opština",
+                            value: korisnik.opstina?.naziv ?? "",
+                            icon: Icons.location_city,
+                          ),
+                          const SizedBox(height: 16),
+                          _buildDisabledInput(
+                            label: "Grad",
+                            value: korisnik.opstina?.grad?.naziv ?? "",
+                            icon: Icons.location_on,
+                          ),
+                          const SizedBox(height: 16),
+                          _buildDisabledInput(
+                            label: "Država",
+                            value: korisnik.opstina?.grad?.drzava?.naziv ?? "",
+                            icon: Icons.public,
+                          ),
+                          const SizedBox(height: 32),
+                          Row(
+                            children: [
+                              Expanded(
+                                child: ElevatedButton.icon(
+                                  onPressed: () {
+                                    // TODO: Dodajte funkcionalnost za uređivanje profila
+                                  },
+                                  icon: const Icon(Icons.edit, color: Colors.white),
+                                  label: const Text(
+                                    "Uredi",
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.white,
+                                    ),
+                                  ),
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: Colors.blueAccent,
+                                    padding: const EdgeInsets.symmetric(vertical: 14),
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(14),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(width: 16),
+                              Expanded(
+                                child: ElevatedButton.icon(
+                                  onPressed: _logout,
+                                  icon: const Icon(Icons.logout, color: Colors.white),
+                                  label: const Text(
+                                    "Odjavi se",
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.white,
+                                    ),
+                                  ),
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: Colors.redAccent,
+                                    padding: const EdgeInsets.symmetric(vertical: 14),
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(14),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          );
+        },
+      ),
+    );
+  }
+
+  Widget _buildDisabledInput({required String label, required String value, required IconData icon}) {
+    return TextFormField(
+      initialValue: value,
+      enabled: false,
+      decoration: InputDecoration(
+        labelText: label,
+        prefixIcon: Icon(icon, color: Colors.blueAccent),
+        filled: true,
+        fillColor: const Color(0xFFF2F6FF),
+        disabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(16),
+          borderSide: const BorderSide(color: Colors.blueAccent, width: 1.5),
+        ),
+        labelStyle: const TextStyle(color: Colors.blueAccent),
+      ),
+      style: const TextStyle(color: Colors.black87, fontWeight: FontWeight.w500),
+    );
+  }
+}

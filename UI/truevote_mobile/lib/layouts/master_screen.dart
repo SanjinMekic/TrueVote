@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:truevote_mobile/screens/faq_screen.dart';
+import 'package:truevote_mobile/screens/profil_screen.dart';
 
 class MasterScreen extends StatefulWidget {
   final Widget child;
@@ -17,8 +19,8 @@ class _MasterScreenState extends State<MasterScreen> {
     // Ovdje zamijenite sa stvarnim screenovima
     Placeholder(key: ValueKey('Pocetna')),
     Placeholder(key: ValueKey('Historija')),
-    Placeholder(key: ValueKey('QA')),
-    Placeholder(key: ValueKey('Profil')),
+    FAQScreen(),
+    ProfilScreen()
   ];
 
   @override

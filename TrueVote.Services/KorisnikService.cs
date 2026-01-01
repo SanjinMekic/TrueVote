@@ -73,7 +73,7 @@ namespace TrueVote.Services
 
         public override KorisnikResponse GetById(int id)
         {
-            var entity = Context.Korisniks.Include(k => k.Uloga).FirstOrDefault(k => k.Id == id);
+            var entity = Context.Korisniks.Include(k => k.Uloga).Include(k => k.Opstina).ThenInclude(k => k.Grad).ThenInclude(k => k.Drzava).FirstOrDefault(k => k.Id == id);
 
             if (entity != null)
             {
