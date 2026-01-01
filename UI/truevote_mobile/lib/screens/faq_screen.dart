@@ -83,7 +83,7 @@ class _FAQScreenState extends State<FAQScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text(
-          "FAQ",
+          "Q&A",
           style: TextStyle(color: Colors.white),
         ),
         backgroundColor: Colors.blueAccent,

@@ -23,4 +23,35 @@ class KorisnikProvider extends BaseProvider<Korisnik> {
       throw Exception('Greška pri provjeri brisanja korisnika');
     }
   }
+
+    Future<bool> kreirajPin(int id, String pin) async {
+    final url = Uri.parse('$baseUrl${endpoint}/$id/pin');
+    final headers = createHeaders();
+    final response = await http.post(
+      url,
+      headers: headers,
+      body: jsonEncode(pin),
+    );
+    if (response.statusCode == 200) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  Future<bool> provjeriPin(int id, String pin) async {
+    final url = Uri.parse('$baseUrl${endpoint}/$id/pin/provjera');
+    final headers = createHeaders();
+    final response = await http.post(
+      url,
+      headers: headers,
+      body: jsonEncode(pin),
+    );
+    if (response.statusCode == 200) {
+      final data = jsonDecode(response.body);
+      return data['valid'] == true;
+    } else {
+      return false;
+    }
+  }
 }

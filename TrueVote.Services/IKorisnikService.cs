@@ -14,5 +14,8 @@ namespace TrueVote.Services
     {
         KorisnikResponse Login(string username, string password);
         bool CanDelete(int id);
+
+        Task<bool> KreirajPinAsync(int korisnikId, string pin);
+        Task<bool> ProvjeriPinAsync(int korisnikId, string pin);
     }
 }

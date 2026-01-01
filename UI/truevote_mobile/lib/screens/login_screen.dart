@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/auth_provider.dart';
+import '../providers/korisnik_provider.dart';
 import '../layouts/master_screen.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -42,12 +43,31 @@ class _LoginScreenState extends State<LoginScreen> {
 
         // Dozvoljena rola je 'Birac'
         if (response.uloga?.naziv == 'Birac') {
-          if (!mounted) return;
-          Navigator.of(context).pushReplacement(
-            MaterialPageRoute(
-              builder: (context) => MasterScreen(child: const PocetnaScreen()),
-            ),
-          );
+          final korisnikProvider = Provider.of<KorisnikProvider>(context, listen: false);
+          final korisnik = await korisnikProvider.getById(response.id);
+
+          if (korisnik != null && (korisnik.pin == null || korisnik.pin!.isEmpty)) {
+            await showDialog(
+              context: context,
+              barrierDismissible: false,
+              builder: (context) => _PinDialog(
+                korisnikId: korisnik.id,
+                onPinCreated: () {
+                  Navigator.of(context).pushReplacement(
+                    MaterialPageRoute(
+                      builder: (context) => MasterScreen(child: const PocetnaScreen()),
+                    ),
+                  );
+                },
+              ),
+            );
+          } else {
+            Navigator.of(context).pushReplacement(
+              MaterialPageRoute(
+                builder: (context) => MasterScreen(child: const PocetnaScreen()),
+              ),
+            );
+          }
         } else {
           setState(() {
             _passwordError = "Nemate prava";
@@ -204,6 +224,153 @@ class _LoginScreenState extends State<LoginScreen> {
           ),
         ),
       ),
+    );
+  }
+}
+
+class _PinDialog extends StatefulWidget {
+  final int korisnikId;
+  final VoidCallback onPinCreated;
+
+  const _PinDialog({required this.korisnikId, required this.onPinCreated, super.key});
+
+  @override
+  State<_PinDialog> createState() => _PinDialogState();
+}
+
+class _PinDialogState extends State<_PinDialog> {
+  final List<TextEditingController> _pinControllers =
+      List.generate(4, (_) => TextEditingController());
+  final _formKey = GlobalKey<FormState>();
+  bool _isLoading = false;
+  String? _error;
+
+  @override
+  void dispose() {
+    for (var c in _pinControllers) {
+      c.dispose();
+    }
+    super.dispose();
+  }
+
+  String get _pin =>
+      _pinControllers.map((c) => c.text).join();
+
+  Future<void> _submitPin() async {
+    setState(() {
+      _error = null;
+      _isLoading = true;
+    });
+
+    if (_pin.length != 4 || !_pin.contains(RegExp(r'^\d{4}$'))) {
+      setState(() {
+        _error = "PIN mora sadržavati tačno 4 cifre.";
+        _isLoading = false;
+      });
+      return;
+    }
+
+    final korisnikProvider = Provider.of<KorisnikProvider>(context, listen: false);
+    final success = await korisnikProvider.kreirajPin(widget.korisnikId, _pin);
+
+    if (success) {
+      Navigator.of(context).pop();
+      widget.onPinCreated();
+    } else {
+      setState(() {
+        _error = "Greška pri kreiranju PIN-a.";
+        _isLoading = false;
+      });
+    }
+  }
+
+  void _focusNext(int index) {
+    if (_pinControllers[index].text.length == 1 && index < 3) {
+      FocusScope.of(context).nextFocus();
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AlertDialog(
+      title: const Text(
+        "Dobrodošli!",
+        style: TextStyle(color: Colors.blueAccent, fontWeight: FontWeight.bold),
+      ),
+      content: Form(
+        key: _formKey,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Text(
+              "Molimo unesite svoj četveroznamenkasti PIN za nastavak.",
+              style: TextStyle(fontSize: 16),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 18),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: List.generate(4, (i) {
+                return Container(
+                  width: 40,
+                  margin: const EdgeInsets.symmetric(horizontal: 6),
+                  child: TextFormField(
+                    controller: _pinControllers[i],
+                    keyboardType: TextInputType.number,
+                    textAlign: TextAlign.center,
+                    maxLength: 1,
+                    obscureText: true,
+                    style: const TextStyle(fontSize: 24, letterSpacing: 8),
+                    decoration: InputDecoration(
+                      counterText: "",
+                      enabledBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(8),
+                        borderSide: const BorderSide(color: Colors.blueAccent),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(8),
+                        borderSide: const BorderSide(color: Colors.blueAccent, width: 2),
+                      ),
+                    ),
+                    onChanged: (_) => _focusNext(i),
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return "";
+                      }
+                      if (!RegExp(r'^\d$').hasMatch(value)) {
+                        return "";
+                      }
+                      return null;
+                    },
+                  ),
+                );
+              }),
+            ),
+            if (_error != null) ...[
+              const SizedBox(height: 12),
+              Text(
+                _error!,
+                style: const TextStyle(color: Colors.red, fontWeight: FontWeight.bold),
+              ),
+            ],
+          ],
+        ),
+      ),
+      actions: [
+        TextButton(
+          onPressed: _isLoading ? null : _submitPin,
+          child: _isLoading
+              ? const SizedBox(
+                  height: 20,
+                  width: 20,
+                  child: CircularProgressIndicator(strokeWidth: 2),
+                )
+              : const Text(
+                  "Potvrdi PIN",
+                  style: TextStyle(fontWeight: FontWeight.bold, color: Colors.blueAccent),
+                ),
+        ),
+      ],
     );
   }
 }

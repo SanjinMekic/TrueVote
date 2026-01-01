@@ -32,5 +32,26 @@ namespace TrueVote.WebAPI.Controllers
         {
             return Ok(new { canDelete = _service.CanDelete(id) });
         }
+
+        [HttpPost("{id}/pin")]
+        [Authorize]
+        public async Task<IActionResult> KreirajPin(int id, [FromBody] string request)
+        {
+            var result = await _service.KreirajPinAsync(id, request);
+
+            if (!result)
+                return BadRequest("PIN nije kreiran.");
+
+            return Ok(new { message = "PIN uspješno kreiran." });
+        }
+
+        [HttpPost("{id}/pin/provjera")]
+        [Authorize]
+        public async Task<IActionResult> ProvjeriPin(int id, [FromBody] string request)
+        {
+            var isValid = await _service.ProvjeriPinAsync(id, request);
+
+            return Ok(new { valid = isValid });
+        }
     }
 }
