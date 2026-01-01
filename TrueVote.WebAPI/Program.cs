@@ -9,6 +9,11 @@ using Microsoft.AspNetCore.Authentication;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.WebHost.ConfigureKestrel(options =>
+{
+    options.ListenAnyIP(5080); // http bez https-a
+});
+
 // Registracija servisa
 builder.Services.AddTransient<IPitanjeService, PitanjeService>();
 builder.Services.AddTransient<IKorisnikService, KorisnikService>();
@@ -71,13 +76,13 @@ builder.Services.AddSwaggerGen(c =>
 var app = builder.Build();
 
 // Middleware pipeline
-if (app.Environment.IsDevelopment())
-{
+//if (app.Environment.IsDevelopment())
+//{
     app.UseSwagger();
     app.UseSwaggerUI();
-}
+//}
 
-app.UseHttpsRedirection();
+//app.UseHttpsRedirection();
 
 // **OBAVEZNO** - prvo authentication pa authorization
 app.UseAuthentication();
