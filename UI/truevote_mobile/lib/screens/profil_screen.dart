@@ -35,6 +35,34 @@ class _ProfilScreenState extends State<ProfilScreen> {
     );
   }
 
+  void _showFullImage(String base64Image) {
+    showDialog(
+      context: context,
+      builder: (context) => Dialog(
+        backgroundColor: Colors.transparent,
+        child: GestureDetector(
+          onTap: () => Navigator.of(context).pop(),
+          child: InteractiveViewer(
+            child: Container(
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(20),
+                color: Colors.black,
+              ),
+              padding: const EdgeInsets.all(8),
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(16),
+                child: Image.memory(
+                  base64Decode(base64Image),
+                  fit: BoxFit.contain,
+                ),
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -71,32 +99,37 @@ class _ProfilScreenState extends State<ProfilScreen> {
                   Stack(
                     alignment: Alignment.center,
                     children: [
-                      Container(
-                        width: 120,
-                        height: 120,
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.blueAccent.withOpacity(0.2),
-                              blurRadius: 16,
-                              offset: const Offset(0, 8),
-                            ),
-                          ],
-                          border: Border.all(color: Colors.blueAccent, width: 3),
-                        ),
-                        child: ClipOval(
-                          child: (korisnik.slika != null && korisnik.slika!.isNotEmpty)
-                              ? Image.memory(
-                                  base64Decode(korisnik.slika!),
-                                  fit: BoxFit.cover,
-                                  width: 120,
-                                  height: 120,
-                                )
-                              : Container(
-                                  color: Colors.blueAccent,
-                                  child: const Icon(Icons.person, size: 64, color: Colors.white),
-                                ),
+                      GestureDetector(
+                        onTap: (korisnik.slika != null && korisnik.slika!.isNotEmpty)
+                            ? () => _showFullImage(korisnik.slika!)
+                            : null,
+                        child: Container(
+                          width: 120,
+                          height: 120,
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.blueAccent.withOpacity(0.2),
+                                blurRadius: 16,
+                                offset: const Offset(0, 8),
+                              ),
+                            ],
+                            border: Border.all(color: Colors.blueAccent, width: 3),
+                          ),
+                          child: ClipOval(
+                            child: (korisnik.slika != null && korisnik.slika!.isNotEmpty)
+                                ? Image.memory(
+                                    base64Decode(korisnik.slika!),
+                                    fit: BoxFit.cover,
+                                    width: 120,
+                                    height: 120,
+                                  )
+                                : Container(
+                                    color: Colors.blueAccent,
+                                    child: const Icon(Icons.person, size: 64, color: Colors.white),
+                                  ),
+                          ),
                         ),
                       ),
                     ],
