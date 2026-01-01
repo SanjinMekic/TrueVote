@@ -152,7 +152,7 @@ namespace TrueVote.Services
 
             // 2. Izbor mora biti u statusu Planned
             if (izbor.Status != "Planiran")
-                throw new UserException("Kandidate možete dodavati samo dok je izbor u statusu 'Planned'.");
+                throw new UserException("Kandidate možete dodavati samo dok je izbor u statusu 'Planiran'.");
 
             // 3. Stranka mora postojati (ako je navedena)
             if (strankaId.HasValue)

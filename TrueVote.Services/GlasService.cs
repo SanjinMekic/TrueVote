@@ -42,12 +42,12 @@ namespace TrueVote.Services
             if (tip.OpstinaId != korisnik.OpstinaId)
                 throw new UserException("Ne možete glasati za izbor koji nije u vašoj općini.");
 
-            if (izbor.Status != "Active")
+            if (izbor.Status != "Planiran")
                 throw new UserException("Ovaj izbor trenutno nije aktivan.");
 
-            var sada = DateTime.Now;
-            if (sada < izbor.DatumPocetka || sada > izbor.DatumKraja)
-                throw new UserException("Glasanje nije moguće. Izbor nije trenutno u toku.");
+            //var sada = DateTime.Now;
+            //if (sada < izbor.DatumPocetka || sada > izbor.DatumKraja)
+            //    throw new UserException("Glasanje nije moguće. Izbor nije trenutno u toku.");
 
             var korisnikoviGlasovi = Context.Glas
                 .Include(x => x.Kandidat)

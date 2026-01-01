@@ -47,7 +47,8 @@ class _KandidatFormScreenState extends State<KandidatFormScreen> {
     final izborProvider = Provider.of<IzborProvider>(context, listen: false);
     final izborResult = await izborProvider.get();
     setState(() {
-      _izbori = izborResult.result;
+      // Prikazi samo izbore koji su u statusu "Planned"
+      _izbori = izborResult.result.where((i) => i.status == "Planiran").toList();
     });
 
     // Dobavi stranke preko StrankaProvider

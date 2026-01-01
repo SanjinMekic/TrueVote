@@ -44,11 +44,8 @@ class _LoginPageState extends State<LoginPage> {
         if (response.uloga?.naziv == 'Admin') {
           Navigator.of(context).pushReplacement(
             MaterialPageRoute(
-              builder: (context) => MasterScreen(
-                "Početna",
-                PocetnaScreen(),
+              builder: (context) => const PocetnaScreen(),
               ),
-            ),
           );
         } else {
           setState(() {

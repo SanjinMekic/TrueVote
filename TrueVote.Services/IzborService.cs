@@ -21,6 +21,9 @@ namespace TrueVote.Services
 
         public override IQueryable<Izbor> AddFilter(IzborSearchObject search, IQueryable<Izbor> query)
         {
+            // AUTOMATSKA SINHRONIZACIJA STATUSA
+            SyncIzborStatus();
+
             query = base.AddFilter(search, query);
 
             if (!string.IsNullOrEmpty(search.Status))
@@ -43,6 +46,36 @@ namespace TrueVote.Services
                 .ThenInclude(ti => ti.Opstina)
                 .ThenInclude(o => o.Grad)
                 .ThenInclude(g => g.Drzava);
+        }
+
+        private void SyncIzborStatus()
+        {
+            var danas = DateTime.Now.Date;
+
+            var izbori = Context.Izbors
+                .Where(i =>
+                    (i.Status == "Planiran" && i.DatumPocetka.Date <= danas) ||
+                    (i.Status == "U toku" && i.DatumKraja.Date < danas))
+                .ToList();
+
+            foreach (var izbor in izbori)
+            {
+                if (danas < izbor.DatumPocetka.Date)
+                {
+                    izbor.Status = "Planiran";
+                }
+                else if (danas >= izbor.DatumPocetka.Date && danas <= izbor.DatumKraja.Date)
+                {
+                    izbor.Status = "U toku";
+                }
+                else
+                {
+                    izbor.Status = "Završen";
+                }
+            }
+
+            if (izbori.Any())
+                Context.SaveChanges();
         }
 
         public override void BeforeInsert(IzborInsetRequest request, Izbor entity)

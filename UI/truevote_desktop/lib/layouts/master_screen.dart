@@ -13,6 +13,7 @@ import 'package:truevote_desktop/screens/geografska_administracija_gradova_scree
 import 'package:truevote_desktop/screens/geografska_administracija_opstina_screen.dart';
 import 'package:truevote_desktop/screens/grafovi_screen.dart';
 import 'package:truevote_desktop/screens/login_screen.dart';
+import 'package:truevote_desktop/screens/pocetna_screen.dart';
 import 'package:truevote_desktop/screens/upravljanje_nalozima_screen.dart';
 import 'dart:convert';
 
@@ -171,7 +172,12 @@ class MasterScreen extends StatelessWidget {
                     ),
                     onTap: () {
                       Navigator.pop(context);
-                      // Dodaj navigaciju na početnu stranicu
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (context) =>
+                              const PocetnaScreen(),
+                        ),
+                      );
                     },
                   ),
                   ListTile(
