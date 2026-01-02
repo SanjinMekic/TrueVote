@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import '../providers/auth_provider.dart';
 import '../providers/korisnik_provider.dart';
@@ -8,8 +9,9 @@ class UrediProfilScreen extends StatelessWidget {
   const UrediProfilScreen({super.key});
 
   void _onPromijeniPin(BuildContext context) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text("Promjena PIN-a nije implementirana.")),
+    showDialog(
+      context: context,
+      builder: (context) => const PromjenaPinDialog(),
     );
   }
 
@@ -118,6 +120,228 @@ class UrediProfilScreen extends StatelessWidget {
   }
 }
 
+class PromjenaPinDialog extends StatefulWidget {
+  const PromjenaPinDialog({super.key});
+
+  @override
+  State<PromjenaPinDialog> createState() => _PromjenaPinDialogState();
+}
+
+class _PromjenaPinDialogState extends State<PromjenaPinDialog> {
+  final List<TextEditingController> _stariPinControllers =
+      List.generate(4, (_) => TextEditingController());
+  final List<TextEditingController> _noviPinControllers =
+      List.generate(4, (_) => TextEditingController());
+  final _formKey = GlobalKey<FormState>();
+  bool _isLoading = false;
+  String? _error;
+
+  @override
+  void dispose() {
+    for (var c in _stariPinControllers) {
+      c.dispose();
+    }
+    for (var c in _noviPinControllers) {
+      c.dispose();
+    }
+    super.dispose();
+  }
+
+  String get _stariPin => _stariPinControllers.map((c) => c.text).join();
+  String get _noviPin => _noviPinControllers.map((c) => c.text).join();
+
+  Future<void> _promijeniPin() async {
+    setState(() {
+      _error = null;
+      _isLoading = true;
+    });
+
+    if (_stariPin.length != 4 || !_stariPin.contains(RegExp(r'^\d{4}$'))) {
+      setState(() {
+        _error = "Stari PIN mora sadržavati tačno 4 cifre.";
+        _isLoading = false;
+      });
+      return;
+    }
+    if (_noviPin.length != 4 || !_noviPin.contains(RegExp(r'^\d{4}$'))) {
+      setState(() {
+        _error = "Novi PIN mora sadržavati tačno 4 cifre.";
+        _isLoading = false;
+      });
+      return;
+    }
+    if (_stariPin == _noviPin) {
+      setState(() {
+        _error = "Novi PIN mora biti različit od starog PIN-a.";
+        _isLoading = false;
+      });
+      return;
+    }
+
+    final korisnikProvider = Provider.of<KorisnikProvider>(context, listen: false);
+    final korisnikId = AuthProvider.korisnikId;
+
+    if (korisnikId == null) {
+      setState(() {
+        _error = "Korisnik nije pronađen.";
+        _isLoading = false;
+      });
+      return;
+    }
+
+    final success = await korisnikProvider.promijeniPin(korisnikId, _stariPin, _noviPin);
+
+    if (success) {
+      AuthProvider.username = null;
+      AuthProvider.password = null;
+      AuthProvider.korisnikId = null;
+      Navigator.of(context).pop();
+      Navigator.of(context).pushAndRemoveUntil(
+        MaterialPageRoute(builder: (context) => const LoginScreen()),
+        (route) => false,
+      );
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text("PIN je uspješno promijenjen. Prijavite se ponovo."),
+          backgroundColor: Colors.blueAccent,
+        ),
+      );
+    } else {
+      setState(() {
+        _error = "Greška pri promjeni PIN-a!";
+        _isLoading = false;
+      });
+    }
+  }
+
+  void _focusNext(List<TextEditingController> controllers, int index) {
+    if (controllers[index].text.length == 1 && index < 3) {
+      FocusScope.of(context).nextFocus();
+    }
+  }
+
+  Widget _buildPinRow(List<TextEditingController> controllers, String label) {
+    return Column(
+      children: [
+        Text(
+          label,
+          style: const TextStyle(
+            fontWeight: FontWeight.bold,
+            color: Colors.blueAccent,
+            fontSize: 16,
+          ),
+        ),
+        const SizedBox(height: 8),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: List.generate(4, (i) {
+            return Container(
+              width: 44,
+              margin: const EdgeInsets.symmetric(horizontal: 6),
+              child: TextFormField(
+                controller: controllers[i],
+                keyboardType: TextInputType.number,
+                textAlign: TextAlign.center,
+                maxLength: 1,
+                obscureText: false,
+                style: const TextStyle(
+                  fontSize: 28,
+                  letterSpacing: 8,
+                  color: Colors.blueAccent,
+                ),
+                inputFormatters: [
+                  FilteringTextInputFormatter.digitsOnly,
+                  LengthLimitingTextInputFormatter(1),
+                ],
+                decoration: InputDecoration(
+                  counterText: "",
+                  contentPadding: const EdgeInsets.symmetric(vertical: 12),
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10),
+                    borderSide: const BorderSide(color: Colors.blueAccent),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10),
+                    borderSide: const BorderSide(color: Colors.blueAccent, width: 2),
+                  ),
+                ),
+                onChanged: (value) {
+                  if (value.length == 1) _focusNext(controllers, i);
+                  setState(() {});
+                },
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return "";
+                  }
+                  if (!RegExp(r'^\d$').hasMatch(value)) {
+                    return "";
+                  }
+                  return null;
+                },
+              ),
+            );
+          }),
+        ),
+      ],
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AlertDialog(
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+      title: const Text(
+        "Promjena PIN-a",
+        style: TextStyle(color: Colors.blueAccent, fontWeight: FontWeight.bold),
+      ),
+      content: SingleChildScrollView(
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(minHeight: 220),
+          child: Form(
+            key: _formKey,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                _buildPinRow(_stariPinControllers, "Unesite stari PIN"),
+                const SizedBox(height: 18),
+                _buildPinRow(_noviPinControllers, "Unesite novi PIN"),
+                if (_error != null) ...[
+                  const SizedBox(height: 14),
+                  Text(
+                    _error!,
+                    style: const TextStyle(color: Colors.red, fontWeight: FontWeight.bold),
+                  ),
+                ],
+              ],
+            ),
+          ),
+        ),
+      ),
+      actions: [
+        TextButton(
+          onPressed: _isLoading
+              ? null
+              : () {
+                  if (_formKey.currentState!.validate()) {
+                    _promijeniPin();
+                  }
+                },
+          child: _isLoading
+              ? const SizedBox(
+                  height: 20,
+                  width: 20,
+                  child: CircularProgressIndicator(strokeWidth: 2),
+                )
+              : const Text(
+                  "Promijeni PIN",
+                  style: TextStyle(fontWeight: FontWeight.bold, color: Colors.blueAccent),
+                ),
+        ),
+      ],
+    );
+  }
+}
+
 class PromjenaSifreDialog extends StatefulWidget {
   const PromjenaSifreDialog({super.key});
 
@@ -152,7 +376,6 @@ class _PromjenaSifreDialogState extends State<PromjenaSifreDialog> {
     final novaSifra = _novaSifraController.text;
     final potvrdaSifre = _potvrdaSifreController.text;
 
-    // Validacija
     if (novaSifra != potvrdaSifre) {
       setState(() {
         _error = "Lozinka i potvrda moraju biti iste!";
@@ -167,8 +390,6 @@ class _PromjenaSifreDialogState extends State<PromjenaSifreDialog> {
       });
       return;
     }
-    // Regex za lozinku (možete dodati dodatne provjere po potrebi)
-    // Backend ne traži specijalne karaktere, samo dužinu i potvrdu
 
     final korisnikProvider = Provider.of<KorisnikProvider>(context, listen: false);
     final authProvider = Provider.of<AuthProvider>(context, listen: false);
@@ -177,7 +398,6 @@ class _PromjenaSifreDialogState extends State<PromjenaSifreDialog> {
       final korisnikId = AuthProvider.korisnikId;
       if (korisnikId == null) throw Exception("Korisnik nije pronađen.");
 
-      // Prvo provjeri staru šifru (login)
       final loginResult = await authProvider.login(AuthProvider.username ?? "", staraSifra);
       if (loginResult == null) {
         setState(() {
@@ -187,18 +407,16 @@ class _PromjenaSifreDialogState extends State<PromjenaSifreDialog> {
         return;
       }
 
-      // Update lozinke
       final updateResult = await korisnikProvider.update(korisnikId, {
         "Lozinka": novaSifra,
         "LozinkaPotvrda": potvrdaSifre,
       });
 
       if (updateResult != null) {
-        // Uspjeh: logout i redirect
         AuthProvider.username = null;
         AuthProvider.password = null;
         AuthProvider.korisnikId = null;
-        Navigator.of(context).pop(); // zatvori dialog
+        Navigator.of(context).pop();
         Navigator.of(context).pushAndRemoveUntil(
           MaterialPageRoute(builder: (context) => const LoginScreen()),
           (route) => false,
@@ -285,11 +503,13 @@ class _PromjenaSifreDialogState extends State<PromjenaSifreDialog> {
       ),
       actions: [
         TextButton(
-          onPressed: _isLoading ? null : () {
-            if (_formKey.currentState!.validate()) {
-              _promijeniSifru();
-            }
-          },
+          onPressed: _isLoading
+              ? null
+              : () {
+                  if (_formKey.currentState!.validate()) {
+                    _promijeniSifru();
+                  }
+                },
           child: _isLoading
               ? const SizedBox(
                   height: 20,
