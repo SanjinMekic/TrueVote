@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter/services.dart';
+import 'package:truevote_mobile/screens/pocetna_screen.dart';
 import '../providers/auth_provider.dart';
 import '../providers/korisnik_provider.dart';
 import '../layouts/master_screen.dart';
@@ -48,27 +49,27 @@ class _LoginScreenState extends State<LoginScreen> {
           final korisnik = await korisnikProvider.getById(response.id);
 
           if (korisnik != null && (korisnik.pin == null || korisnik.pin!.isEmpty)) {
-            await showDialog(
-              context: context,
-              barrierDismissible: false,
-              builder: (context) => _PinDialog(
-                korisnikId: korisnik.id,
-                onPinCreated: () {
-                  Navigator.of(context).pushReplacement(
-                    MaterialPageRoute(
-                      builder: (context) => MasterScreen(child: const PocetnaScreen()),
-                    ),
-                  );
-                },
-              ),
-            );
-          } else {
-            Navigator.of(context).pushReplacement(
-              MaterialPageRoute(
-                builder: (context) => MasterScreen(child: const PocetnaScreen()),
-              ),
-            );
-          }
+  await showDialog(
+    context: context,
+    barrierDismissible: false,
+    builder: (context) => _PinDialog(
+      korisnikId: korisnik.id,
+      onPinCreated: () {
+        Navigator.of(context).pushReplacement(
+          MaterialPageRoute(
+            builder: (context) => MasterScreen(child: const PocetnaScreen()),
+          ),
+        );
+      },
+    ),
+  );
+} else {
+  Navigator.of(context).pushReplacement(
+    MaterialPageRoute(
+      builder: (context) => MasterScreen(child: const PocetnaScreen()),
+    ),
+  );
+}
         } else {
           setState(() {
             _passwordError = "Nemate prava";
@@ -405,20 +406,6 @@ class _PinDialogState extends State<_PinDialog> {
                 ),
         ),
       ],
-    );
-  }
-}
-
-class PocetnaScreen extends StatelessWidget {
-  const PocetnaScreen({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Center(
-      child: Text(
-        "Početna stranica",
-        style: Theme.of(context).textTheme.headlineSmall,
-      ),
     );
   }
 }

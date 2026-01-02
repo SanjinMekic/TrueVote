@@ -26,5 +26,12 @@ namespace TrueVote.WebAPI.Controllers
             var result = await _service.GetKandidatiByIzborAsync(izborId);
             return Ok(result);
         }
+
+        [HttpGet("aktivni-izbori/korisnik/{korisnikId}")]
+        public async Task<IActionResult> GetAktivniIzboriZaKorisnika(int korisnikId)
+        {
+            var result = await _service.GetAktivniIzboriZaKorisnikaAsync(korisnikId);
+            return Ok(result);
+        }
     }
 }

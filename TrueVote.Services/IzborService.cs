@@ -176,5 +176,26 @@ namespace TrueVote.Services
             return result;
         }
 
+        public async Task<List<IzborResponse>> GetAktivniIzboriZaKorisnikaAsync(int korisnikId)
+        {
+            var korisnik = await Context.Korisniks
+                .FirstOrDefaultAsync(k => k.Id == korisnikId && k.Obrisan == false);
+
+            if (korisnik == null)
+                throw new UserException("Korisnik nije pronađen.");
+
+            var izbori = await Context.Izbors
+                .Include(i => i.TipIzbora)
+                    .ThenInclude(t => t.Opstina)
+                        .ThenInclude(o => o.Grad)
+                            .ThenInclude(g => g.Drzava)
+                .Where(i =>
+                    i.Status == "U toku" &&
+                    i.TipIzbora.OpstinaId == korisnik.OpstinaId)
+                .ToListAsync();
+
+            return Mapper.Map<List<IzborResponse>>(izbori);
+        }
+
     }
 }

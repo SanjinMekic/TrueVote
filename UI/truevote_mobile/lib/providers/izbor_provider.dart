@@ -36,4 +36,17 @@ class IzborProvider extends BaseProvider<Izbor> {
       throw Exception('Greška pri dohvatanju kandidata za izbor');
     }
   }
+
+   Future<List<Izbor>> getAktivniIzboriZaKorisnika(int korisnikId) async {
+    final url = Uri.parse('$baseUrl${endpoint}/aktivni-izbori/korisnik/$korisnikId');
+    final headers = createHeaders();
+    final response = await http.get(url, headers: headers);
+
+    if (response.statusCode == 200) {
+      final data = jsonDecode(response.body);
+      return (data as List).map((e) => Izbor.fromJson(e)).toList();
+    } else {
+      throw Exception('Greška pri dohvatanju aktivnih izbora za korisnika');
+    }
+  }
 }

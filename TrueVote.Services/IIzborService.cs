@@ -13,5 +13,6 @@ namespace TrueVote.Services
     {
         bool CanDelete(int id);
         Task<List<KandidatResponse>> GetKandidatiByIzborAsync(int izborId);
+        Task<List<IzborResponse>> GetAktivniIzboriZaKorisnikaAsync(int korisnikId);
     }
 }

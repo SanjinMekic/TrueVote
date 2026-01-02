@@ -42,7 +42,7 @@ namespace TrueVote.Services
             if (tip.OpstinaId != korisnik.OpstinaId)
                 throw new UserException("Ne možete glasati za izbor koji nije u vašoj općini.");
 
-            if (izbor.Status != "Planiran")
+            if (izbor.Status == "Završen")
                 throw new UserException("Ovaj izbor trenutno nije aktivan.");
 
             //var sada = DateTime.Now;
