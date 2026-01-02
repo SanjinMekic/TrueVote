@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:truevote_mobile/screens/uredi_profil_screen.dart';
 import '../providers/auth_provider.dart';
 import '../providers/korisnik_provider.dart';
 import '../models/korisnik.dart';
@@ -21,7 +22,10 @@ class _ProfilScreenState extends State<ProfilScreen> {
     super.initState();
     final korisnikId = AuthProvider.korisnikId;
     if (korisnikId != null) {
-      _korisnikFuture = Provider.of<KorisnikProvider>(context, listen: false).getById(korisnikId);
+      _korisnikFuture = Provider.of<KorisnikProvider>(
+        context,
+        listen: false,
+      ).getById(korisnikId);
     }
   }
 
@@ -67,10 +71,7 @@ class _ProfilScreenState extends State<ProfilScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text(
-          "Profil",
-          style: TextStyle(color: Colors.white),
-        ),
+        title: const Text("Profil", style: TextStyle(color: Colors.white)),
         backgroundColor: Colors.blueAccent,
         iconTheme: const IconThemeData(color: Colors.white),
         elevation: 0,
@@ -80,7 +81,9 @@ class _ProfilScreenState extends State<ProfilScreen> {
         future: _korisnikFuture,
         builder: (context, snapshot) {
           if (snapshot.connectionState != ConnectionState.done) {
-            return const Center(child: CircularProgressIndicator(color: Colors.blueAccent));
+            return const Center(
+              child: CircularProgressIndicator(color: Colors.blueAccent),
+            );
           }
           final korisnik = snapshot.data;
           if (korisnik == null) {
@@ -100,7 +103,9 @@ class _ProfilScreenState extends State<ProfilScreen> {
                     alignment: Alignment.center,
                     children: [
                       GestureDetector(
-                        onTap: (korisnik.slika != null && korisnik.slika!.isNotEmpty)
+                        onTap:
+                            (korisnik.slika != null &&
+                                korisnik.slika!.isNotEmpty)
                             ? () => _showFullImage(korisnik.slika!)
                             : null,
                         child: Container(
@@ -115,10 +120,15 @@ class _ProfilScreenState extends State<ProfilScreen> {
                                 offset: const Offset(0, 8),
                               ),
                             ],
-                            border: Border.all(color: Colors.blueAccent, width: 3),
+                            border: Border.all(
+                              color: Colors.blueAccent,
+                              width: 3,
+                            ),
                           ),
                           child: ClipOval(
-                            child: (korisnik.slika != null && korisnik.slika!.isNotEmpty)
+                            child:
+                                (korisnik.slika != null &&
+                                    korisnik.slika!.isNotEmpty)
                                 ? Image.memory(
                                     base64Decode(korisnik.slika!),
                                     fit: BoxFit.cover,
@@ -127,7 +137,11 @@ class _ProfilScreenState extends State<ProfilScreen> {
                                   )
                                 : Container(
                                     color: Colors.blueAccent,
-                                    child: const Icon(Icons.person, size: 64, color: Colors.white),
+                                    child: const Icon(
+                                      Icons.person,
+                                      size: 64,
+                                      color: Colors.white,
+                                    ),
                                   ),
                           ),
                         ),
@@ -137,9 +151,14 @@ class _ProfilScreenState extends State<ProfilScreen> {
                   const SizedBox(height: 24),
                   Card(
                     elevation: 6,
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(20),
+                    ),
                     child: Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 24, horizontal: 18),
+                      padding: const EdgeInsets.symmetric(
+                        vertical: 24,
+                        horizontal: 18,
+                      ),
                       child: Column(
                         children: [
                           _buildDisabledInput(
@@ -189,9 +208,17 @@ class _ProfilScreenState extends State<ProfilScreen> {
                               Expanded(
                                 child: ElevatedButton.icon(
                                   onPressed: () {
-                                    // TODO: Dodajte funkcionalnost za uređivanje profila
+                                    Navigator.of(context).push(
+                                      MaterialPageRoute(
+                                        builder: (context) =>
+                                            const UrediProfilScreen(),
+                                      ),
+                                    );
                                   },
-                                  icon: const Icon(Icons.edit, color: Colors.white),
+                                  icon: const Icon(
+                                    Icons.edit,
+                                    color: Colors.white,
+                                  ),
                                   label: const Text(
                                     "Uredi",
                                     style: TextStyle(
@@ -201,7 +228,9 @@ class _ProfilScreenState extends State<ProfilScreen> {
                                   ),
                                   style: ElevatedButton.styleFrom(
                                     backgroundColor: Colors.blueAccent,
-                                    padding: const EdgeInsets.symmetric(vertical: 14),
+                                    padding: const EdgeInsets.symmetric(
+                                      vertical: 14,
+                                    ),
                                     shape: RoundedRectangleBorder(
                                       borderRadius: BorderRadius.circular(14),
                                     ),
@@ -212,7 +241,10 @@ class _ProfilScreenState extends State<ProfilScreen> {
                               Expanded(
                                 child: ElevatedButton.icon(
                                   onPressed: _logout,
-                                  icon: const Icon(Icons.logout, color: Colors.white),
+                                  icon: const Icon(
+                                    Icons.logout,
+                                    color: Colors.white,
+                                  ),
                                   label: const Text(
                                     "Odjavi se",
                                     style: TextStyle(
@@ -222,7 +254,9 @@ class _ProfilScreenState extends State<ProfilScreen> {
                                   ),
                                   style: ElevatedButton.styleFrom(
                                     backgroundColor: Colors.redAccent,
-                                    padding: const EdgeInsets.symmetric(vertical: 14),
+                                    padding: const EdgeInsets.symmetric(
+                                      vertical: 14,
+                                    ),
                                     shape: RoundedRectangleBorder(
                                       borderRadius: BorderRadius.circular(14),
                                     ),
@@ -244,7 +278,11 @@ class _ProfilScreenState extends State<ProfilScreen> {
     );
   }
 
-  Widget _buildDisabledInput({required String label, required String value, required IconData icon}) {
+  Widget _buildDisabledInput({
+    required String label,
+    required String value,
+    required IconData icon,
+  }) {
     return TextFormField(
       initialValue: value,
       enabled: false,
@@ -259,7 +297,10 @@ class _ProfilScreenState extends State<ProfilScreen> {
         ),
         labelStyle: const TextStyle(color: Colors.blueAccent),
       ),
-      style: const TextStyle(color: Colors.black87, fontWeight: FontWeight.w500),
+      style: const TextStyle(
+        color: Colors.black87,
+        fontWeight: FontWeight.w500,
+      ),
     );
   }
 }

@@ -17,5 +17,6 @@ namespace TrueVote.Services
 
         Task<bool> KreirajPinAsync(int korisnikId, string pin);
         Task<bool> ProvjeriPinAsync(int korisnikId, string pin);
+        Task<bool> PromijeniPinAsync(int korisnikId, string stariPin, string noviPin);
     }
 }

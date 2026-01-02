@@ -330,5 +330,33 @@ namespace TrueVote.Services
 
             return korisnik.Pin == hash;
         }
+
+        public async Task<bool> PromijeniPinAsync(int korisnikId, string stariPin, string noviPin)
+        {
+            // Validacija – oba pina moraju biti 4 cifre
+            if (!System.Text.RegularExpressions.Regex.IsMatch(stariPin, @"^\d{4}$") ||
+                !System.Text.RegularExpressions.Regex.IsMatch(noviPin, @"^\d{4}$"))
+            {
+                throw new Exception("PIN mora biti četveroznamenkasti broj.");
+            }
+
+            var korisnik = await Context.Korisniks
+                .FirstOrDefaultAsync(k => k.Id == korisnikId && k.Obrisan == false);
+
+            if (korisnik == null)
+                throw new Exception("Korisnik nije pronađen.");
+
+            if (string.IsNullOrEmpty(korisnik.Pin))
+                throw new Exception("Korisnik nema kreiran PIN.");
+
+            var stariPinHash = GenerateHash(korisnik.PasswordSalt, stariPin);
+            if (korisnik.Pin != stariPinHash)
+                throw new Exception("Stari PIN nije ispravan.");
+
+            korisnik.Pin = GenerateHash(korisnik.PasswordSalt, noviPin);
+
+            await Context.SaveChangesAsync();
+            return true;
+        }
     }
 }

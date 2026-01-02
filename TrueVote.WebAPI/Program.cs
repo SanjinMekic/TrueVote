@@ -37,6 +37,7 @@ builder.Services.AddDbContext<BirackiSistemContext>(options =>
 
 // Mapster
 builder.Services.AddMapster();
+TypeAdapterConfig.GlobalSettings.Default.IgnoreNullValues(true);
 
 // Basic Authentication
 builder.Services.AddAuthentication("BasicAuthentication")

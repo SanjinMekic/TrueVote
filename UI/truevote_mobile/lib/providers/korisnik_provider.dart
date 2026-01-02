@@ -54,4 +54,25 @@ class KorisnikProvider extends BaseProvider<Korisnik> {
       return false;
     }
   }
+
+   Future<bool> promijeniPin(int id, String stariPin, String noviPin) async {
+    final url = Uri.parse('$baseUrl${endpoint}/$id/promijeni-pin');
+    final headers = createHeaders();
+    final body = jsonEncode({
+      "stariPin": stariPin,
+      "noviPin": noviPin,
+    });
+
+    final response = await http.put(
+      url,
+      headers: headers,
+      body: body,
+    );
+
+    if (response.statusCode == 200) {
+      return true;
+    } else {
+      return false;
+    }
+  }
 }

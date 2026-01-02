@@ -53,5 +53,12 @@ namespace TrueVote.WebAPI.Controllers
 
             return Ok(new { valid = isValid });
         }
+
+        [HttpPut("{id}/promijeni-pin")]
+        public async Task<IActionResult> PromijeniPin(int id, [FromBody] PromjeniPinRequest request)
+        {
+            await _service.PromijeniPinAsync(id, request.StariPin, request.NoviPin);
+            return Ok(new { message = "PIN uspješno promijenjen." });
+        }
     }
 }
