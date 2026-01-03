@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:truevote_mobile/screens/faq_screen.dart';
+import 'package:truevote_mobile/screens/historija_screen.dart';
 import 'package:truevote_mobile/screens/profil_screen.dart';
 
 class MasterScreen extends StatefulWidget {
@@ -26,9 +27,9 @@ class _MasterScreenState extends State<MasterScreen> {
       case 0:
         return widget.child;
       case 1:
-        return const Placeholder(key: ValueKey('Historija')); // Zamijeni stvarnim ekranom
+        return HistorijaScreen(); // Zamijeni stvarnim ekranom
       case 2:
-        return FAQScreen(key: ValueKey(DateTime.now().millisecondsSinceEpoch)); // NOVI FAQScreen svaki put!
+        return FAQScreen(); // NOVI FAQScreen svaki put!
       case 3:
         return ProfilScreen();
       default:

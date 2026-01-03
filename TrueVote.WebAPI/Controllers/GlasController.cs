@@ -31,5 +31,14 @@ namespace TrueVote.WebAPI.Controllers
 
             return Ok(new { zavrsio });
         }
+
+        [HttpGet("korisnik/{korisnikId}/glasovi")]
+        public async Task<IActionResult> GetGlasoviZaKorisnika(int korisnikId)
+        {
+            var result = await _service
+                .GetGlasoviZaKorisnikaSaIzborimaAsync(korisnikId);
+
+            return Ok(result);
+        }
     }
 }

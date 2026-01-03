@@ -37,4 +37,17 @@ class GlasProvider extends BaseProvider<Glas> {
       throw Exception('Greška pri provjeri završenog glasanja');
     }
   }
+
+    Future<List<dynamic>> getGlasoviZaKorisnika(int korisnikId) async {
+    final url = Uri.parse('$baseUrl${endpoint}/korisnik/$korisnikId/glasovi');
+    final headers = createHeaders();
+    final response = await http.get(url, headers: headers);
+
+    if (response.statusCode == 200) {
+      final data = jsonDecode(response.body);
+      return data as List<dynamic>;
+    } else {
+      throw Exception('Greška pri dohvatanju glasova za korisnika');
+    }
+  }
 }

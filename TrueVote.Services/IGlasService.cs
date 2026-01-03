@@ -13,5 +13,6 @@ namespace TrueVote.Services
     {
         Task<int> GetUkupanBrojGlasovaZaKandidataAsync(int kandidatId);
         Task<bool> JeLiKorisnikZavrsioGlasanjeAsync(int izborId, int korisnikId);
+        Task<List<GlasResponse>> GetGlasoviZaKorisnikaSaIzborimaAsync(int korisnikId);
     }
 }

@@ -125,5 +125,44 @@ namespace TrueVote.Services
 
             return false;
         }
+
+        public async Task<List<GlasResponse>>
+    GetGlasoviZaKorisnikaSaIzborimaAsync(int korisnikId)
+        {
+            var korisnik = await Context.Korisniks
+                .FirstOrDefaultAsync(k => k.Id == korisnikId && k.Obrisan == false);
+
+            if (korisnik == null)
+                throw new UserException("Korisnik ne postoji.");
+
+            var glasovi = await Context.Glas
+    .Include(g => g.Kandidat)
+        .ThenInclude(k => k.Stranka)
+    .Include(g => g.Kandidat)
+        .ThenInclude(k => k.Izbor)
+            .ThenInclude(i => i.TipIzbora)
+                .ThenInclude(t => t.Opstina)
+    .Where(g =>
+        g.KorisnikId == korisnikId &&
+        g.Obrisan == false)
+    .OrderByDescending(g => g.VrijemeGlasanja)
+    .ToListAsync();
+
+            var result = Mapper.Map<List<GlasResponse>>(glasovi);
+
+            foreach (var glas in result)
+            {
+                var entity = glasovi.First(g => g.Id == glas.Id);
+
+                if (entity.Kandidat != null)
+                {
+                    glas.Kandidat.Slika = entity.Kandidat.Slika != null
+                        ? Convert.ToBase64String(entity.Kandidat.Slika)
+                        : null;
+                }
+            }
+
+            return result;
+        }
     }
 }
