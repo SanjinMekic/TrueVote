@@ -142,6 +142,8 @@ namespace TrueVote.Services
         .ThenInclude(k => k.Izbor)
             .ThenInclude(i => i.TipIzbora)
                 .ThenInclude(t => t.Opstina)
+                .ThenInclude(o => o.Grad)
+                .ThenInclude(g => g.Drzava)
     .Where(g =>
         g.KorisnikId == korisnikId &&
         g.Obrisan == false)
