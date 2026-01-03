@@ -51,7 +51,7 @@ class _AdministracijaIzboraScreenState extends State<AdministracijaIzboraScreen>
 
     DateTime today = DateTime.now();
     DateTime todayDate = DateTime(today.year, today.month, today.day);
-    DateTime minPocetniDatum = todayDate.add(const Duration(days: 2)); // 2 dana poslije danas
+    DateTime minPocetniDatum = todayDate; // Sada je danasnji dan dozvoljen
 
     String _calculateStatus(DateTime? datumPocetka) {
       if (datumPocetka == null) return "";
@@ -285,12 +285,7 @@ class _AdministracijaIzboraScreenState extends State<AdministracijaIzboraScreen>
                               });
                               return;
                             }
-                            if (_datumPocetka!.isBefore(minPocetniDatum)) {
-                              setState(() {
-                                _error = "Datum početka mora biti najmanje 2 dana nakon današnjeg datuma.";
-                              });
-                              return;
-                            }
+                            // Uklonjeno pravilo o 2 dana unaprijed
                             if (_datumKraja!.isBefore(_datumPocetka!)) {
                               setState(() {
                                 _error = "Datum kraja ne može biti prije datuma početka.";
