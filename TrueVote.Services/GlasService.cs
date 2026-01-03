@@ -85,5 +85,45 @@ namespace TrueVote.Services
 
             return brojGlasova;
         }
+
+        public async Task<bool> JeLiKorisnikZavrsioGlasanjeAsync(int izborId, int korisnikId)
+        {
+            var korisnik = await Context.Korisniks
+                .FirstOrDefaultAsync(k => k.Id == korisnikId && k.Obrisan == false);
+
+            if (korisnik == null)
+                throw new UserException("Korisnik ne postoji.");
+
+            var izbor = await Context.Izbors
+                .Include(i => i.TipIzbora)
+                .FirstOrDefaultAsync(i => i.Id == izborId);
+
+            if (izbor == null)
+                throw new UserException("Izbor ne postoji.");
+
+            var tip = izbor.TipIzbora;
+
+            var brojGlasova = await Context.Glas
+                .Include(g => g.Kandidat)
+                .Where(g =>
+                    g.KorisnikId == korisnikId &&
+                    g.Kandidat.IzborId == izborId &&
+                    g.Obrisan == false)
+                .CountAsync();
+
+            // Ako je dozvoljen samo jedan glas
+            if (!tip.DozvoljenoViseGlasova)
+            {
+                return brojGlasova >= 1;
+            }
+
+            // Ako je dozvoljeno više glasova, ali postoji limit
+            if (tip.MaxBrojGlasova.HasValue)
+            {
+                return brojGlasova >= tip.MaxBrojGlasova.Value;
+            }
+
+            return false;
+        }
     }
 }

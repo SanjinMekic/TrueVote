@@ -41,8 +41,17 @@ class _AdministracijaIzboraScreenState extends State<AdministracijaIzboraScreen>
     final _formKey = GlobalKey<FormState>();
     TipIzbora? _selectedTipIzbora = izbor?.tipIzbora;
     int? _selectedTipIzboraId = izbor?.tipIzboraId;
+
     DateTime? _datumPocetka = izbor?.datumPocetka;
+    TimeOfDay? _vrijemePocetka = izbor?.datumPocetka != null
+        ? TimeOfDay(hour: izbor!.datumPocetka!.hour, minute: izbor.datumPocetka!.minute)
+        : const TimeOfDay(hour: 0, minute: 0);
+
     DateTime? _datumKraja = izbor?.datumKraja;
+    TimeOfDay? _vrijemeKraja = izbor?.datumKraja != null
+        ? TimeOfDay(hour: izbor!.datumKraja!.hour, minute: izbor.datumKraja!.minute)
+        : const TimeOfDay(hour: 23, minute: 59);
+
     String _status = izbor?.status ?? "";
     bool _isLoading = false;
     String? _error;
@@ -51,7 +60,7 @@ class _AdministracijaIzboraScreenState extends State<AdministracijaIzboraScreen>
 
     DateTime today = DateTime.now();
     DateTime todayDate = DateTime(today.year, today.month, today.day);
-    DateTime minPocetniDatum = todayDate; // Sada je danasnji dan dozvoljen
+    DateTime minPocetniDatum = todayDate;
 
     String _calculateStatus(DateTime? datumPocetka) {
       if (datumPocetka == null) return "";
@@ -65,12 +74,57 @@ class _AdministracijaIzboraScreenState extends State<AdministracijaIzboraScreen>
       }
     }
 
+    Future<void> _pickDateTime({
+      required BuildContext context,
+      required DateTime? initialDate,
+      required TimeOfDay? initialTime,
+      required DateTime firstDate,
+      required ValueChanged<DateTime> onDateChanged,
+      required ValueChanged<TimeOfDay> onTimeChanged,
+    }) async {
+      final pickedDate = await showDatePicker(
+        context: context,
+        initialDate: initialDate ?? firstDate,
+        firstDate: firstDate,
+        lastDate: DateTime(2100),
+      );
+      if (pickedDate != null) {
+        onDateChanged(pickedDate);
+        final pickedTime = await showTimePicker(
+          context: context,
+          initialTime: initialTime ?? const TimeOfDay(hour: 0, minute: 0),
+        );
+        if (pickedTime != null) {
+          onTimeChanged(pickedTime);
+        }
+      }
+    }
+
     await showDialog(
       context: context,
       builder: (context) {
         return StatefulBuilder(
           builder: (context, setState) {
-            _status = _calculateStatus(_datumPocetka);
+            DateTime? combinedPocetak = (_datumPocetka != null && _vrijemePocetka != null)
+                ? DateTime(
+                    _datumPocetka!.year,
+                    _datumPocetka!.month,
+                    _datumPocetka!.day,
+                    _vrijemePocetka!.hour,
+                    _vrijemePocetka!.minute,
+                  )
+                : null;
+            DateTime? combinedKraj = (_datumKraja != null && _vrijemeKraja != null)
+                ? DateTime(
+                    _datumKraja!.year,
+                    _datumKraja!.month,
+                    _datumKraja!.day,
+                    _vrijemeKraja!.hour,
+                    _vrijemeKraja!.minute,
+                  )
+                : null;
+
+            _status = _calculateStatus(combinedPocetak);
 
             return AlertDialog(
               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
@@ -149,25 +203,30 @@ class _AdministracijaIzboraScreenState extends State<AdministracijaIzboraScreen>
                             Expanded(
                               child: InkWell(
                                 onTap: () async {
-                                  final picked = await showDatePicker(
+                                  await _pickDateTime(
                                     context: context,
-                                    initialDate: _datumPocetka ?? minPocetniDatum,
+                                    initialDate: _datumPocetka,
+                                    initialTime: _vrijemePocetka,
                                     firstDate: minPocetniDatum,
-                                    lastDate: DateTime(2100),
+                                    onDateChanged: (date) {
+                                      setState(() {
+                                        _datumPocetka = date;
+                                        if (_datumKraja != null && _datumKraja!.isBefore(date)) {
+                                          _datumKraja = null;
+                                          _vrijemeKraja = const TimeOfDay(hour: 23, minute: 59);
+                                        }
+                                      });
+                                    },
+                                    onTimeChanged: (time) {
+                                      setState(() {
+                                        _vrijemePocetka = time;
+                                      });
+                                    },
                                   );
-                                  if (picked != null) {
-                                    setState(() {
-                                      _datumPocetka = picked;
-                                      _error = null;
-                                      if (_datumKraja != null && _datumKraja!.isBefore(picked)) {
-                                        _datumKraja = null;
-                                      }
-                                    });
-                                  }
                                 },
                                 child: InputDecorator(
                                   decoration: InputDecoration(
-                                    labelText: "Datum početka",
+                                    labelText: "Datum i vrijeme početka",
                                     border: OutlineInputBorder(
                                       borderRadius: BorderRadius.circular(12),
                                     ),
@@ -175,9 +234,9 @@ class _AdministracijaIzboraScreenState extends State<AdministracijaIzboraScreen>
                                     fillColor: const Color(0xFFF2F6FF),
                                   ),
                                   child: Text(
-                                    _datumPocetka != null
-                                        ? DateFormat('dd.MM.yyyy').format(_datumPocetka!)
-                                        : "Odaberite datum",
+                                    (_datumPocetka != null && _vrijemePocetka != null)
+                                        ? "${DateFormat('dd.MM.yyyy').format(_datumPocetka!)} ${_vrijemePocetka!.format(context)}"
+                                        : "Odaberite datum i vrijeme",
                                     style: const TextStyle(fontSize: 16),
                                   ),
                                 ),
@@ -193,22 +252,26 @@ class _AdministracijaIzboraScreenState extends State<AdministracijaIzboraScreen>
                                     onTap: _datumPocetka == null
                                         ? null
                                         : () async {
-                                            final picked = await showDatePicker(
+                                            await _pickDateTime(
                                               context: context,
-                                              initialDate: _datumKraja ?? _datumPocetka!,
+                                              initialDate: _datumKraja ?? _datumPocetka,
+                                              initialTime: _vrijemeKraja,
                                               firstDate: _datumPocetka!,
-                                              lastDate: DateTime(2100),
+                                              onDateChanged: (date) {
+                                                setState(() {
+                                                  _datumKraja = date;
+                                                });
+                                              },
+                                              onTimeChanged: (time) {
+                                                setState(() {
+                                                  _vrijemeKraja = time;
+                                                });
+                                              },
                                             );
-                                            if (picked != null) {
-                                              setState(() {
-                                                _datumKraja = picked;
-                                                _error = null;
-                                              });
-                                            }
                                           },
                                     child: InputDecorator(
                                       decoration: InputDecoration(
-                                        labelText: "Datum kraja",
+                                        labelText: "Datum i vrijeme kraja",
                                         border: OutlineInputBorder(
                                           borderRadius: BorderRadius.circular(12),
                                         ),
@@ -216,9 +279,9 @@ class _AdministracijaIzboraScreenState extends State<AdministracijaIzboraScreen>
                                         fillColor: const Color(0xFFF2F6FF),
                                       ),
                                       child: Text(
-                                        _datumKraja != null
-                                            ? DateFormat('dd.MM.yyyy').format(_datumKraja!)
-                                            : "Odaberite datum",
+                                        (_datumKraja != null && _vrijemeKraja != null)
+                                            ? "${DateFormat('dd.MM.yyyy').format(_datumKraja!)} ${_vrijemeKraja!.format(context)}"
+                                            : "Odaberite datum i vrijeme",
                                         style: const TextStyle(fontSize: 16),
                                       ),
                                     ),
@@ -279,16 +342,32 @@ class _AdministracijaIzboraScreenState extends State<AdministracijaIzboraScreen>
                       ? null
                       : () async {
                           if (_formKey.currentState?.validate() ?? false) {
-                            if (_datumPocetka == null || _datumKraja == null) {
+                            if (_datumPocetka == null ||
+                                _vrijemePocetka == null ||
+                                _datumKraja == null ||
+                                _vrijemeKraja == null) {
                               setState(() {
-                                _error = "Morate odabrati oba datuma.";
+                                _error = "Morate odabrati datum i vrijeme početka i kraja.";
                               });
                               return;
                             }
-                            // Uklonjeno pravilo o 2 dana unaprijed
-                            if (_datumKraja!.isBefore(_datumPocetka!)) {
+                            final combinedPocetak = DateTime(
+                              _datumPocetka!.year,
+                              _datumPocetka!.month,
+                              _datumPocetka!.day,
+                              _vrijemePocetka!.hour,
+                              _vrijemePocetka!.minute,
+                            );
+                            final combinedKraj = DateTime(
+                              _datumKraja!.year,
+                              _datumKraja!.month,
+                              _datumKraja!.day,
+                              _vrijemeKraja!.hour,
+                              _vrijemeKraja!.minute,
+                            );
+                            if (combinedKraj.isBefore(combinedPocetak)) {
                               setState(() {
-                                _error = "Datum kraja ne može biti prije datuma početka.";
+                                _error = "Datum i vrijeme kraja ne može biti prije početka.";
                               });
                               return;
                             }
@@ -300,9 +379,9 @@ class _AdministracijaIzboraScreenState extends State<AdministracijaIzboraScreen>
                               final provider = Provider.of<IzborProvider>(context, listen: false);
                               final data = {
                                 "tipIzboraId": _selectedTipIzboraId,
-                                "datumPocetka": _datumPocetka?.toIso8601String(),
-                                "datumKraja": _datumKraja?.toIso8601String(),
-                                "status": _calculateStatus(_datumPocetka),
+                                "datumPocetka": combinedPocetak.toIso8601String(),
+                                "datumKraja": combinedKraj.toIso8601String(),
+                                "status": _calculateStatus(combinedPocetak),
                               };
                               if (izbor == null) {
                                 await provider.insert(data);

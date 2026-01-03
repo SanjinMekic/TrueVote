@@ -6,6 +6,8 @@ import 'package:truevote_mobile/screens/glasanje_screen.dart';
 import 'package:truevote_mobile/screens/biometrija_screen.dart';
 import '../models/izbor.dart';
 import '../providers/izbor_provider.dart';
+import '../providers/glas_provider.dart';
+import '../providers/auth_provider.dart';
 import 'kandidat_detalji_screen.dart';
 
 class IzborDetaljiScreen extends StatefulWidget {
@@ -19,11 +21,14 @@ class IzborDetaljiScreen extends StatefulWidget {
 class _IzborDetaljiScreenState extends State<IzborDetaljiScreen> {
   bool _isLoading = true;
   List<dynamic> _kandidati = [];
+  bool _jeZavrsioGlasanje = false;
+  bool _provjeraGlasanjaLoading = true;
 
   @override
   void initState() {
     super.initState();
     _loadKandidati();
+    _provjeriJeLiZavrsioGlasanje();
   }
 
   Future<void> _loadKandidati() async {
@@ -44,6 +49,37 @@ class _IzborDetaljiScreenState extends State<IzborDetaljiScreen> {
       });
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text("Greška pri dohvatanju kandidata: $e")),
+      );
+    }
+  }
+
+  Future<void> _provjeriJeLiZavrsioGlasanje() async {
+    setState(() {
+      _provjeraGlasanjaLoading = true;
+    });
+    final glasProvider = Provider.of<GlasProvider>(context, listen: false);
+    final korisnikId = AuthProvider.korisnikId;
+    final izborId = widget.izbor.id;
+    if (korisnikId == null || izborId == null) {
+      setState(() {
+        _jeZavrsioGlasanje = false;
+        _provjeraGlasanjaLoading = false;
+      });
+      return;
+    }
+    try {
+      final zavrsio = await glasProvider.jeLiZavrsioGlasanje(izborId, korisnikId);
+      setState(() {
+        _jeZavrsioGlasanje = zavrsio;
+        _provjeraGlasanjaLoading = false;
+      });
+    } catch (e) {
+      setState(() {
+        _jeZavrsioGlasanje = false;
+        _provjeraGlasanjaLoading = false;
+      });
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Greška pri provjeri glasanja: $e")),
       );
     }
   }
@@ -294,24 +330,41 @@ class _IzborDetaljiScreenState extends State<IzborDetaljiScreen> {
                   ),
             const SizedBox(height: 24),
             Center(
-              child: ElevatedButton.icon(
-                icon: const Icon(Icons.how_to_vote),
-                label: const Text(
-                  "Započni glasanje",
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                ),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.blueAccent,
-                  foregroundColor: Colors.white,
-                  padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 14),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  elevation: 3,
-                ),
-                onPressed: _kreniGlasanje,
-              ),
+              child: _provjeraGlasanjaLoading
+                  ? const CircularProgressIndicator()
+                  : ElevatedButton.icon(
+                      icon: const Icon(Icons.how_to_vote),
+                      label: const Text(
+                        "Započni glasanje",
+                        style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                      ),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.blueAccent,
+                        foregroundColor: Colors.white,
+                        padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 14),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        elevation: 3,
+                      ),
+                      onPressed: _jeZavrsioGlasanje ? null : _kreniGlasanje,
+                    ),
             ),
+            if (_jeZavrsioGlasanje && !_provjeraGlasanjaLoading)
+              Center(
+                child: Padding(
+                  padding: const EdgeInsets.only(top: 12),
+                  child: Text(
+                    "Već ste glasali na ovom izboru.",
+                    style: const TextStyle(
+                      color: Colors.red,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 16,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                ),
+              ),
           ],
         ),
       ),

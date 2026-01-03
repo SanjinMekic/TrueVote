@@ -178,6 +178,8 @@ namespace TrueVote.Services
 
         public async Task<List<IzborResponse>> GetAktivniIzboriZaKorisnikaAsync(int korisnikId)
         {
+            var danas = DateTime.Now;
+
             var korisnik = await Context.Korisniks
                 .FirstOrDefaultAsync(k => k.Id == korisnikId && k.Obrisan == false);
 
@@ -190,8 +192,10 @@ namespace TrueVote.Services
                         .ThenInclude(o => o.Grad)
                             .ThenInclude(g => g.Drzava)
                 .Where(i =>
-                    i.Status == "U toku" &&
-                    i.TipIzbora.OpstinaId == korisnik.OpstinaId)
+                    i.TipIzbora.OpstinaId == korisnik.OpstinaId &&
+                    i.DatumPocetka <= danas &&
+                    i.DatumKraja >= danas
+                )
                 .ToListAsync();
 
             return Mapper.Map<List<IzborResponse>>(izbori);

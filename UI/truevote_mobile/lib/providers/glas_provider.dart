@@ -24,4 +24,17 @@ class GlasProvider extends BaseProvider<Glas> {
       throw Exception('Greška pri dohvatanju broja glasova za kandidata');
     }
   }
+
+    Future<bool> jeLiZavrsioGlasanje(int izborId, int korisnikId) async {
+    final url = Uri.parse('$baseUrl${endpoint}/provjera-zavrsenog-glasanja?izborId=$izborId&korisnikId=$korisnikId');
+    final headers = createHeaders();
+    final response = await http.get(url, headers: headers);
+
+    if (response.statusCode == 200) {
+      final data = jsonDecode(response.body);
+      return data['zavrsio'] == true;
+    } else {
+      throw Exception('Greška pri provjeri završenog glasanja');
+    }
+  }
 }

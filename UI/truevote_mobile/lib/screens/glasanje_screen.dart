@@ -4,6 +4,8 @@ import 'package:provider/provider.dart';
 import '../providers/auth_provider.dart';
 import '../providers/korisnik_provider.dart';
 import '../providers/glas_provider.dart';
+import '../layouts/master_screen.dart';
+import 'pocetna_screen.dart';
 
 class GlasanjeScreen extends StatefulWidget {
   final List<dynamic> kandidati;
@@ -95,14 +97,24 @@ class _GlasanjeScreenState extends State<GlasanjeScreen> {
     });
 
     if (uspjesno == odabraniKandidati.length) {
+      if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            "Glasanje uspješno! Glasali ste za: ${odabraniKandidati.map((k) => "${k['ime']} ${k['prezime']}").join(', ')}",
-          ),
+        const SnackBar(
+          content: Text("Vaš glas je zabilježen. Hvala Vam na učešću!"),
+          backgroundColor: Colors.green,
         ),
       );
-      // Ovdje možeš dodati navigaciju ili refresh
+      Future.delayed(const Duration(seconds: 2), () {
+        Navigator.of(context).pushAndRemoveUntil(
+          MaterialPageRoute(
+            builder: (context) => MasterScreen(
+              child: const PocetnaScreen(),
+              initialIndex: 0,
+            ),
+          ),
+          (route) => false,
+        );
+      });
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(

@@ -20,5 +20,16 @@ namespace TrueVote.WebAPI.Controllers
             var broj = await _service.GetUkupanBrojGlasovaZaKandidataAsync(kandidatId);
             return Ok(broj);
         }
+
+        [HttpGet("provjera-zavrsenog-glasanja")]
+        public async Task<IActionResult> JeLiZavrsioGlasanje(
+            [FromQuery] int izborId,
+            [FromQuery] int korisnikId)
+        {
+            var zavrsio = await _service
+                .JeLiKorisnikZavrsioGlasanjeAsync(izborId, korisnikId);
+
+            return Ok(new { zavrsio });
+        }
     }
 }
