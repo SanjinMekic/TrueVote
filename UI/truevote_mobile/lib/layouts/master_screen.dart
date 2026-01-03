@@ -15,18 +15,25 @@ class MasterScreen extends StatefulWidget {
 class _MasterScreenState extends State<MasterScreen> {
   int _selectedIndex = 0;
 
-  final List<Widget> _screens = [
-    // Ovdje zamijenite sa stvarnim screenovima
-    Placeholder(key: ValueKey('Pocetna')),
-    Placeholder(key: ValueKey('Historija')),
-    FAQScreen(),
-    ProfilScreen()
-  ];
-
   @override
   void initState() {
     super.initState();
     _selectedIndex = widget.initialIndex;
+  }
+
+  Widget _getScreen(int index) {
+    switch (index) {
+      case 0:
+        return widget.child;
+      case 1:
+        return const Placeholder(key: ValueKey('Historija')); // Zamijeni stvarnim ekranom
+      case 2:
+        return FAQScreen(key: ValueKey(DateTime.now().millisecondsSinceEpoch)); // NOVI FAQScreen svaki put!
+      case 3:
+        return ProfilScreen();
+      default:
+        return widget.child;
+    }
   }
 
   void _onItemTapped(int index) {
@@ -38,15 +45,7 @@ class _MasterScreenState extends State<MasterScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: IndexedStack(
-        index: _selectedIndex,
-        children: [
-          if (_selectedIndex == 0) widget.child else _screens[0],
-          _screens[1],
-          _screens[2],
-          _screens[3],
-        ],
-      ),
+      body: _getScreen(_selectedIndex),
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _selectedIndex,
         selectedItemColor: Colors.blueAccent,

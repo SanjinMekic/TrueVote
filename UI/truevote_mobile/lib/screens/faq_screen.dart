@@ -12,7 +12,7 @@ class FAQScreen extends StatefulWidget {
   State<FAQScreen> createState() => _FAQScreenState();
 }
 
-class _FAQScreenState extends State<FAQScreen> {
+class _FAQScreenState extends State<FAQScreen> with AutomaticKeepAliveClientMixin {
   List<Kategorija> _kategorije = [];
   Map<int, List<Pitanje>> _faqPoKategoriji = {};
   bool _isLoading = true;
@@ -21,9 +21,22 @@ class _FAQScreenState extends State<FAQScreen> {
   String _searchFilter = "";
 
   @override
+  bool get wantKeepAlive => false; // Bitno: uvijek false da se ekran ne kešira
+
+  @override
   void initState() {
     super.initState();
     _fetchData();
+  }
+
+  // Osvježi FAQ svaki put kad se ekran prikaže (kad se klikne Q&A tab)
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    // Pozovi refresh svaki put kad se ekran prikaže
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _fetchData();
+    });
   }
 
   @override
@@ -72,6 +85,7 @@ class _FAQScreenState extends State<FAQScreen> {
 
   @override
   Widget build(BuildContext context) {
+    super.build(context);
     final filtriraneKategorije = _kategorije
         .where((kategorija) =>
             _searchFilter.isEmpty ||
@@ -125,7 +139,7 @@ class _FAQScreenState extends State<FAQScreen> {
                 child: Center(
                   child: Text(
                     "Nema rezultata.",
-                    style: TextStyle(fontSize: 18, color: Colors.grey[700]),
+                    style: TextStyle(fontSize: 18, color: Colors.grey),
                   ),
                 ),
               )
