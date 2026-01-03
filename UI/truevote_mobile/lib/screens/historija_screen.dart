@@ -4,6 +4,8 @@ import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import '../providers/glas_provider.dart';
 import '../providers/auth_provider.dart';
+import '../models/izbor.dart';
+import 'izbor_statistika_screen.dart';
 
 class HistorijaScreen extends StatefulWidget {
   const HistorijaScreen({super.key});
@@ -127,6 +129,23 @@ class _HistorijaScreenState extends State<HistorijaScreen> {
                     ],
                   ),
                 ),
+                // Dugme za statistiku izbora
+                if (izbor != null)
+                  IconButton(
+                    icon: const Icon(Icons.bar_chart, color: Colors.blueAccent),
+                    tooltip: "Statistika izbora",
+                    onPressed: () {
+                      // Pretvori mapu u Izbor objekat
+                      final izborObj = Izbor.fromJson(Map<String, dynamic>.from(izbor));
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (context) => IzborStatistikaScreen(
+                            izbor: izborObj,
+                          ),
+                        ),
+                      );
+                    },
+                  ),
               ],
             ),
             const SizedBox(height: 10),
