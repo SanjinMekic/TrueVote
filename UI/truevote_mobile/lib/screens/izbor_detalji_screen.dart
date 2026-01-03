@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:truevote_mobile/screens/glasanje_screen.dart';
 import 'package:truevote_mobile/screens/biometrija_screen.dart';
+import 'package:truevote_mobile/screens/izbor_statistika_screen.dart';
 import '../models/izbor.dart';
 import '../providers/izbor_provider.dart';
 import '../providers/glas_provider.dart';
@@ -149,6 +150,19 @@ class _IzborDetaljiScreenState extends State<IzborDetaljiScreen> {
         ),
         backgroundColor: Colors.blueAccent,
         iconTheme: const IconThemeData(color: Colors.white),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.bar_chart, color: Colors.white),
+            tooltip: "Statistika",
+            onPressed: () {
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (context) => IzborStatistikaScreen(izbor: izbor),
+                ),
+              );
+            },
+          ),
+        ],
       ),
       backgroundColor: const Color(0xFFF2F6FF),
       body: Padding(
@@ -355,9 +369,9 @@ class _IzborDetaljiScreenState extends State<IzborDetaljiScreen> {
                 child: Padding(
                   padding: const EdgeInsets.only(top: 12),
                   child: Text(
-                    "Već ste glasali na ovom izboru.",
+                    "Glasali ste na ovom izboru.",
                     style: const TextStyle(
-                      color: Colors.red,
+                      color: Color.fromARGB(255, 22, 228, 56),
                       fontWeight: FontWeight.bold,
                       fontSize: 16,
                     ),
