@@ -1,6 +1,8 @@
 import 'dart:convert';
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:truevote_mobile/screens/uredi_profil_screen.dart';
 import '../providers/auth_provider.dart';
 import '../providers/korisnik_provider.dart';
@@ -16,6 +18,9 @@ class ProfilScreen extends StatefulWidget {
 
 class _ProfilScreenState extends State<ProfilScreen> {
   Future<Korisnik?>? _korisnikFuture;
+  String? _profilnaSlikaBase64;
+  bool _isUploading = false;
+  String? _slikaError;
 
   @override
   void initState() {
@@ -67,6 +72,51 @@ class _ProfilScreenState extends State<ProfilScreen> {
     );
   }
 
+  // --- POSUĐENA LOGIKA ZA PROMJENU SLIKE ---
+  Future<void> _pickImageAndUpload(int korisnikId) async {
+    setState(() {
+      _slikaError = null;
+    });
+    final result = await FilePicker.platform.pickFiles(
+      type: FileType.custom,
+      allowedExtensions: ['png', 'jpg', 'jpeg'],
+      withData: true,
+    );
+    if (result != null && result.files.single.bytes != null) {
+      final ext = result.files.single.extension?.toLowerCase();
+      if (ext == 'heic') {
+        setState(() {
+          _slikaError =
+              "HEIC format nije dozvoljen. Dozvoljeni su samo PNG, JPG i JPEG.";
+        });
+        return;
+      }
+      setState(() {
+        _isUploading = true;
+      });
+      try {
+        final base64 = base64Encode(result.files.single.bytes!);
+        final korisnikProvider = Provider.of<KorisnikProvider>(context, listen: false);
+        await korisnikProvider.update(korisnikId, {"slikaBase64": base64});
+        setState(() {
+          _profilnaSlikaBase64 = base64;
+          _isUploading = false;
+        });
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text("Profilna slika je uspješno ažurirana.")),
+        );
+      } catch (e) {
+        setState(() {
+          _isUploading = false;
+        });
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text("Greška pri ažuriranju slike: $e")),
+        );
+      }
+    }
+  }
+  // --- KRAJ POSUĐENE LOGIKE ---
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -94,6 +144,9 @@ class _ProfilScreenState extends State<ProfilScreen> {
               ),
             );
           }
+          final korisnikId = korisnik.id!;
+          final slikaZaPrikaz = _profilnaSlikaBase64 ?? korisnik.slika;
+
           return SingleChildScrollView(
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 32),
@@ -103,10 +156,8 @@ class _ProfilScreenState extends State<ProfilScreen> {
                     alignment: Alignment.center,
                     children: [
                       GestureDetector(
-                        onTap:
-                            (korisnik.slika != null &&
-                                korisnik.slika!.isNotEmpty)
-                            ? () => _showFullImage(korisnik.slika!)
+                        onTap: (slikaZaPrikaz != null && slikaZaPrikaz.isNotEmpty)
+                            ? () => _showFullImage(slikaZaPrikaz)
                             : null,
                         child: Container(
                           width: 120,
@@ -126,11 +177,9 @@ class _ProfilScreenState extends State<ProfilScreen> {
                             ),
                           ),
                           child: ClipOval(
-                            child:
-                                (korisnik.slika != null &&
-                                    korisnik.slika!.isNotEmpty)
+                            child: (slikaZaPrikaz != null && slikaZaPrikaz.isNotEmpty)
                                 ? Image.memory(
-                                    base64Decode(korisnik.slika!),
+                                    base64Decode(slikaZaPrikaz),
                                     fit: BoxFit.cover,
                                     width: 120,
                                     height: 120,
@@ -146,8 +195,41 @@ class _ProfilScreenState extends State<ProfilScreen> {
                           ),
                         ),
                       ),
+                      Positioned(
+                        bottom: 0,
+                        right: 8,
+                        child: Material(
+                          color: Colors.white,
+                          shape: const CircleBorder(),
+                          elevation: 3,
+                          child: IconButton(
+                            icon: _isUploading
+                                ? const SizedBox(
+                                    width: 24,
+                                    height: 24,
+                                    child: CircularProgressIndicator(strokeWidth: 2),
+                                  )
+                                : const Icon(Icons.edit, color: Colors.blueAccent),
+                            tooltip: "Uredi profilnu sliku",
+                            onPressed: _isUploading
+                                ? null
+                                : () => _pickImageAndUpload(korisnikId),
+                          ),
+                        ),
+                      ),
                     ],
                   ),
+                  if (_slikaError != null)
+                    Padding(
+                      padding: const EdgeInsets.only(top: 8.0),
+                      child: Text(
+                        _slikaError!,
+                        style: const TextStyle(
+                          color: Colors.red,
+                          fontSize: 14,
+                        ),
+                      ),
+                    ),
                   const SizedBox(height: 24),
                   Card(
                     elevation: 6,
