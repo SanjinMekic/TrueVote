@@ -25,6 +25,7 @@ class _GlasanjeScreenState extends State<GlasanjeScreen> {
   late List<bool> _checked;
   int _brojOdabranih = 0;
   bool _isLoading = false;
+  bool _pinValidan = false;
 
   @override
   void initState() {
@@ -59,6 +60,9 @@ class _GlasanjeScreenState extends State<GlasanjeScreen> {
     );
 
     if (pinValidan == true) {
+      setState(() {
+        _pinValidan = true;
+      });
       await _posaljiGlasove(korisnikId);
     }
   }
@@ -197,7 +201,9 @@ class _GlasanjeScreenState extends State<GlasanjeScreen> {
                         ),
                         elevation: 3,
                       ),
-                      onPressed: _brojOdabranih > 0 ? _provjeriPinIPotvrdiGlasanje : null,
+                      onPressed: (_brojOdabranih > 0 && !_pinValidan)
+                          ? _provjeriPinIPotvrdiGlasanje
+                          : null,
                     ),
             ),
           ],
@@ -295,7 +301,7 @@ class _PinCheckDialogState extends State<_PinCheckDialog> {
               children: [
                 const SizedBox(height: 8),
                 Text(
-                  "Radi sigurnosti, unesite svoj četveroznamenkasti PIN.",
+                  "Radi sigurnosti, unesite svoj četveroznamenkasti PIN.\n\nNakon uspješnog unosa PIN-a, Vaš glas će biti evidentiran i ova akcija je nepovratna.",
                   style: const TextStyle(fontSize: 15, color: Colors.black87),
                   textAlign: TextAlign.center,
                 ),
@@ -318,7 +324,7 @@ class _PinCheckDialogState extends State<_PinCheckDialog> {
                           color: Colors.blueAccent,
                         ),
                         inputFormatters: [
-                          // samo cifre
+                          FilteringTextInputFormatter.digitsOnly,
                         ],
                         decoration: InputDecoration(
                           counterText: "",
@@ -362,6 +368,13 @@ class _PinCheckDialogState extends State<_PinCheckDialog> {
         ),
       ),
       actions: [
+        TextButton(
+          onPressed: _isLoading ? null : () => Navigator.of(context).pop(false),
+          child: const Text(
+            "Otkaži",
+            style: TextStyle(fontWeight: FontWeight.bold, color: Colors.blueGrey),
+          ),
+        ),
         TextButton(
           onPressed: _isLoading ? null : _submitPin,
           child: _isLoading
