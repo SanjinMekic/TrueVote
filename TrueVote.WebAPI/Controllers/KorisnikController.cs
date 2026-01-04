@@ -7,6 +7,7 @@ using TrueVote.Services;
 
 namespace TrueVote.WebAPI.Controllers
 {
+    [Authorize]
     public class KorisnikController : BaseCRUDController<KorisnikResponse, KorisnikSearchObject, KorisnikInsertRequest, KorisnikUpdateRequest>
     {
         IKorisnikService _service;
@@ -27,6 +28,7 @@ namespace TrueVote.WebAPI.Controllers
             return Ok(user);
         }
 
+        [Authorize(Roles = "Admin")]
         [HttpGet("{id}/can-delete")]
         public ActionResult<bool> CanDelete(int id)
         {
@@ -34,7 +36,7 @@ namespace TrueVote.WebAPI.Controllers
         }
 
         [HttpPost("{id}/pin")]
-        [Authorize]
+        [Authorize(Roles = "Birac")]
         public async Task<IActionResult> KreirajPin(int id, [FromBody] string request)
         {
             var result = await _service.KreirajPinAsync(id, request);
@@ -46,7 +48,7 @@ namespace TrueVote.WebAPI.Controllers
         }
 
         [HttpPost("{id}/pin/provjera")]
-        [Authorize]
+        [Authorize(Roles = "Birac")]
         public async Task<IActionResult> ProvjeriPin(int id, [FromBody] string request)
         {
             var isValid = await _service.ProvjeriPinAsync(id, request);
@@ -55,10 +57,23 @@ namespace TrueVote.WebAPI.Controllers
         }
 
         [HttpPut("{id}/promijeni-pin")]
+        [Authorize(Roles = "Birac")]
         public async Task<IActionResult> PromijeniPin(int id, [FromBody] PromjeniPinRequest request)
         {
             await _service.PromijeniPinAsync(id, request.StariPin, request.NoviPin);
             return Ok(new { message = "PIN uspješno promijenjen." });
+        }
+
+        [Authorize(Roles = "Admin")]
+        public override KorisnikResponse Insert(KorisnikInsertRequest request)
+        {
+            return base.Insert(request);
+        }
+
+        [Authorize(Roles = "Admin")]
+        public override void Delete(int id)
+        {
+            base.Delete(id);
         }
     }
 }
