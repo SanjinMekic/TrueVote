@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using TrueVote.Model.Requests;
 using TrueVote.Model.Responses;
 using TrueVote.Model.SearchObjects;
@@ -6,6 +7,7 @@ using TrueVote.Services;
 
 namespace TrueVote.WebAPI.Controllers
 {
+    [Authorize]
     public class GlasController : BaseCRUDController<GlasResponse, GlasSearchObject, GlasInsertRequest, GlasUpdateRequest>
     {
         IGlasService _service;
@@ -21,6 +23,7 @@ namespace TrueVote.WebAPI.Controllers
             return Ok(broj);
         }
 
+        [Authorize(Roles = "Birac")]
         [HttpGet("provjera-zavrsenog-glasanja")]
         public async Task<IActionResult> JeLiZavrsioGlasanje(
             [FromQuery] int izborId,
@@ -32,6 +35,7 @@ namespace TrueVote.WebAPI.Controllers
             return Ok(new { zavrsio });
         }
 
+        [Authorize(Roles = "Birac")]
         [HttpGet("korisnik/{korisnikId}/glasovi")]
         public async Task<IActionResult> GetGlasoviZaKorisnika(int korisnikId)
         {
