@@ -22,10 +22,10 @@ namespace TrueVote.Model.Responses
 
         public string Slika { get; set; }
 
-        public string Pin { get; set; }
-
         public OpstinaResponse Opstina { get; set; }
 
         public UlogaResponse Uloga { get; set; }
+
+        public string Pin { get; set; }
     }
 }

@@ -48,28 +48,29 @@ class _LoginScreenState extends State<LoginScreen> {
           final korisnikProvider = Provider.of<KorisnikProvider>(context, listen: false);
           final korisnik = await korisnikProvider.getById(response.id);
 
-          if (korisnik != null && (korisnik.pin == null || korisnik.pin!.isEmpty)) {
-  await showDialog(
-    context: context,
-    barrierDismissible: false,
-    builder: (context) => _PinDialog(
-      korisnikId: korisnik.id,
-      onPinCreated: () {
-        Navigator.of(context).pushReplacement(
-          MaterialPageRoute(
-            builder: (context) => MasterScreen(child: const PocetnaScreen()),
-          ),
-        );
-      },
-    ),
-  );
-} else {
-  Navigator.of(context).pushReplacement(
-    MaterialPageRoute(
-      builder: (context) => MasterScreen(child: const PocetnaScreen()),
-    ),
-  );
-}
+          // NOVA LOGIKA: Pin može biti "ima" ili "nema"
+          if (korisnik != null && korisnik.pin == "nema") {
+            await showDialog(
+              context: context,
+              barrierDismissible: false,
+              builder: (context) => _PinDialog(
+                korisnikId: korisnik.id,
+                onPinCreated: () {
+                  Navigator.of(context).pushReplacement(
+                    MaterialPageRoute(
+                      builder: (context) => MasterScreen(child: const PocetnaScreen()),
+                    ),
+                  );
+                },
+              ),
+            );
+          } else {
+            Navigator.of(context).pushReplacement(
+              MaterialPageRoute(
+                builder: (context) => MasterScreen(child: const PocetnaScreen()),
+              ),
+            );
+          }
         } else {
           setState(() {
             _passwordError = "Nemate prava";
@@ -293,7 +294,6 @@ class _PinDialogState extends State<_PinDialog> {
 
   @override
   Widget build(BuildContext context) {
-    // Rješenje za visinu: koristi SingleChildScrollView i minHeight
     return AlertDialog(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
       contentPadding: const EdgeInsets.fromLTRB(24, 20, 24, 10),
@@ -364,7 +364,7 @@ class _PinDialogState extends State<_PinDialog> {
                         ),
                         onChanged: (value) {
                           if (value.length == 1) _focusNext(i);
-                          setState(() {}); // Refresh for visible value
+                          setState(() {});
                         },
                         validator: (value) {
                           if (value == null || value.isEmpty) {

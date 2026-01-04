@@ -156,28 +156,6 @@ class _PromjenaPinDialogState extends State<PromjenaPinDialog> {
       _isLoading = true;
     });
 
-    if (_stariPin.length != 4 || !_stariPin.contains(RegExp(r'^\d{4}$'))) {
-      setState(() {
-        _error = "Stari PIN mora sadržavati tačno 4 cifre.";
-        _isLoading = false;
-      });
-      return;
-    }
-    if (_noviPin.length != 4 || !_noviPin.contains(RegExp(r'^\d{4}$'))) {
-      setState(() {
-        _error = "Novi PIN mora sadržavati tačno 4 cifre.";
-        _isLoading = false;
-      });
-      return;
-    }
-    if (_stariPin == _noviPin) {
-      setState(() {
-        _error = "Novi PIN mora biti različit od starog PIN-a.";
-        _isLoading = false;
-      });
-      return;
-    }
-
     final korisnikProvider = Provider.of<KorisnikProvider>(context, listen: false);
     final korisnikId = AuthProvider.korisnikId;
 
@@ -189,26 +167,37 @@ class _PromjenaPinDialogState extends State<PromjenaPinDialog> {
       return;
     }
 
-    final success = await korisnikProvider.promijeniPin(korisnikId, _stariPin, _noviPin);
+    try {
+      final result = await korisnikProvider.promijeniPinSaPorukom(
+        korisnikId,
+        _stariPin,
+        _noviPin,
+      );
 
-    if (success) {
-      AuthProvider.username = null;
-      AuthProvider.password = null;
-      AuthProvider.korisnikId = null;
-      Navigator.of(context).pop();
-      Navigator.of(context).pushAndRemoveUntil(
-        MaterialPageRoute(builder: (context) => const LoginScreen()),
-        (route) => false,
-      );
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text("PIN je uspješno promijenjen. Prijavite se ponovo."),
-          backgroundColor: Colors.blueAccent,
-        ),
-      );
-    } else {
+      if (result['success'] == true) {
+        AuthProvider.username = null;
+        AuthProvider.password = null;
+        AuthProvider.korisnikId = null;
+        Navigator.of(context).pop();
+        Navigator.of(context).pushAndRemoveUntil(
+          MaterialPageRoute(builder: (context) => const LoginScreen()),
+          (route) => false,
+        );
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(result['message'] ?? "PIN je uspješno promijenjen. Prijavite se ponovo."),
+            backgroundColor: Colors.blueAccent,
+          ),
+        );
+      } else {
+        setState(() {
+          _error = result['message'] ?? "Greška pri promjeni PIN-a!";
+          _isLoading = false;
+        });
+      }
+    } catch (e) {
       setState(() {
-        _error = "Greška pri promjeni PIN-a!";
+        _error = e.toString().replaceAll('Exception: ', '');
         _isLoading = false;
       });
     }
@@ -270,12 +259,6 @@ class _PromjenaPinDialogState extends State<PromjenaPinDialog> {
                   setState(() {});
                 },
                 validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return "";
-                  }
-                  if (!RegExp(r'^\d$').hasMatch(value)) {
-                    return "";
-                  }
                   return null;
                 },
               ),
@@ -322,9 +305,7 @@ class _PromjenaPinDialogState extends State<PromjenaPinDialog> {
           onPressed: _isLoading
               ? null
               : () {
-                  if (_formKey.currentState!.validate()) {
-                    _promijeniPin();
-                  }
+                  _promijeniPin();
                 },
           child: _isLoading
               ? const SizedBox(

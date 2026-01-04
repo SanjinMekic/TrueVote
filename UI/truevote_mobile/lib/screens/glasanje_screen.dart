@@ -183,29 +183,37 @@ class _GlasanjeScreenState extends State<GlasanjeScreen> {
               ),
             ),
             const SizedBox(height: 18),
-            Center(
-              child: _isLoading
-                  ? const CircularProgressIndicator()
-                  : ElevatedButton.icon(
-                      icon: const Icon(Icons.check),
-                      label: const Text(
-                        "Potvrdi glasanje",
-                        style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                      ),
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.green,
-                        foregroundColor: Colors.white,
-                        padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 14),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        elevation: 3,
-                      ),
-                      onPressed: (_brojOdabranih > 0 && !_pinValidan)
-                          ? _provjeriPinIPotvrdiGlasanje
-                          : null,
-                    ),
-            ),
+            _isLoading
+    ? const Center(child: CircularProgressIndicator())
+    : SizedBox(
+  width: double.infinity,
+  child: ElevatedButton(
+    style: ElevatedButton.styleFrom(
+      backgroundColor: Colors.green,
+      foregroundColor: Colors.white,
+      padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 14),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(12),
+      ),
+      elevation: 3,
+    ),
+    onPressed: (_brojOdabranih > 0 && !_pinValidan)
+        ? _provjeriPinIPotvrdiGlasanje
+        : null,
+    child: Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      mainAxisSize: MainAxisSize.min,
+      children: const [
+        Icon(Icons.check),
+        SizedBox(width: 10),
+        Text(
+          "Potvrdi glasanje",
+          style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+        ),
+      ],
+    ),
+  ),
+),
           ],
         ),
       ),

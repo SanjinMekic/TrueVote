@@ -25,9 +25,11 @@ public partial class Korisnik
 
     public byte[]? Slika { get; set; }
 
-    public string? Pin { get; set; }
-
     public bool Obrisan { get; set; }
+
+    public string? PinSalt { get; set; }
+
+    public string? PinHash { get; set; }
 
     public virtual ICollection<Glas> Glas { get; set; } = new List<Glas>();
 

@@ -7,7 +7,9 @@ using System.Linq;
 using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using TrueVote.Model.Exceptions;
 using TrueVote.Model.Models;
 using TrueVote.Model.Requests;
 using TrueVote.Model.Responses;
@@ -64,7 +66,15 @@ namespace TrueVote.Services
                 var databaseKorisnik = Context.Set<Database.Korisnik>().Find(korisnik.Id);
                 if (databaseKorisnik != null)
                 {
-                    korisnik.Slika = databaseKorisnik.Slika != null ? Convert.ToBase64String(databaseKorisnik.Slika) : null;
+                    korisnik.Slika = databaseKorisnik.Slika != null
+                        ? Convert.ToBase64String(databaseKorisnik.Slika)
+                        : null;
+
+                    korisnik.Pin =
+                        !string.IsNullOrEmpty(databaseKorisnik.PinHash) &&
+                        !string.IsNullOrEmpty(databaseKorisnik.PinSalt)
+                        ? "ima"
+                        : "nema";
                 }
             }
 
@@ -80,6 +90,12 @@ namespace TrueVote.Services
                 var model = Mapper.Map<KorisnikResponse>(entity);
 
                 model.Slika = entity.Slika != null ? Convert.ToBase64String(entity.Slika) : null;
+
+                model.Pin =
+    !string.IsNullOrEmpty(entity.PinHash) &&
+    !string.IsNullOrEmpty(entity.PinSalt)
+    ? "ima"
+    : "nema";
 
                 return model;
             }
@@ -296,20 +312,20 @@ namespace TrueVote.Services
 
         public async Task<bool> KreirajPinAsync(int korisnikId, string pin)
         {
-            // Validacija – mora biti tačno 4 cifre
-            if (!System.Text.RegularExpressions.Regex.IsMatch(pin, @"^\d{4}$"))
-                throw new Exception("PIN mora biti četveroznamenkasti broj.");
+            if (!Regex.IsMatch(pin, @"^\d{4}$"))
+                throw new UserException("PIN mora biti četveroznamenkasti broj.");
 
             var korisnik = await Context.Korisniks
-                .FirstOrDefaultAsync(k => k.Id == korisnikId && k.Obrisan == false);
+                .FirstOrDefaultAsync(k => k.Id == korisnikId && !k.Obrisan);
 
             if (korisnik == null)
-                throw new Exception("Korisnik nije pronađen.");
+                throw new UserException("Korisnik nije pronađen.");
 
-            if (!string.IsNullOrEmpty(korisnik.Pin))
-                throw new Exception("PIN je već kreiran za ovog korisnika.");
+            if (!string.IsNullOrEmpty(korisnik.PinHash))
+                throw new UserException("PIN je već kreiran za ovog korisnika.");
 
-            korisnik.Pin = GenerateHash(korisnik.PasswordSalt, pin);
+            korisnik.PinSalt = GeneratePinSalt();
+            korisnik.PinHash = GeneratePinHash(korisnik.PinSalt, pin);
 
             await Context.SaveChangesAsync();
             return true;
@@ -317,46 +333,70 @@ namespace TrueVote.Services
 
         public async Task<bool> ProvjeriPinAsync(int korisnikId, string pin)
         {
-            if (!System.Text.RegularExpressions.Regex.IsMatch(pin, @"^\d{4}$"))
+            if (!Regex.IsMatch(pin, @"^\d{4}$"))
                 return false;
 
             var korisnik = await Context.Korisniks
-                .FirstOrDefaultAsync(k => k.Id == korisnikId && k.Obrisan == false);
+                .FirstOrDefaultAsync(k => k.Id == korisnikId && !k.Obrisan);
 
-            if (korisnik == null || string.IsNullOrEmpty(korisnik.Pin))
+            if (korisnik == null || string.IsNullOrEmpty(korisnik.PinHash))
                 return false;
 
-            var hash = GenerateHash(korisnik.PasswordSalt, pin);
-
-            return korisnik.Pin == hash;
+            var hash = GeneratePinHash(korisnik.PinSalt!, pin);
+            return korisnik.PinHash == hash;
         }
 
         public async Task<bool> PromijeniPinAsync(int korisnikId, string stariPin, string noviPin)
         {
-            // Validacija – oba pina moraju biti 4 cifre
-            if (!System.Text.RegularExpressions.Regex.IsMatch(stariPin, @"^\d{4}$") ||
-                !System.Text.RegularExpressions.Regex.IsMatch(noviPin, @"^\d{4}$"))
+            if (!Regex.IsMatch(stariPin, @"^\d{4}$") ||
+                !Regex.IsMatch(noviPin, @"^\d{4}$"))
             {
-                throw new Exception("PIN mora biti četveroznamenkasti broj.");
+                throw new UserException("PIN mora biti četveroznamenkasti broj.");
             }
 
             var korisnik = await Context.Korisniks
-                .FirstOrDefaultAsync(k => k.Id == korisnikId && k.Obrisan == false);
+                .FirstOrDefaultAsync(k => k.Id == korisnikId && !k.Obrisan);
 
             if (korisnik == null)
-                throw new Exception("Korisnik nije pronađen.");
+                throw new UserException("Korisnik nije pronađen.");
 
-            if (string.IsNullOrEmpty(korisnik.Pin))
-                throw new Exception("Korisnik nema kreiran PIN.");
+            if (string.IsNullOrEmpty(korisnik.PinHash))
+                throw new UserException("Korisnik nema kreiran PIN.");
 
-            var stariPinHash = GenerateHash(korisnik.PasswordSalt, stariPin);
-            if (korisnik.Pin != stariPinHash)
-                throw new Exception("Stari PIN nije ispravan.");
+            var stariPinHash = GeneratePinHash(korisnik.PinSalt!, stariPin);
 
-            korisnik.Pin = GenerateHash(korisnik.PasswordSalt, noviPin);
+            if (korisnik.PinHash != stariPinHash)
+                throw new UserException("Stari PIN nije ispravan.");
+
+            var noviPinHash = GeneratePinHash(korisnik.PinSalt!, noviPin);
+
+            if (noviPinHash == korisnik.PinHash)
+                throw new UserException("Novi PIN ne smije biti isti kao stari PIN.");
+
+            korisnik.PinSalt = GeneratePinSalt();
+            korisnik.PinHash = GeneratePinHash(korisnik.PinSalt, noviPin);
 
             await Context.SaveChangesAsync();
             return true;
+        }
+
+        private static string GeneratePinSalt()
+        {
+            var bytes = RandomNumberGenerator.GetBytes(16);
+            return Convert.ToBase64String(bytes);
+        }
+
+        private static string GeneratePinHash(string salt, string pin)
+        {
+            byte[] src = Convert.FromBase64String(salt);
+            byte[] bytes = Encoding.UTF8.GetBytes(pin);
+            byte[] dst = new byte[src.Length + bytes.Length];
+
+            Buffer.BlockCopy(src, 0, dst, 0, src.Length);
+            Buffer.BlockCopy(bytes, 0, dst, src.Length, bytes.Length);
+
+            using var algorithm = SHA256.Create();
+            return Convert.ToBase64String(algorithm.ComputeHash(dst));
         }
     }
 }

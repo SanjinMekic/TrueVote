@@ -343,27 +343,38 @@ class _IzborDetaljiScreenState extends State<IzborDetaljiScreen> {
                     ),
                   ),
             const SizedBox(height: 24),
-            Center(
-              child: _provjeraGlasanjaLoading
-                  ? const CircularProgressIndicator()
-                  : ElevatedButton.icon(
-                      icon: const Icon(Icons.how_to_vote),
-                      label: const Text(
-                        "Započni glasanje",
-                        style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                      ),
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.blueAccent,
-                        foregroundColor: Colors.white,
-                        padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 14),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        elevation: 3,
-                      ),
-                      onPressed: _jeZavrsioGlasanje ? null : _kreniGlasanje,
-                    ),
-            ),
+_provjeraGlasanjaLoading
+    ? const Center(child: CircularProgressIndicator())
+    : Padding(
+  padding: const EdgeInsets.symmetric(horizontal: 0),
+  child: SizedBox(
+    width: double.infinity,
+    child: ElevatedButton(
+      style: ElevatedButton.styleFrom(
+        backgroundColor: Colors.blueAccent,
+        foregroundColor: Colors.white,
+        padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 14),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(12),
+        ),
+        elevation: 3,
+      ),
+      onPressed: _jeZavrsioGlasanje ? null : _kreniGlasanje,
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        mainAxisSize: MainAxisSize.min,
+        children: const [
+          Icon(Icons.how_to_vote),
+          SizedBox(width: 10),
+          Text(
+            "Započni glasanje",
+            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+          ),
+        ],
+      ),
+    ),
+  ),
+),
             if (_jeZavrsioGlasanje && !_provjeraGlasanjaLoading)
               Center(
                 child: Padding(

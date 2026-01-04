@@ -55,7 +55,7 @@ class KorisnikProvider extends BaseProvider<Korisnik> {
     }
   }
 
-   Future<bool> promijeniPin(int id, String stariPin, String noviPin) async {
+  Future<Map<String, dynamic>> promijeniPinSaPorukom(int id, String stariPin, String noviPin) async {
     final url = Uri.parse('$baseUrl${endpoint}/$id/promijeni-pin');
     final headers = createHeaders();
     final body = jsonEncode({
@@ -70,9 +70,36 @@ class KorisnikProvider extends BaseProvider<Korisnik> {
     );
 
     if (response.statusCode == 200) {
-      return true;
+      final data = jsonDecode(response.body);
+      return {
+        "success": true,
+        "message": data["message"] ?? "PIN je uspješno promijenjen."
+      };
     } else {
-      return false;
+      try {
+        final data = jsonDecode(response.body);
+        if (data["errors"] != null && data["errors"]["userError"] != null) {
+          return {
+            "success": false,
+            "message": (data["errors"]["userError"] as List).join("\n")
+          };
+        }
+        if (data["message"] != null) {
+          return {
+            "success": false,
+            "message": data["message"]
+          };
+        }
+        return {
+          "success": false,
+          "message": "Greška pri promjeni PIN-a!"
+        };
+      } catch (_) {
+        return {
+          "success": false,
+          "message": "Greška pri promjeni PIN-a!"
+        };
+      }
     }
   }
 }

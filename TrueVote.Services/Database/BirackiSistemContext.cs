@@ -143,9 +143,8 @@ public partial class BirackiSistemContext : DbContext
             entity.Property(e => e.KorisnickoIme).HasMaxLength(100);
             entity.Property(e => e.PasswordHash).HasMaxLength(128);
             entity.Property(e => e.PasswordSalt).HasMaxLength(128);
-            entity.Property(e => e.Pin)
-                .HasMaxLength(10)
-                .HasColumnName("PIN");
+            entity.Property(e => e.PinHash).HasMaxLength(128);
+            entity.Property(e => e.PinSalt).HasMaxLength(128);
             entity.Property(e => e.Prezime).HasMaxLength(100);
 
             entity.HasOne(d => d.Opstina).WithMany(p => p.Korisniks)
