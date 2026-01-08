@@ -17,6 +17,7 @@ class Korisnik {
   String? pin;
   Opstina? opstina;
   Uloga? uloga;
+  bool? sistemAdministrator;
 
   Korisnik({
     required this.id,
@@ -30,6 +31,7 @@ class Korisnik {
     this.pin,
     this.opstina,
     this.uloga,
+    this.sistemAdministrator,
   });
 
   factory Korisnik.fromJson(Map<String, dynamic> json) =>

@@ -27,5 +27,6 @@ namespace TrueVote.Model.Responses
         public UlogaResponse Uloga { get; set; }
 
         public string Pin { get; set; }
+        public bool SistemAdministrator { get; set; }
     }
 }

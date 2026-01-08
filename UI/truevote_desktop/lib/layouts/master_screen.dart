@@ -14,6 +14,7 @@ import 'package:truevote_desktop/screens/geografska_administracija_opstina_scree
 import 'package:truevote_desktop/screens/grafovi_screen.dart';
 import 'package:truevote_desktop/screens/login_screen.dart';
 import 'package:truevote_desktop/screens/pocetna_screen.dart';
+import 'package:truevote_desktop/screens/profil_screen.dart';
 import 'package:truevote_desktop/screens/upravljanje_nalozima_screen.dart';
 import 'dart:convert';
 
@@ -34,73 +35,47 @@ class MasterScreen extends StatelessWidget {
   }
 
   Widget _buildUserAvatar(BuildContext context) {
-    final korisnikId = AuthProvider.korisnikId;
-    if (korisnikId == null) {
-      return _defaultAvatar();
-    }
-    return FutureBuilder<Korisnik>(
-      future: Provider.of<KorisnikProvider>(context, listen: false).getById(korisnikId),
-      builder: (context, snapshot) {
-        if (snapshot.connectionState != ConnectionState.done) {
-          return _defaultAvatar();
-        }
-        final korisnik = snapshot.data;
-        if (korisnik == null || korisnik.slika == null || korisnik.slika!.isEmpty) {
-          return _defaultAvatar();
-        }
-        try {
-          final bytes = base64Decode(korisnik.slika!);
-          return Container(
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              color: Colors.white,
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.blueAccent.withOpacity(0.2),
-                  blurRadius: 8,
-                  offset: const Offset(0, 4),
-                ),
-              ],
-            ),
-            padding: const EdgeInsets.all(8),
-            child: ClipOval(
-              child: Image.memory(
-                bytes,
-                width: 40,
-                height: 40,
-                fit: BoxFit.cover,
-                errorBuilder: (context, error, stackTrace) => _defaultAvatar(),
-              ),
-            ),
-          );
-        } catch (e) {
-          return _defaultAvatar();
-        }
-      },
-    );
+  final korisnikId = AuthProvider.korisnikId;
+  if (korisnikId == null) {
+    return _defaultAvatar();
   }
-
-  Widget _defaultAvatar() {
-    return Container(
-      decoration: BoxDecoration(
-        shape: BoxShape.circle,
-        color: Colors.white,
-        boxShadow: [
-          BoxShadow(
-            color: Colors.blueAccent.withOpacity(0.2),
-            blurRadius: 8,
-            offset: const Offset(0, 4),
+  return FutureBuilder<Korisnik>(
+    future: Provider.of<KorisnikProvider>(context, listen: false).getById(korisnikId),
+    builder: (context, snapshot) {
+      if (snapshot.connectionState != ConnectionState.done) {
+        return _defaultAvatar();
+      }
+      final korisnik = snapshot.data;
+      if (korisnik == null || korisnik.slika == null || korisnik.slika!.isEmpty) {
+        return _defaultAvatar();
+      }
+      try {
+        final bytes = base64Decode(korisnik.slika!);
+        return ClipOval(
+          child: Image.memory(
+            bytes,
+            width: 60,
+            height: 60,
+            fit: BoxFit.cover,
+            errorBuilder: (context, error, stackTrace) => _defaultAvatar(),
           ),
-        ],
-      ),
-      padding: const EdgeInsets.all(8),
-      child: const Icon(
-        Icons.person,
-        size: 40,
-        color: Colors.blueAccent,
-      ),
-    );
-  }
+        );
+      } catch (e) {
+        return _defaultAvatar();
+      }
+    },
+  );
+}
+
+Widget _defaultAvatar() {
+  return ClipOval(
+    child: Icon(
+      Icons.person,
+      size: 40,
+      color: Colors.blueAccent,
+    ),
+  );
+}
 
   @override
   Widget build(BuildContext context) {
@@ -370,6 +345,36 @@ class MasterScreen extends StatelessWidget {
                       );
                     },
                   ),
+                  ListTile(
+  leading: Icon(
+    Icons.account_circle,
+    color: Colors.blueAccent,
+  ),
+  title: Text(
+    "Profil",
+    style: TextStyle(fontWeight: FontWeight.w600),
+  ),
+  onTap: () {
+    Navigator.pop(context);
+    final korisnikId = AuthProvider.korisnikId;
+    if (korisnikId == null) return;
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (context) => FutureBuilder<Korisnik>(
+          future: Provider.of<KorisnikProvider>(context, listen: false).getById(korisnikId),
+          builder: (context, snapshot) {
+            if (!snapshot.hasData) {
+              return const Scaffold(
+                body: Center(child: CircularProgressIndicator()),
+              );
+            }
+            return ProfilScreen(korisnik: snapshot.data!);
+          },
+        ),
+      ),
+    );
+  },
+),
                  const Divider(),
                   ListTile(
                     leading: Icon(Icons.logout, color: Colors.redAccent),

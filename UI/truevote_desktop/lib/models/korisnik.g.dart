@@ -22,6 +22,7 @@ Korisnik _$KorisnikFromJson(Map<String, dynamic> json) => Korisnik(
   uloga: json['uloga'] == null
       ? null
       : Uloga.fromJson(json['uloga'] as Map<String, dynamic>),
+  sistemAdministrator: json['sistemAdministrator'] as bool?,
 );
 
 Map<String, dynamic> _$KorisnikToJson(Korisnik instance) => <String, dynamic>{
@@ -36,4 +37,5 @@ Map<String, dynamic> _$KorisnikToJson(Korisnik instance) => <String, dynamic>{
   'pin': instance.pin,
   'opstina': instance.opstina,
   'uloga': instance.uloga,
+  'sistemAdministrator': instance.sistemAdministrator,
 };

@@ -40,7 +40,6 @@ class _LoginPageState extends State<LoginPage> {
         AuthProvider.password = password;
         AuthProvider.setUser(response);
 
-        // Pretpostavljamo da je admin ako ima uloga naziv 'Administrator'
         if (response.uloga?.naziv == 'Admin') {
           Navigator.of(context).pushReplacement(
             MaterialPageRoute(
@@ -202,17 +201,6 @@ class _LoginPageState extends State<LoginPage> {
                                     color: Colors.white,
                                   ),
                                 ),
-                        ),
-                      ),
-                      const SizedBox(height: 16),
-                      TextButton(
-                        onPressed: () {},
-                        child: Text(
-                          "Zaboravili ste lozinku?",
-                          style: TextStyle(
-                            color: Colors.blueAccent.withOpacity(0.8),
-                            fontWeight: FontWeight.w500,
-                          ),
                         ),
                       ),
                     ],

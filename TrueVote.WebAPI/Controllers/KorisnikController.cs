@@ -75,5 +75,33 @@ namespace TrueVote.WebAPI.Controllers
         {
             base.Delete(id);
         }
+
+        [Authorize(Roles = "Admin")]
+
+        [HttpPost("{id}/provjeri-staru-lozinku")]
+        public async Task<IActionResult> ProvjeriStaruLozinku(
+    int id,
+    [FromBody] string staraLozinka)
+        {
+            var ispravna = await _service
+                .ProvjeriStaruLozinkuAsync(id, staraLozinka);
+
+            return Ok(new
+            {
+                ispravna = ispravna
+            });
+        }
+
+        [HttpGet("provjeri-korisnicko-ime")]
+        [AllowAnonymous]
+        public async Task<IActionResult> ProvjeriKorisnickoIme([FromQuery] string korisnickoIme)
+        {
+            var postoji = await _service.ProvjeriKorisnickoIme(korisnickoIme);
+
+            return Ok(new
+            {
+                postoji = postoji
+            });
+        }
     }
 }

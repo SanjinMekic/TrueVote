@@ -5,6 +5,7 @@ import 'package:provider/provider.dart';
 import 'package:truevote_desktop/layouts/master_screen.dart';
 import 'package:truevote_desktop/providers/korisnik_provider.dart';
 import 'package:truevote_desktop/models/korisnik.dart';
+import 'package:truevote_desktop/providers/auth_provider.dart';
 import 'korisnik_form_screen.dart';
 
 class UpravljanjeNalozimaScreen extends StatefulWidget {
@@ -26,6 +27,25 @@ class _UpravljanjeNalozimaScreenState extends State<UpravljanjeNalozimaScreen> {
   String? _emailFilter;
   String? _korisnickoImeFilter;
   String? _opstinaNazivFilter;
+
+  Korisnik? _loggedInKorisnik;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadLoggedInKorisnik();
+  }
+
+  Future<void> _loadLoggedInKorisnik() async {
+    final korisnikId = AuthProvider.korisnikId;
+    if (korisnikId != null) {
+      final provider = Provider.of<KorisnikProvider>(context, listen: false);
+      final korisnik = await provider.getById(korisnikId);
+      setState(() {
+        _loggedInKorisnik = korisnik;
+      });
+    }
+  }
 
   @override
   void dispose() {
@@ -146,6 +166,11 @@ class _UpravljanjeNalozimaScreenState extends State<UpravljanjeNalozimaScreen> {
   }
 
   Widget _buildKorisnikCard(Korisnik korisnik) {
+    final loggedInId = _loggedInKorisnik?.id;
+    final isSistemAdmin = _loggedInKorisnik?.sistemAdministrator == true;
+    final isAdmin = korisnik.uloga?.naziv == "Admin";
+    final isSelf = korisnik.id == loggedInId;
+
     Widget avatar;
     if (korisnik.slika != null && korisnik.slika!.isNotEmpty) {
       try {
@@ -177,6 +202,10 @@ class _UpravljanjeNalozimaScreenState extends State<UpravljanjeNalozimaScreen> {
     } else {
       avatar = _defaultAvatar(korisnik);
     }
+
+    // Prava za edit/brisanje
+    final canEditAdmin = isAdmin && isSistemAdmin && !isSelf;
+    final canEditBirac = !isAdmin && !isSelf;
 
     return Card(
       elevation: 4,
@@ -233,16 +262,18 @@ class _UpravljanjeNalozimaScreenState extends State<UpravljanjeNalozimaScreen> {
             ),
             Column(
               children: [
-                IconButton(
-                  icon: const Icon(Icons.edit, color: Colors.blueAccent),
-                  tooltip: "Uredi",
-                  onPressed: () => _openKorisnikForm(korisnik: korisnik),
-                ),
-                IconButton(
-                  icon: const Icon(Icons.delete, color: Colors.redAccent),
-                  tooltip: "Obriši",
-                  onPressed: () => _tryDeleteKorisnik(korisnik),
-                ),
+                if ((isAdmin && canEditAdmin) || (!isAdmin && canEditBirac))
+                  IconButton(
+                    icon: const Icon(Icons.edit, color: Colors.blueAccent),
+                    tooltip: "Uredi",
+                    onPressed: () => _openKorisnikForm(korisnik: korisnik),
+                  ),
+                if ((isAdmin && canEditAdmin) || (!isAdmin && canEditBirac))
+                  IconButton(
+                    icon: const Icon(Icons.delete, color: Colors.redAccent),
+                    tooltip: "Obriši",
+                    onPressed: () => _tryDeleteKorisnik(korisnik),
+                  ),
               ],
             ),
           ],
@@ -353,6 +384,9 @@ class _UpravljanjeNalozimaScreenState extends State<UpravljanjeNalozimaScreen> {
               child: FutureBuilder<List<Korisnik>>(
                 future: _fetchKorisnici(),
                 builder: (context, snapshot) {
+                  if (_loggedInKorisnik == null) {
+                    return const Center(child: CircularProgressIndicator(color: Colors.blueAccent));
+                  }
                   if (snapshot.connectionState == ConnectionState.waiting) {
                     return const Center(child: CircularProgressIndicator(color: Colors.blueAccent));
                   }

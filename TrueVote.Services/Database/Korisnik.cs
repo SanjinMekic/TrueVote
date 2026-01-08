@@ -31,6 +31,8 @@ public partial class Korisnik
 
     public string? PinHash { get; set; }
 
+    public bool SistemAdministrator { get; set; }
+
     public virtual ICollection<Glas> Glas { get; set; } = new List<Glas>();
 
     public virtual Opstina Opstina { get; set; } = null!;

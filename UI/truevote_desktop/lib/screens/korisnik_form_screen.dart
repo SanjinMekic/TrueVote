@@ -7,6 +7,7 @@ import 'package:truevote_desktop/providers/opstina_provider.dart';
 import 'package:truevote_desktop/models/korisnik.dart';
 import 'package:truevote_desktop/models/uloga.dart';
 import 'package:truevote_desktop/models/opstina.dart';
+import 'package:truevote_desktop/providers/auth_provider.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:dropdown_search/dropdown_search.dart';
 import 'dart:io';
@@ -31,6 +32,8 @@ class _KorisnikFormScreenState extends State<KorisnikFormScreen> {
   int? _ulogaId;
   Opstina? _selectedOpstina;
   String? _slikaPath;
+  String? _korisnickoImeError;
+  Korisnik? _loggedInKorisnik;
 
   @override
   void initState() {
@@ -45,6 +48,18 @@ class _KorisnikFormScreenState extends State<KorisnikFormScreen> {
         _selectedOpstina = Opstina(id: widget.korisnik!.opstinaId!, naziv: widget.korisnik!.opstina?.naziv);
       }
       _slikaPath = widget.korisnik!.slika;
+    }
+    _loadLoggedInKorisnik();
+  }
+
+  Future<void> _loadLoggedInKorisnik() async {
+    final korisnikId = AuthProvider.korisnikId;
+    if (korisnikId != null) {
+      final provider = Provider.of<KorisnikProvider>(context, listen: false);
+      final korisnik = await provider.getById(korisnikId);
+      setState(() {
+        _loggedInKorisnik = korisnik;
+      });
     }
   }
 
@@ -115,8 +130,22 @@ class _KorisnikFormScreenState extends State<KorisnikFormScreen> {
     }
   }
 
+  Future<bool> _provjeriKorisnickoIme() async {
+    final provider = Provider.of<KorisnikProvider>(context, listen: false);
+    final korisnickoIme = _korisnickoImeController.text.trim();
+    if (widget.korisnik != null && korisnickoIme == (widget.korisnik!.korisnickoIme ?? "")) {
+      return true;
+    }
+    final postoji = await provider.provjeriKorisnickoIme(korisnickoIme);
+    setState(() {
+      _korisnickoImeError = postoji ? "Korisničko ime je već zauzeto." : null;
+    });
+    return !postoji;
+  }
+
   Future<void> _save() async {
     if (!_formKey.currentState!.validate()) return;
+    if (!await _provjeriKorisnickoIme()) return;
 
     final provider = Provider.of<KorisnikProvider>(context, listen: false);
     final slikaBase64 = await _getSlikaBase64();
@@ -146,9 +175,177 @@ class _KorisnikFormScreenState extends State<KorisnikFormScreen> {
     Navigator.of(context).pop(true);
   }
 
+  String? _validateIme(String? value) {
+    if (value == null || value.isEmpty) return "Ime je obavezno.";
+    if (!RegExp(r"^[A-Za-zČčĆćŠšĐđŽž]+$").hasMatch(value)) {
+      return "Ime može sadržavati samo slova.";
+    }
+    return null;
+  }
+
+  String? _validatePrezime(String? value) {
+    if (value == null || value.isEmpty) return "Prezime je obavezno.";
+    if (!RegExp(r"^[A-Za-zČčĆćŠšĐđŽž]+$").hasMatch(value)) {
+      return "Prezime može sadržavati samo slova.";
+    }
+    return null;
+  }
+
+  String? _validateEmail(String? value) {
+    if (value == null || value.isEmpty) return "Email je obavezan.";
+    if (!RegExp(r"^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$").hasMatch(value)) {
+      return "Unesite validan email.";
+    }
+    return null;
+  }
+
+  String? _validateKorisnickoIme(String? value) {
+    if (value == null || value.isEmpty) return "Korisničko ime je obavezno.";
+    if (_korisnickoImeError != null) return _korisnickoImeError;
+    return null;
+  }
+
+  String? _validateLozinka(String? value) {
+    if (widget.korisnik != null) return null;
+    if (value == null || value.isEmpty) return "Lozinka je obavezna.";
+    if (value.length < 6) return "Lozinka mora imati najmanje 6 karaktera.";
+    return null;
+  }
+
+  String? _validateLozinkaPotvrda(String? value) {
+    if (widget.korisnik != null) return null;
+    if (value == null || value.isEmpty) return "Potvrda lozinke je obavezna.";
+    if (value != _lozinkaController.text) return "Lozinke se ne podudaraju.";
+    return null;
+  }
+
+  Future<void> _showChangePasswordDialog() async {
+    final _pwFormKey = GlobalKey<FormState>();
+    final _novaController = TextEditingController();
+    final _potvrdaController = TextEditingController();
+    bool _isLoading = false;
+    String? _error;
+
+    await showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) {
+        return StatefulBuilder(
+          builder: (context, setState) => AlertDialog(
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
+            title: Row(
+              children: [
+                const Icon(Icons.lock, color: Colors.blueAccent, size: 28),
+                const SizedBox(width: 12),
+                const Text("Promjena lozinke", style: TextStyle(fontWeight: FontWeight.bold)),
+              ],
+            ),
+            content: SizedBox(
+              width: 350,
+              child: Form(
+                key: _pwFormKey,
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    TextFormField(
+                      controller: _novaController,
+                      obscureText: true,
+                      decoration: const InputDecoration(
+                        labelText: "Nova lozinka",
+                        border: OutlineInputBorder(),
+                      ),
+                      validator: (v) {
+                        if (v == null || v.isEmpty) return "Unesite novu lozinku";
+                        if (v.length < 6) return "Lozinka mora imati najmanje 6 karaktera";
+                        return null;
+                      },
+                    ),
+                    const SizedBox(height: 12),
+                    TextFormField(
+                      controller: _potvrdaController,
+                      obscureText: true,
+                      decoration: const InputDecoration(
+                        labelText: "Potvrda lozinke",
+                        border: OutlineInputBorder(),
+                      ),
+                      validator: (v) {
+                        if (v == null || v.isEmpty) return "Unesite potvrdu lozinke";
+                        if (v != _novaController.text) return "Lozinke se ne podudaraju";
+                        return null;
+                      },
+                    ),
+                    if (_error != null) ...[
+                      const SizedBox(height: 10),
+                      Text(_error!, style: const TextStyle(color: Colors.red)),
+                    ],
+                  ],
+                ),
+              ),
+            ),
+            actions: [
+              TextButton(
+                onPressed: _isLoading
+                    ? null
+                    : () {
+                        Navigator.of(context).pop();
+                      },
+                child: const Text("Otkaži"),
+              ),
+              ElevatedButton.icon(
+                icon: _isLoading
+                    ? const SizedBox(
+                        width: 18,
+                        height: 18,
+                        child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
+                      )
+                    : const Icon(Icons.save),
+                label: const Text("Spremi"),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.blueAccent,
+                  foregroundColor: Colors.white,
+                ),
+                onPressed: _isLoading
+                    ? null
+                    : () async {
+                        if (_pwFormKey.currentState?.validate() ?? false) {
+                          setState(() {
+                            _isLoading = true;
+                            _error = null;
+                          });
+                          try {
+                            final provider = Provider.of<KorisnikProvider>(context, listen: false);
+                            await provider.update(widget.korisnik!.id, {
+                              "lozinka": _novaController.text,
+                              "lozinkaPotvrda": _potvrdaController.text,
+                            });
+                            if (mounted) {
+                              Navigator.of(context).pop();
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(content: Text("Lozinka uspješno promijenjena.")),
+                              );
+                            }
+                          } catch (e) {
+                            setState(() {
+                              _error = "Greška pri promjeni lozinke.";
+                              _isLoading = false;
+                            });
+                          }
+                        }
+                      },
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final isEdit = widget.korisnik != null;
+    final isAdmin = widget.korisnik?.uloga?.naziv == "Admin";
+    final isBirac = widget.korisnik?.uloga?.naziv == "Birac";
+    final isSistemAdmin = _loggedInKorisnik?.sistemAdministrator == true;
 
     return MasterScreen(
       isEdit ? "Uređivanje korisnika" : "Dodavanje korisnika",
@@ -171,8 +368,7 @@ class _KorisnikFormScreenState extends State<KorisnikFormScreen> {
                           labelText: "Ime *",
                           border: OutlineInputBorder(),
                         ),
-                        validator: (value) =>
-                            value == null || value.isEmpty ? "Ime je obavezno." : null,
+                        validator: _validateIme,
                       ),
                       const SizedBox(height: 14),
                       TextFormField(
@@ -181,8 +377,7 @@ class _KorisnikFormScreenState extends State<KorisnikFormScreen> {
                           labelText: "Prezime *",
                           border: OutlineInputBorder(),
                         ),
-                        validator: (value) =>
-                            value == null || value.isEmpty ? "Prezime je obavezno." : null,
+                        validator: _validatePrezime,
                       ),
                       const SizedBox(height: 14),
                       TextFormField(
@@ -191,8 +386,7 @@ class _KorisnikFormScreenState extends State<KorisnikFormScreen> {
                           labelText: "Email *",
                           border: OutlineInputBorder(),
                         ),
-                        validator: (value) =>
-                            value == null || value.isEmpty ? "Email je obavezan." : null,
+                        validator: _validateEmail,
                       ),
                       const SizedBox(height: 14),
                       TextFormField(
@@ -201,8 +395,12 @@ class _KorisnikFormScreenState extends State<KorisnikFormScreen> {
                           labelText: "Korisničko ime *",
                           border: OutlineInputBorder(),
                         ),
-                        validator: (value) =>
-                            value == null || value.isEmpty ? "Korisničko ime je obavezno." : null,
+                        onChanged: (_) {
+                          setState(() {
+                            _korisnickoImeError = null;
+                          });
+                        },
+                        validator: _validateKorisnickoIme,
                       ),
                       if (!isEdit) ...[
                         const SizedBox(height: 14),
@@ -213,8 +411,7 @@ class _KorisnikFormScreenState extends State<KorisnikFormScreen> {
                             border: OutlineInputBorder(),
                           ),
                           obscureText: true,
-                          validator: (value) =>
-                              value == null || value.isEmpty ? "Lozinka je obavezna." : null,
+                          validator: _validateLozinka,
                         ),
                         const SizedBox(height: 14),
                         TextFormField(
@@ -224,8 +421,7 @@ class _KorisnikFormScreenState extends State<KorisnikFormScreen> {
                             border: OutlineInputBorder(),
                           ),
                           obscureText: true,
-                          validator: (value) =>
-                              value != _lozinkaController.text ? "Lozinke se ne podudaraju." : null,
+                          validator: _validateLozinkaPotvrda,
                         ),
                       ],
                       const SizedBox(height: 14),
@@ -256,30 +452,30 @@ class _KorisnikFormScreenState extends State<KorisnikFormScreen> {
                       ),
                       const SizedBox(height: 14),
                       FutureBuilder<List<Opstina>>(
-  future: Provider.of<OpstinaProvider>(context, listen: false).get().then((value) => value.result),
-  builder: (context, snapshot) {
-    if (!snapshot.hasData) {
-      return const CircularProgressIndicator();
-    }
-    final opstine = snapshot.data!;
-    return DropdownSearch<Opstina>(
-      items: opstine,
-      itemAsString: (o) => o.naziv ?? "",
-      selectedItem: _selectedOpstina,
-      dropdownDecoratorProps: const DropDownDecoratorProps(
-        dropdownSearchDecoration: InputDecoration(
-          labelText: "Opština *",
-          border: OutlineInputBorder(),
-        ),
-      ),
-      onChanged: (opstina) => setState(() => _selectedOpstina = opstina),
-      validator: (opstina) => opstina == null ? "Opština je obavezna." : null,
-      popupProps: const PopupProps.menu(
-        showSearchBox: true,
-      ),
-    );
-  },
-),
+                        future: Provider.of<OpstinaProvider>(context, listen: false).get().then((value) => value.result),
+                        builder: (context, snapshot) {
+                          if (!snapshot.hasData) {
+                            return const CircularProgressIndicator();
+                          }
+                          final opstine = snapshot.data!;
+                          return DropdownSearch<Opstina>(
+                            items: opstine,
+                            itemAsString: (o) => o.naziv ?? "",
+                            selectedItem: _selectedOpstina,
+                            dropdownDecoratorProps: const DropDownDecoratorProps(
+                              dropdownSearchDecoration: InputDecoration(
+                                labelText: "Opština *",
+                                border: OutlineInputBorder(),
+                              ),
+                            ),
+                            onChanged: (opstina) => setState(() => _selectedOpstina = opstina),
+                            validator: (opstina) => opstina == null ? "Opština je obavezna." : null,
+                            popupProps: const PopupProps.menu(
+                              showSearchBox: true,
+                            ),
+                          );
+                        },
+                      ),
                       const SizedBox(height: 14),
                       Row(
                         children: [
@@ -299,6 +495,23 @@ class _KorisnikFormScreenState extends State<KorisnikFormScreen> {
                         ],
                       ),
                       const SizedBox(height: 24),
+                      if (isEdit && (isBirac || (isAdmin && isSistemAdmin))) ...[
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.end,
+                          children: [
+                            ElevatedButton.icon(
+                              icon: const Icon(Icons.lock_reset),
+                              label: const Text("Promijeni lozinku"),
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: Colors.blueAccent,
+                                foregroundColor: Colors.white,
+                              ),
+                              onPressed: _showChangePasswordDialog,
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 18),
+                      ],
                       Row(
                         mainAxisAlignment: MainAxisAlignment.end,
                         children: [

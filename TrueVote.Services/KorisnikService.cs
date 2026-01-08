@@ -398,5 +398,21 @@ namespace TrueVote.Services
             using var algorithm = SHA256.Create();
             return Convert.ToBase64String(algorithm.ComputeHash(dst));
         }
+
+        public async Task<bool> ProvjeriStaruLozinkuAsync(int korisnikId, string staraLozinka)
+        {
+            if (string.IsNullOrWhiteSpace(staraLozinka))
+                return false;
+
+            var korisnik = await Context.Korisniks
+                .FirstOrDefaultAsync(k => k.Id == korisnikId && !k.Obrisan);
+
+            if (korisnik == null)
+                return false;
+
+            var hash = GenerateHash(korisnik.PasswordSalt, staraLozinka);
+
+            return korisnik.PasswordHash == hash;
+        }
     }
 }
