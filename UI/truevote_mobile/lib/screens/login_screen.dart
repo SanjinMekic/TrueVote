@@ -208,17 +208,6 @@ class _LoginScreenState extends State<LoginScreen> {
                                 ),
                         ),
                       ),
-                      const SizedBox(height: 12),
-                      TextButton(
-                        onPressed: () {},
-                        child: Text(
-                          "Zaboravili ste lozinku?",
-                          style: TextStyle(
-                            color: Colors.blueAccent.withOpacity(0.8),
-                            fontWeight: FontWeight.w500,
-                          ),
-                        ),
-                      ),
                     ],
                   ),
                 ),
