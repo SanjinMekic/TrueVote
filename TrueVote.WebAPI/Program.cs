@@ -6,6 +6,7 @@ using TrueVote.Services;
 using TrueVote.Services.Database;
 using TrueVote.WebAPI.Filters;
 using Microsoft.AspNetCore.Authentication;
+using TrueVote.Services.UserAdminSeed;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -28,6 +29,7 @@ builder.Services.AddTransient<IOpstinaService, OpstinaService>();
 builder.Services.AddTransient<IGlasService, GlasService>();
 builder.Services.AddTransient<IIzborService, IzborService>();
 builder.Services.AddTransient<IReportService, ReportService>();
+builder.Services.AddTransient<IUserAdminSeed, UserAdminSeed>();
 builder.Services.AddHttpContextAccessor();
 
 // Registracija DbContext
@@ -90,5 +92,22 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
+
+using (var scope = app.Services.CreateScope())
+{
+    var services = scope.ServiceProvider;
+    try
+    {
+        var context = services.GetRequiredService<BirackiSistemContext>();
+        var adminUserSeeder = services.GetRequiredService<IUserAdminSeed>();
+        await adminUserSeeder.Ucitaj();
+    }
+    catch (Exception ex)
+    {
+        var logger = services.GetRequiredService<ILogger<Program>>();
+        logger.LogError(ex, "Greška prilikom pokretanja seedera.");
+        throw;
+    }
+}
 
 app.Run();
