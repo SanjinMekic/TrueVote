@@ -91,7 +91,6 @@ namespace TrueVote.Services
                 null
             );
 
-            // Base64 → byte[]
             if (!string.IsNullOrEmpty(request.SlikaBase64))
             {
                 try
@@ -120,7 +119,6 @@ namespace TrueVote.Services
                 entity.Id
             );
 
-            // Ako je poslata nova slika
             if (!string.IsNullOrEmpty(request.SlikaBase64))
             {
                 try
@@ -142,7 +140,6 @@ namespace TrueVote.Services
             int izborId,
             int? kandidatId)
         {
-            // 1. Izbor mora postojati
             var izbor = Context.Izbors
                 .Include(x => x.TipIzbora)
                 .FirstOrDefault(x => x.Id == izborId);
@@ -150,18 +147,15 @@ namespace TrueVote.Services
             if (izbor == null)
                 throw new UserException("Izbor ne postoji.");
 
-            // 2. Izbor mora biti u statusu Planned
             if (izbor.Status == "Završen")
                 throw new UserException("Kandidate možete dodavati samo dok je izbor u statusu 'Planiran' ili 'U toku'.");
 
-            // 3. Stranka mora postojati (ako je navedena)
             if (strankaId.HasValue)
             {
                 if (!Context.Strankas.Any(x => x.Id == strankaId.Value))
                     throw new UserException("Odabrana stranka ne postoji.");
             }
 
-            // 4. Unikatnost kandidata u okviru jednog izbora
             bool duplicate = Context.Kandidats.Any(x =>
                 x.IzborId == izborId &&
                 x.Ime == ime &&
@@ -180,7 +174,6 @@ namespace TrueVote.Services
             if (kandidat == null)
                 return false;
 
-            //Da li kandidat ima glasove
             bool imaGlasova = Context.Glas.Any(g => g.KandidatId == id && g.Obrisan == false);
 
             if (imaGlasova)

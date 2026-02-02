@@ -110,7 +110,6 @@ namespace TrueVote.Services
             if (!validStatuses.Contains(status))
                 throw new UserException("Nevalidan status izbora.");
 
-            // 5. Ne smije postojati drugi izbor istog tipa koji se vremenski preklapa
             var conflicting = Context.Izbors
                 .Where(x => x.TipIzboraId == tipIzboraId &&
                     (izborId == null || x.Id != izborId) &&
@@ -126,14 +125,12 @@ namespace TrueVote.Services
 
         public bool CanDelete(int id)
         {
-            //Postoje li kandidati za ovaj izbor?
             bool imaKandidata = Context.Kandidats
                 .Any(k => k.IzborId == id && k.Obrisan == false);
 
             if (imaKandidata)
                 return false;
 
-            //Postoje li glasovi za ovaj izbor?
             bool imaGlasova = Context.Glas
                 .Include(g => g.Kandidat)
                 .Any(g => g.Kandidat.IzborId == id && g.Obrisan == false);
