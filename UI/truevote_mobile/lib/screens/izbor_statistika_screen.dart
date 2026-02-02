@@ -251,7 +251,7 @@ class _IzborStatistikaScreenState extends State<IzborStatistikaScreen> {
                       }),
                       const SizedBox(height: 18),
                       const Text(
-                        "Grafički prikaz (Pie chart)",
+                        "Grafički prikaz",
                         style: TextStyle(
                           fontSize: 20,
                           fontWeight: FontWeight.bold,

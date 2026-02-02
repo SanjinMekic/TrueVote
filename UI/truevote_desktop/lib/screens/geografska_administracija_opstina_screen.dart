@@ -269,7 +269,7 @@ class _GeografskaAdministracijaOpstinaScreenState extends State<GeografskaAdmini
         );
       },
     );
-    setState(() {}); // Refresh FutureBuilder
+    setState(() {});
   }
 
   Future<void> _tryDeleteOpstina(Opstina opstina) async {
@@ -327,7 +327,7 @@ class _GeografskaAdministracijaOpstinaScreenState extends State<GeografskaAdmini
     );
     if (confirm == true) {
       await provider.delete(opstina.id);
-      setState(() {}); // Refresh FutureBuilder
+      setState(() {});
     }
   }
 

@@ -35,7 +35,6 @@ class _AdministracijaTipovaIzboraScreenState extends State<AdministracijaTipovaI
     bool _isLoading = false;
     String? _error;
 
-    // Dohvati opštine prije prikaza popupa
     List<Opstina> _opstine = await _fetchOpstine();
 
     await showDialog(
@@ -68,7 +67,7 @@ class _AdministracijaTipovaIzboraScreenState extends State<AdministracijaTipovaI
                 ],
               ),
               content: SizedBox(
-                width: 600, // Širi popup za dropdown
+                width: 600,
                 child: SingleChildScrollView(
                   child: Form(
                     key: _formKey,
@@ -250,7 +249,7 @@ class _AdministracijaTipovaIzboraScreenState extends State<AdministracijaTipovaI
         );
       },
     );
-    setState(() {}); // Refresh FutureBuilder
+    setState(() {});
   }
 
   Future<void> _tryDeleteTipIzbora(TipIzbora tip) async {
@@ -308,7 +307,7 @@ class _AdministracijaTipovaIzboraScreenState extends State<AdministracijaTipovaI
     );
     if (confirm == true) {
       await provider.delete(tip.id);
-      setState(() {}); // Refresh FutureBuilder
+      setState(() {});
     }
   }
 

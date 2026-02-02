@@ -25,7 +25,7 @@ class _StrankaFormScreenState extends State<StrankaFormScreen> {
   final _sjedisteController = TextEditingController();
   final _webUrlController = TextEditingController();
 
-  String? _logoPath; // Local file path or base64 string
+  String? _logoPath;
 
   @override
   void initState() {
@@ -68,8 +68,7 @@ class _StrankaFormScreenState extends State<StrankaFormScreen> {
 
   Future<String?> _getLogoBase64() async {
     if (_logoPath == null || _logoPath!.isEmpty) return null;
-    if (_logoPath!.startsWith('http')) return null; // Ne šalji URL, samo base64
-    // Ako je već base64, vrati direktno
+    if (_logoPath!.startsWith('http')) return null;
     try {
       base64Decode(_logoPath!);
       return _logoPath;
@@ -92,7 +91,6 @@ class _StrankaFormScreenState extends State<StrankaFormScreen> {
         child: const Icon(Icons.how_to_vote, color: Colors.blueAccent, size: 40),
       );
     }
-    // Pokušaj base64 decode
     try {
       final bytes = base64Decode(_logoPath!);
       return ClipRRect(
@@ -100,14 +98,12 @@ class _StrankaFormScreenState extends State<StrankaFormScreen> {
         child: Image.memory(bytes, width: 80, height: 80, fit: BoxFit.cover),
       );
     } catch (e) {
-      // Ako nije base64, pokušaj kao URL
       if (_logoPath!.startsWith('http')) {
         return ClipRRect(
           borderRadius: BorderRadius.circular(12),
           child: Image.network(_logoPath!, width: 80, height: 80, fit: BoxFit.cover),
         );
       }
-      // Ako je lokalni file
       return ClipRRect(
         borderRadius: BorderRadius.circular(12),
         child: Image.file(File(_logoPath!), width: 80, height: 80, fit: BoxFit.cover),

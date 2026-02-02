@@ -404,7 +404,7 @@ class _AdministracijaIzboraScreenState extends State<AdministracijaIzboraScreen>
         );
       },
     );
-    setState(() {}); // Refresh FutureBuilder
+    setState(() {});
   }
 
   Future<void> _showFilterDialog() async {
@@ -587,7 +587,7 @@ class _AdministracijaIzboraScreenState extends State<AdministracijaIzboraScreen>
     );
     if (confirm == true) {
       await provider.delete(izbor.id);
-      setState(() {}); // Refresh FutureBuilder
+      setState(() {});
     }
   }
 

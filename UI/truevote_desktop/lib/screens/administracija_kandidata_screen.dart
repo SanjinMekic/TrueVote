@@ -123,7 +123,7 @@ class _AdministracijaKandidataScreenState extends State<AdministracijaKandidataS
     );
     if (confirm == true) {
       await provider.delete(kandidat.id);
-      setState(() {}); // Refresh FutureBuilder
+      setState(() {});
     }
   }
 

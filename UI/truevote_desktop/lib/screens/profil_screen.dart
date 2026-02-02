@@ -236,7 +236,6 @@ class _ProfilScreenState extends State<ProfilScreen> {
                             _error = null;
                           });
                           final provider = Provider.of<KorisnikProvider>(context, listen: false);
-                          // Provjera stare lozinke
                           bool ispravnaStara = false;
                           try {
                             ispravnaStara = await provider.provjeriStaruLozinku(

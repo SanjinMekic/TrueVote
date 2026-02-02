@@ -260,7 +260,7 @@ class _GeografskaAdministracijaGradScreenState extends State<GeografskaAdministr
         );
       },
     );
-    setState(() {}); // Refresh FutureBuilder
+    setState(() {});
   }
 
   Future<void> _tryDeleteGrad(Grad grad) async {
@@ -318,7 +318,7 @@ class _GeografskaAdministracijaGradScreenState extends State<GeografskaAdministr
     );
     if (confirm == true) {
       await provider.delete(grad.id);
-      setState(() {}); // Refresh FutureBuilder
+      setState(() {});
     }
   }
 

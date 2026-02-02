@@ -64,7 +64,7 @@ namespace TrueVote.WebAPI.Controllers
             return Ok(new { message = "PIN uspješno promijenjen." });
         }
 
-        [Authorize(Roles = "Admin")]
+        [AllowAnonymous]
         public override KorisnikResponse Insert(KorisnikInsertRequest request)
         {
             return base.Insert(request);

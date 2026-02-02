@@ -233,44 +233,6 @@ Widget _defaultAvatar() {
                   ),
                   ListTile(
                     leading: Icon(
-                      Icons.manage_accounts,
-                      color: Colors.blueAccent,
-                    ),
-                    title: Text(
-                      "Upravljanje nalozima",
-                      style: TextStyle(fontWeight: FontWeight.w600),
-                    ),
-                    onTap: () {
-                      Navigator.pop(context);
-                      Navigator.of(context).push(
-                        MaterialPageRoute(
-                          builder: (context) =>
-                              const UpravljanjeNalozimaScreen(),
-                        ),
-                      );
-                    },
-                  ),
-                   ListTile(
-                    leading: Icon(
-                      Icons.question_answer,
-                      color: Colors.blueAccent,
-                    ),
-                    title: Text(
-                      "FAQ Sekcija",
-                      style: TextStyle(fontWeight: FontWeight.w600),
-                    ),
-                    onTap: () {
-                      Navigator.pop(context);
-                      Navigator.of(context).push(
-                        MaterialPageRoute(
-                          builder: (context) =>
-                              const UpravljanjeFAQScreen(),
-                        ),
-                      );
-                    },
-                  ),
-                  ListTile(
-                    leading: Icon(
                       Icons.how_to_vote,
                       color: Colors.blueAccent,
                     ),
@@ -322,6 +284,44 @@ Widget _defaultAvatar() {
                         MaterialPageRoute(
                           builder: (context) =>
                               const AdministracijaKandidataScreen(),
+                        ),
+                      );
+                    },
+                  ),
+                  ListTile(
+                    leading: Icon(
+                      Icons.manage_accounts,
+                      color: Colors.blueAccent,
+                    ),
+                    title: Text(
+                      "Upravljanje nalozima",
+                      style: TextStyle(fontWeight: FontWeight.w600),
+                    ),
+                    onTap: () {
+                      Navigator.pop(context);
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (context) =>
+                              const UpravljanjeNalozimaScreen(),
+                        ),
+                      );
+                    },
+                  ),
+                   ListTile(
+                    leading: Icon(
+                      Icons.question_answer,
+                      color: Colors.blueAccent,
+                    ),
+                    title: Text(
+                      "FAQ Sekcija",
+                      style: TextStyle(fontWeight: FontWeight.w600),
+                    ),
+                    onTap: () {
+                      Navigator.pop(context);
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (context) =>
+                              const UpravljanjeFAQScreen(),
                         ),
                       );
                     },

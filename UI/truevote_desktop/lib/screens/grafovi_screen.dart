@@ -111,7 +111,6 @@ class _GrafoviScreenState extends State<GrafoviScreen> {
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
                         const SizedBox(height: 16),
-                        // 1. Pie chart: Struktura korisnika (Admini vs Birači vs Ostali)
                         _SectionTitle("Struktura korisnika"),
                         SizedBox(
                           height: 220,
@@ -146,7 +145,6 @@ class _GrafoviScreenState extends State<GrafoviScreen> {
                           ),
                         ),
                         const SizedBox(height: 32),
-                        // 2. Bar chart: Poređenje admina i korisnika
                         _SectionTitle("Poređenje broja admina i korisnika"),
                         SizedBox(
                           height: 180,
@@ -201,7 +199,6 @@ class _GrafoviScreenState extends State<GrafoviScreen> {
                           ),
                         ),
                         const SizedBox(height: 32),
-                        // 3. Bar chart: Gradovi vs Opštine
                         _SectionTitle("Poređenje broja gradova i opština"),
                         SizedBox(
                           height: 180,
@@ -256,7 +253,6 @@ class _GrafoviScreenState extends State<GrafoviScreen> {
                           ),
                         ),
                         const SizedBox(height: 32),
-                        // 4. Bar chart: Stranke vs Kandidati
                         _SectionTitle("Poređenje broja stranaka i kandidata"),
                         SizedBox(
                           height: 180,
@@ -311,62 +307,26 @@ class _GrafoviScreenState extends State<GrafoviScreen> {
                           ),
                         ),
                         const SizedBox(height: 32),
-                        // 5. Bar chart: Izbori vs FAQ pitanja
-                        _SectionTitle("Poređenje broja izbora i FAQ pitanja"),
+                        _SectionTitle("FAQ pitanja"),
                         SizedBox(
-                          height: 180,
-                          child: BarChart(
-                            BarChartData(
-                              alignment: BarChartAlignment.spaceAround,
-                              barTouchData: BarTouchData(enabled: true),
-                              titlesData: FlTitlesData(
-                                leftTitles: AxisTitles(
-                                  sideTitles: SideTitles(showTitles: true),
+                          height: 220,
+                          child: PieChart(
+                            PieChartData(
+                              sections: [
+                                PieChartSectionData(
+                                  value: (report?.brojFaqPitanja ?? 0).toDouble(),
+                                  color: Colors.deepPurple,
+                                  title: 'FAQ pitanja\n${report?.brojFaqPitanja ?? 0}',
+                                  radius: 80,
+                                  titleStyle: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16),
                                 ),
-                                bottomTitles: AxisTitles(
-                                  sideTitles: SideTitles(
-                                    showTitles: true,
-                                    getTitlesWidget: (value, meta) {
-                                      switch (value.toInt()) {
-                                        case 0:
-                                          return const Text('Izbori');
-                                        case 1:
-                                          return const Text('FAQ');
-                                        default:
-                                          return const Text('');
-                                      }
-                                    },
-                                  ),
-                                ),
-                                rightTitles: AxisTitles(
-                                  sideTitles: SideTitles(showTitles: false),
-                                ),
-                                topTitles: AxisTitles(
-                                  sideTitles: SideTitles(showTitles: false),
-                                ),
-                              ),
-                              borderData: FlBorderData(show: false),
-                              barGroups: [
-                                BarChartGroupData(x: 0, barRods: [
-                                  BarChartRodData(
-                                    toY: (report?.brojIzbora ?? 0).toDouble(),
-                                    color: Colors.teal,
-                                    width: 28,
-                                  ),
-                                ]),
-                                BarChartGroupData(x: 1, barRods: [
-                                  BarChartRodData(
-                                    toY: (report?.brojFaqPitanja ?? 0).toDouble(),
-                                    color: Colors.brown,
-                                    width: 28,
-                                  ),
-                                ]),
                               ],
+                              sectionsSpace: 0,
+                              centerSpaceRadius: 40,
                             ),
                           ),
                         ),
                         const SizedBox(height: 32),
-                        // 6. Bar chart: Pregled svih entiteta
                         _SectionTitle("Pregled svih entiteta"),
                         SizedBox(
                           height: 300,
@@ -475,7 +435,6 @@ class _GrafoviScreenState extends State<GrafoviScreen> {
                           ),
                         ),
                         const SizedBox(height: 32),
-                        // Tabela sa svim vrijednostima
                         _SectionTitle("Detaljna statistika"),
                         Card(
                           margin: const EdgeInsets.symmetric(vertical: 16, horizontal: 8),

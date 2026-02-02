@@ -150,7 +150,7 @@ class _UpravljanjeNalozimaScreenState extends State<UpravljanjeNalozimaScreen> {
     );
     if (confirm == true) {
       await provider.delete(korisnik.id);
-      setState(() {}); // Refresh FutureBuilder
+      setState(() {});
     }
   }
 
@@ -203,7 +203,6 @@ class _UpravljanjeNalozimaScreenState extends State<UpravljanjeNalozimaScreen> {
       avatar = _defaultAvatar(korisnik);
     }
 
-    // Prava za edit/brisanje
     final canEditAdmin = isAdmin && isSistemAdmin && !isSelf;
     final canEditBirac = !isAdmin && !isSelf;
 

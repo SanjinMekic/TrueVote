@@ -199,7 +199,7 @@ class _GeografskaAdministracijaScreenState extends State<GeografskaAdministracij
         );
       },
     );
-    setState(() {}); // Refresh FutureBuilder
+    setState(() {});
   }
 
   Future<void> _tryDeleteDrzava(Drzava drzava) async {
@@ -257,7 +257,7 @@ class _GeografskaAdministracijaScreenState extends State<GeografskaAdministracij
     );
     if (confirm == true) {
       await provider.delete(drzava.id);
-      setState(() {}); // Refresh FutureBuilder
+      setState(() {});
     }
   }
 
