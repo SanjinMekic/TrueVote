@@ -72,7 +72,6 @@ class _ProfilScreenState extends State<ProfilScreen> {
     );
   }
 
-  // --- POSUĐENA LOGIKA ZA PROMJENU SLIKE ---
   Future<void> _pickImageAndUpload(int korisnikId) async {
     setState(() {
       _slikaError = null;
@@ -115,7 +114,6 @@ class _ProfilScreenState extends State<ProfilScreen> {
       }
     }
   }
-  // --- KRAJ POSUĐENE LOGIKE ---
 
   @override
   Widget build(BuildContext context) {

@@ -101,7 +101,6 @@ class _HistorijaScreenState extends State<HistorijaScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Kandidat info
             Row(
               children: [
                 _buildKandidatSlika(kandidat),
@@ -129,13 +128,11 @@ class _HistorijaScreenState extends State<HistorijaScreen> {
                     ],
                   ),
                 ),
-                // Dugme za statistiku izbora
                 if (izbor != null)
                   IconButton(
                     icon: const Icon(Icons.bar_chart, color: Colors.blueAccent),
                     tooltip: "Statistika izbora",
                     onPressed: () {
-                      // Pretvori mapu u Izbor objekat
                       final izborObj = Izbor.fromJson(Map<String, dynamic>.from(izbor));
                       Navigator.of(context).push(
                         MaterialPageRoute(
@@ -149,7 +146,6 @@ class _HistorijaScreenState extends State<HistorijaScreen> {
               ],
             ),
             const SizedBox(height: 10),
-            // Izbor info
             const Divider(),
             const SizedBox(height: 6),
             Row(
@@ -191,7 +187,6 @@ class _HistorijaScreenState extends State<HistorijaScreen> {
               ],
             ),
             const SizedBox(height: 6),
-            // Kandidat detalji
             const Divider(),
             const SizedBox(height: 6),
             Row(

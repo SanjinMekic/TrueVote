@@ -43,12 +43,10 @@ class _LoginScreenState extends State<LoginScreen> {
         AuthProvider.password = password;
         AuthProvider.setUser(response);
 
-        // Dozvoljena rola je 'Birac'
         if (response.uloga?.naziv == 'Birac') {
           final korisnikProvider = Provider.of<KorisnikProvider>(context, listen: false);
           final korisnik = await korisnikProvider.getById(response.id);
 
-          // NOVA LOGIKA: Pin može biti "ima" ili "nema"
           if (korisnik != null && korisnik.pin == "nema") {
             await showDialog(
               context: context,

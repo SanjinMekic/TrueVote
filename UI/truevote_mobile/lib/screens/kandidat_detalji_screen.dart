@@ -98,7 +98,6 @@ class KandidatDetaljiScreen extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            // Kandidat slika, ime i prezime
             _buildKandidatSlika(kandidat['slika']),
             const SizedBox(height: 18),
             Text(
@@ -111,7 +110,6 @@ class KandidatDetaljiScreen extends StatelessWidget {
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 24),
-            // Stranka card
             if (stranka != null)
               Card(
                 elevation: 5,

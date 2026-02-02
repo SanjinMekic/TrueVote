@@ -109,7 +109,7 @@ class _FAQScreenState extends State<FAQScreen> {
               ),
               onSubmitted: _onSearchChanged,
               onChanged: (value) {
-                setState(() {}); // Za prikaz X dugmeta
+                setState(() {});
               },
               textInputAction: TextInputAction.search,
             ),

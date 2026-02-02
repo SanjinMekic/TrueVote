@@ -124,7 +124,7 @@ class _IzborDetaljiScreenState extends State<IzborDetaljiScreen> {
       MaterialPageRoute(
         builder: (context) => BiometrijaScreen(
           onSuccess: () {
-            Navigator.of(context).pop(); // zatvori biometriju
+            Navigator.of(context).pop();
             Navigator.of(context).push(
               MaterialPageRoute(
                 builder: (context) => GlasanjeScreen(
