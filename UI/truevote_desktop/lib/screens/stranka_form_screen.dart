@@ -119,25 +119,23 @@ class _StrankaFormScreenState extends State<StrankaFormScreen> {
     final logoBase64 = await _getLogoBase64();
 
     DateTime? parsedDate;
-if (_datumController.text.isNotEmpty) {
-  try {
-    parsedDate = DateFormat('dd.MM.yyyy').parse(_datumController.text);
-  } catch (_) {
-    parsedDate = null;
-  }
-}
+    if (_datumController.text.isNotEmpty) {
+      try {
+        parsedDate = DateFormat('dd.MM.yyyy').parse(_datumController.text);
+      } catch (_) {
+        parsedDate = null;
+      }
+    }
 
-final Map<String, dynamic> request = {
-  "naziv": _nazivController.text,
-  "opis": _opisController.text.isNotEmpty ? _opisController.text : null,
-  "datumOsnivanja": parsedDate?.toIso8601String(),
-  "brojClanova": _brojClanovaController.text.isNotEmpty
-      ? int.tryParse(_brojClanovaController.text)
-      : null,
-  "sjediste": _sjedisteController.text.isNotEmpty ? _sjedisteController.text : null,
-  "webUrl": _webUrlController.text.isNotEmpty ? _webUrlController.text : null,
-  "logoBase64": logoBase64,
-};
+    final Map<String, dynamic> request = {
+      "naziv": _nazivController.text,
+      "opis": _opisController.text,
+      "datumOsnivanja": parsedDate?.toIso8601String(),
+      "brojClanova": _brojClanovaController.text.isNotEmpty ? int.parse(_brojClanovaController.text) : null,
+      "sjediste": _sjedisteController.text,
+      "webUrl": _webUrlController.text.isNotEmpty ? _webUrlController.text : null,
+      "logoBase64": logoBase64,
+    };
 
     if (widget.stranka == null) {
       await provider.insert(request);
@@ -194,10 +192,12 @@ final Map<String, dynamic> request = {
                       TextFormField(
                         controller: _opisController,
                         decoration: const InputDecoration(
-                          labelText: "Opis",
+                          labelText: "Opis *",
                           border: OutlineInputBorder(),
                         ),
                         maxLines: 2,
+                        validator: (value) =>
+                            value == null || value.isEmpty ? "Opis je obavezan." : null,
                       ),
                       const SizedBox(height: 14),
                       TextFormField(
@@ -220,14 +220,27 @@ final Map<String, dynamic> request = {
                           border: OutlineInputBorder(),
                         ),
                         keyboardType: TextInputType.number,
+                        validator: (value) {
+                          if (value != null && value.isNotEmpty) {
+                            if (int.tryParse(value) == null) {
+                              return "Broj članova mora biti valjan broj.";
+                            }
+                            if (int.parse(value) <= 0) {
+                              return "Broj članova mora biti veći od 0.";
+                            }
+                          }
+                          return null;
+                        },
                       ),
                       const SizedBox(height: 14),
                       TextFormField(
                         controller: _sjedisteController,
                         decoration: const InputDecoration(
-                          labelText: "Sjedište",
+                          labelText: "Sjedište *",
                           border: OutlineInputBorder(),
                         ),
+                        validator: (value) =>
+                            value == null || value.isEmpty ? "Sjedište je obavezno." : null,
                       ),
                       const SizedBox(height: 14),
                       TextFormField(
@@ -236,6 +249,15 @@ final Map<String, dynamic> request = {
                           labelText: "Web URL",
                           border: OutlineInputBorder(),
                         ),
+                        validator: (value) {
+                          if (value != null && value.isNotEmpty) {
+                            final uri = Uri.tryParse(value);
+                            if (uri == null || !uri.hasScheme || (!uri.hasAbsolutePath && uri.host.isEmpty)) {
+                              return "Unesite valjan URL.";
+                            }
+                          }
+                          return null;
+                        },
                       ),
                       const SizedBox(height: 14),
                       Row(
@@ -243,14 +265,27 @@ final Map<String, dynamic> request = {
                           _logoPreview(),
                           const SizedBox(width: 16),
                           Expanded(
-                            child: ElevatedButton.icon(
-                              icon: const Icon(Icons.upload_file),
-                              label: const Text("Odaberi logo"),
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: Colors.blueAccent,
-                                foregroundColor: Colors.white
-                              ),
-                              onPressed: _pickLogo,
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                ElevatedButton.icon(
+                                  icon: const Icon(Icons.upload_file),
+                                  label: const Text("Odaberi logo"),
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: Colors.blueAccent,
+                                    foregroundColor: Colors.white
+                                  ),
+                                  onPressed: _pickLogo,
+                                ),
+                                const SizedBox(height: 4),
+                                const Text(
+                                  "Logo je opcionalan",
+                                  style: TextStyle(
+                                    fontSize: 12,
+                                    color: Colors.grey,
+                                  ),
+                                ),
+                              ],
                             ),
                           ),
                         ],

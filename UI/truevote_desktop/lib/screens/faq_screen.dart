@@ -62,8 +62,7 @@ class _UpravljanjeFAQScreenState extends State<UpravljanjeFAQScreen> {
   }
 
   Future<void> _kreirajKategoriju() async {
-    String? naziv;
-    String? opis;
+    final _formKey = GlobalKey<FormState>();
     final nazivController = TextEditingController();
     final opisController = TextEditingController();
 
@@ -87,21 +86,41 @@ class _UpravljanjeFAQScreenState extends State<UpravljanjeFAQScreen> {
         ),
         content: SizedBox(
           width: 400,
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              TextField(
-                controller: nazivController,
-                decoration: const InputDecoration(labelText: "Naziv kategorije"),
-                onChanged: (v) => naziv = v,
-              ),
-              const SizedBox(height: 12),
-              TextField(
-                controller: opisController,
-                decoration: const InputDecoration(labelText: "Opis kategorije"),
-                onChanged: (v) => opis = v,
-              ),
-            ],
+          child: Form(
+            key: _formKey,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                TextFormField(
+                  controller: nazivController,
+                  decoration: const InputDecoration(
+                    labelText: "Naziv kategorije *",
+                    border: OutlineInputBorder(),
+                  ),
+                  validator: (value) {
+                    if (value == null || value.trim().isEmpty) {
+                      return "Naziv kategorije je obavezan.";
+                    }
+                    return null;
+                  },
+                ),
+                const SizedBox(height: 12),
+                TextFormField(
+                  controller: opisController,
+                  decoration: const InputDecoration(
+                    labelText: "Opis kategorije *",
+                    border: OutlineInputBorder(),
+                  ),
+                  maxLines: 2,
+                  validator: (value) {
+                    if (value == null || value.trim().isEmpty) {
+                      return "Opis kategorije je obavezan.";
+                    }
+                    return null;
+                  },
+                ),
+              ],
+            ),
           ),
         ),
         actions: [
@@ -110,25 +129,31 @@ class _UpravljanjeFAQScreenState extends State<UpravljanjeFAQScreen> {
             child: const Text("Otkaži"),
           ),
           ElevatedButton(
-            onPressed: () => Navigator.of(context).pop(true),
+            onPressed: () {
+              if (_formKey.currentState?.validate() ?? false) {
+                Navigator.of(context).pop(true);
+              }
+            },
             style: ElevatedButton.styleFrom(backgroundColor: Colors.blueAccent, foregroundColor: Colors.white),
             child: const Text("Kreiraj"),
           ),
         ],
       ),
     );
-    if (result == true && naziv?.trim().isNotEmpty == true) {
+    if (result == true) {
       final provider = Provider.of<KategorijaProvider>(context, listen: false);
-      await provider.insert({'naziv': naziv, 'opis': opis});
+      await provider.insert({
+        'naziv': nazivController.text.trim(),
+        'opis': opisController.text.trim(),
+      });
       _fetchData();
     }
   }
 
   Future<void> _urediKategoriju(Kategorija kategorija) async {
-    String? naziv = kategorija.naziv;
-    String? opis = kategorija.opis;
-    final nazivController = TextEditingController(text: naziv);
-    final opisController = TextEditingController(text: opis);
+    final _formKey = GlobalKey<FormState>();
+    final nazivController = TextEditingController(text: kategorija.naziv);
+    final opisController = TextEditingController(text: kategorija.opis);
 
     final result = await showDialog<bool>(
       context: context,
@@ -150,21 +175,41 @@ class _UpravljanjeFAQScreenState extends State<UpravljanjeFAQScreen> {
         ),
         content: SizedBox(
           width: 400,
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              TextField(
-                controller: nazivController,
-                decoration: const InputDecoration(labelText: "Naziv kategorije"),
-                onChanged: (v) => naziv = v,
-              ),
-              const SizedBox(height: 12),
-              TextField(
-                controller: opisController,
-                decoration: const InputDecoration(labelText: "Opis kategorije"),
-                onChanged: (v) => opis = v,
-              ),
-            ],
+          child: Form(
+            key: _formKey,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                TextFormField(
+                  controller: nazivController,
+                  decoration: const InputDecoration(
+                    labelText: "Naziv kategorije *",
+                    border: OutlineInputBorder(),
+                  ),
+                  validator: (value) {
+                    if (value == null || value.trim().isEmpty) {
+                      return "Naziv kategorije je obavezan.";
+                    }
+                    return null;
+                  },
+                ),
+                const SizedBox(height: 12),
+                TextFormField(
+                  controller: opisController,
+                  decoration: const InputDecoration(
+                    labelText: "Opis kategorije *",
+                    border: OutlineInputBorder(),
+                  ),
+                  maxLines: 2,
+                  validator: (value) {
+                    if (value == null || value.trim().isEmpty) {
+                      return "Opis kategorije je obavezan.";
+                    }
+                    return null;
+                  },
+                ),
+              ],
+            ),
           ),
         ),
         actions: [
@@ -173,16 +218,23 @@ class _UpravljanjeFAQScreenState extends State<UpravljanjeFAQScreen> {
             child: const Text("Otkaži"),
           ),
           ElevatedButton(
-            onPressed: () => Navigator.of(context).pop(true),
+            onPressed: () {
+              if (_formKey.currentState?.validate() ?? false) {
+                Navigator.of(context).pop(true);
+              }
+            },
             style: ElevatedButton.styleFrom(backgroundColor: Colors.blueAccent, foregroundColor: Colors.white),
             child: const Text("Sačuvaj"),
           ),
         ],
       ),
     );
-    if (result == true && naziv?.trim().isNotEmpty == true) {
+    if (result == true) {
       final provider = Provider.of<KategorijaProvider>(context, listen: false);
-      await provider.update(kategorija.id, {'naziv': naziv, 'opis': opis});
+      await provider.update(kategorija.id, {
+        'naziv': nazivController.text.trim(),
+        'opis': opisController.text.trim(),
+      });
       _fetchData();
     }
   }
@@ -213,83 +265,119 @@ class _UpravljanjeFAQScreenState extends State<UpravljanjeFAQScreen> {
   }
 
   Future<void> _urediPitanje(Pitanje pitanje) async {
+    final _formKey = GlobalKey<FormState>();
     int? kategorijaId = pitanje.kategorijaId;
-    String? pitanjeText = pitanje.pitanjeText;
-    String? odgovorText = pitanje.odgovorText;
-    final pitanjeController = TextEditingController(text: pitanjeText);
-    final odgovorController = TextEditingController(text: odgovorText);
+    final pitanjeController = TextEditingController(text: pitanje.pitanjeText);
+    final odgovorController = TextEditingController(text: pitanje.odgovorText);
 
     final result = await showDialog<bool>(
       context: context,
-      builder: (context) => AlertDialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
-        title: Row(
-          children: [
-            Container(
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                gradient: LinearGradient(colors: [Colors.blueAccent, Colors.lightBlueAccent]),
-              ),
-              padding: const EdgeInsets.all(8),
-              child: const Icon(Icons.question_answer, color: Colors.white, size: 28),
-            ),
-            const SizedBox(width: 16),
-            const Text("Uredi pitanje i odgovor", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20)),
-          ],
-        ),
-        content: SizedBox(
-          width: 400,
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
+      builder: (context) => StatefulBuilder(
+        builder: (context, setState) => AlertDialog(
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+          title: Row(
             children: [
-              DropdownButtonFormField<int>(
-                value: kategorijaId,
-                items: _kategorije
-                    .map((k) => DropdownMenuItem(
-                          value: k.id,
-                          child: Text(k.naziv ?? ""),
-                        ))
-                    .toList(),
-                onChanged: (v) => kategorijaId = v,
-                decoration: const InputDecoration(labelText: "Kategorija"),
+              Container(
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  gradient: LinearGradient(colors: [Colors.blueAccent, Colors.lightBlueAccent]),
+                ),
+                padding: const EdgeInsets.all(8),
+                child: const Icon(Icons.question_answer, color: Colors.white, size: 28),
               ),
-              const SizedBox(height: 12),
-              TextField(
-                controller: pitanjeController,
-                decoration: const InputDecoration(labelText: "Pitanje"),
-                onChanged: (v) => pitanjeText = v,
-              ),
-              const SizedBox(height: 12),
-              TextField(
-                controller: odgovorController,
-                decoration: const InputDecoration(labelText: "Odgovor"),
-                onChanged: (v) => odgovorText = v,
-              ),
+              const SizedBox(width: 16),
+              const Text("Uredi pitanje i odgovor", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20)),
             ],
           ),
+          content: SizedBox(
+            width: 400,
+            child: Form(
+              key: _formKey,
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  DropdownButtonFormField<int>(
+                    value: kategorijaId,
+                    items: _kategorije
+                        .map((k) => DropdownMenuItem(
+                              value: k.id,
+                              child: Text(k.naziv ?? ""),
+                            ))
+                        .toList(),
+                    onChanged: (v) {
+                      setState(() {
+                        kategorijaId = v;
+                      });
+                    },
+                    decoration: const InputDecoration(
+                      labelText: "Kategorija *",
+                      border: OutlineInputBorder(),
+                    ),
+                    validator: (value) {
+                      if (value == null) {
+                        return "Kategorija je obavezna.";
+                      }
+                      return null;
+                    },
+                  ),
+                  const SizedBox(height: 12),
+                  TextFormField(
+                    controller: pitanjeController,
+                    decoration: const InputDecoration(
+                      labelText: "Pitanje *",
+                      border: OutlineInputBorder(),
+                    ),
+                    maxLines: 2,
+                    validator: (value) {
+                      if (value == null || value.trim().isEmpty) {
+                        return "Pitanje je obavezno.";
+                      }
+                      return null;
+                    },
+                  ),
+                  const SizedBox(height: 12),
+                  TextFormField(
+                    controller: odgovorController,
+                    decoration: const InputDecoration(
+                      labelText: "Odgovor *",
+                      border: OutlineInputBorder(),
+                    ),
+                    maxLines: 3,
+                    validator: (value) {
+                      if (value == null || value.trim().isEmpty) {
+                        return "Odgovor je obavezan.";
+                      }
+                      return null;
+                    },
+                  ),
+                ],
+              ),
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(false),
+              child: const Text("Otkaži"),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                if (_formKey.currentState?.validate() ?? false) {
+                  Navigator.of(context).pop(true);
+                }
+              },
+              style: ElevatedButton.styleFrom(backgroundColor: Colors.blueAccent, foregroundColor: Colors.white),
+              child: const Text("Sačuvaj"),
+            ),
+          ],
         ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(false),
-            child: const Text("Otkaži"),
-          ),
-          ElevatedButton(
-            onPressed: () => Navigator.of(context).pop(true),
-            style: ElevatedButton.styleFrom(backgroundColor: Colors.blueAccent, foregroundColor: Colors.white),
-            child: const Text("Sačuvaj"),
-          ),
-        ],
       ),
     );
-    if (result == true &&
-        kategorijaId != null &&
-        (pitanjeText?.trim().isNotEmpty == true) &&
-        (odgovorText?.trim().isNotEmpty == true)) {
+    if (result == true) {
       final provider = Provider.of<PitanjeProvider>(context, listen: false);
       await provider.update(pitanje.id, {
         'kategorijaId': kategorijaId,
-        'pitanjeText': pitanjeText,
-        'odgovorText': odgovorText,
+        'pitanjeText': pitanjeController.text.trim(),
+        'odgovorText': odgovorController.text.trim(),
         'datumKreiranja': pitanje.datumKreiranja?.toIso8601String() ?? DateTime.now().toIso8601String(),
       });
       _fetchData();
@@ -322,83 +410,119 @@ class _UpravljanjeFAQScreenState extends State<UpravljanjeFAQScreen> {
   }
 
   Future<void> _kreirajPitanje() async {
+    final _formKey = GlobalKey<FormState>();
     int? kategorijaId = _kategorije.isNotEmpty ? _kategorije.first.id : null;
-    String? pitanjeText;
-    String? odgovorText;
     final pitanjeController = TextEditingController();
     final odgovorController = TextEditingController();
 
     final result = await showDialog<bool>(
       context: context,
-      builder: (context) => AlertDialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
-        title: Row(
-          children: [
-            Container(
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                gradient: LinearGradient(colors: [Colors.blueAccent, Colors.lightBlueAccent]),
-              ),
-              padding: const EdgeInsets.all(8),
-              child: const Icon(Icons.question_answer, color: Colors.white, size: 28),
-            ),
-            const SizedBox(width: 16),
-            const Text("Kreiraj pitanje i odgovor", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20)),
-          ],
-        ),
-        content: SizedBox(
-          width: 400,
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
+      builder: (context) => StatefulBuilder(
+        builder: (context, setState) => AlertDialog(
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+          title: Row(
             children: [
-              DropdownButtonFormField<int>(
-                value: kategorijaId,
-                items: _kategorije
-                    .map((k) => DropdownMenuItem(
-                          value: k.id,
-                          child: Text(k.naziv ?? ""),
-                        ))
-                    .toList(),
-                onChanged: (v) => kategorijaId = v,
-                decoration: const InputDecoration(labelText: "Kategorija"),
+              Container(
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  gradient: LinearGradient(colors: [Colors.blueAccent, Colors.lightBlueAccent]),
+                ),
+                padding: const EdgeInsets.all(8),
+                child: const Icon(Icons.question_answer, color: Colors.white, size: 28),
               ),
-              const SizedBox(height: 12),
-              TextField(
-                controller: pitanjeController,
-                decoration: const InputDecoration(labelText: "Pitanje"),
-                onChanged: (v) => pitanjeText = v,
-              ),
-              const SizedBox(height: 12),
-              TextField(
-                controller: odgovorController,
-                decoration: const InputDecoration(labelText: "Odgovor"),
-                onChanged: (v) => odgovorText = v,
-              ),
+              const SizedBox(width: 16),
+              const Text("Kreiraj pitanje i odgovor", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20)),
             ],
           ),
+          content: SizedBox(
+            width: 400,
+            child: Form(
+              key: _formKey,
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  DropdownButtonFormField<int>(
+                    value: kategorijaId,
+                    items: _kategorije
+                        .map((k) => DropdownMenuItem(
+                              value: k.id,
+                              child: Text(k.naziv ?? ""),
+                            ))
+                        .toList(),
+                    onChanged: (v) {
+                      setState(() {
+                        kategorijaId = v;
+                      });
+                    },
+                    decoration: const InputDecoration(
+                      labelText: "Kategorija *",
+                      border: OutlineInputBorder(),
+                    ),
+                    validator: (value) {
+                      if (value == null) {
+                        return "Kategorija je obavezna.";
+                      }
+                      return null;
+                    },
+                  ),
+                  const SizedBox(height: 12),
+                  TextFormField(
+                    controller: pitanjeController,
+                    decoration: const InputDecoration(
+                      labelText: "Pitanje *",
+                      border: OutlineInputBorder(),
+                    ),
+                    maxLines: 2,
+                    validator: (value) {
+                      if (value == null || value.trim().isEmpty) {
+                        return "Pitanje je obavezno.";
+                      }
+                      return null;
+                    },
+                  ),
+                  const SizedBox(height: 12),
+                  TextFormField(
+                    controller: odgovorController,
+                    decoration: const InputDecoration(
+                      labelText: "Odgovor *",
+                      border: OutlineInputBorder(),
+                    ),
+                    maxLines: 3,
+                    validator: (value) {
+                      if (value == null || value.trim().isEmpty) {
+                        return "Odgovor je obavezan.";
+                      }
+                      return null;
+                    },
+                  ),
+                ],
+              ),
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(false),
+              child: const Text("Otkaži"),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                if (_formKey.currentState?.validate() ?? false) {
+                  Navigator.of(context).pop(true);
+                }
+              },
+              style: ElevatedButton.styleFrom(backgroundColor: Colors.blueAccent, foregroundColor: Colors.white),
+              child: const Text("Kreiraj"),
+            ),
+          ],
         ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(false),
-            child: const Text("Otkaži"),
-          ),
-          ElevatedButton(
-            onPressed: () => Navigator.of(context).pop(true),
-            style: ElevatedButton.styleFrom(backgroundColor: Colors.blueAccent, foregroundColor: Colors.white),
-            child: const Text("Kreiraj"),
-          ),
-        ],
       ),
     );
-    if (result == true &&
-        kategorijaId != null &&
-        (pitanjeText?.trim().isNotEmpty == true) &&
-        (odgovorText?.trim().isNotEmpty == true)) {
+    if (result == true) {
       final provider = Provider.of<PitanjeProvider>(context, listen: false);
       await provider.insert({
         'kategorijaId': kategorijaId,
-        'pitanjeText': pitanjeText,
-        'odgovorText': odgovorText,
+        'pitanjeText': pitanjeController.text.trim(),
+        'odgovorText': odgovorController.text.trim(),
         'datumKreiranja': DateTime.now().toIso8601String(),
       });
       _fetchData();
