@@ -43,7 +43,7 @@ class _BiometrijaScreenState extends State<BiometrijaScreen> {
       });
       authenticated = await auth.authenticate(
         localizedReason: 'Potvrdite identitet otiskom prsta ili licem',
-        biometricOnly: true,
+        biometricOnly: false,
       );
       setState(() {
         _isAuthenticating = false;
@@ -92,7 +92,7 @@ class _BiometrijaScreenState extends State<BiometrijaScreen> {
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 12),
                       child: Text(
-                        "Radi vaše sigurnosti i zaštite integriteta glasanja, potrebno je da potvrdite svoj identitet putem biometrijske autentifikacije (otiska prsta). Ova provjera osigurava da samo vi možete pristupiti i glasati sa svog uređaja.",
+                        "Radi vaše sigurnosti i zaštite integriteta glasanja, potrebno je da potvrdite svoj identitet putem biometrijske autentifikacije (otiska prsta ili prepoznavanje lica). Ova provjera osigurava da samo vi možete pristupiti i glasati sa svog uređaja.",
                         style: const TextStyle(
                           fontSize: 16,
                           color: Colors.black87,
@@ -113,7 +113,7 @@ class _BiometrijaScreenState extends State<BiometrijaScreen> {
               child: ElevatedButton.icon(
                 icon: const Icon(Icons.fingerprint),
                 label: const Text(
-                  "Autentifikuj se putem otiska prsta",
+                  "Autentifikuj se",
                   style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                 ),
                 style: ElevatedButton.styleFrom(

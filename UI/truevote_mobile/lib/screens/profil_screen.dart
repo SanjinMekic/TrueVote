@@ -115,6 +115,110 @@ class _ProfilScreenState extends State<ProfilScreen> {
     }
   }
 
+  Future<void> _showEditEmailDialog(Korisnik korisnik) async {
+  final TextEditingController emailController =
+      TextEditingController(text: korisnik.email ?? "");
+  final _formKey = GlobalKey<FormState>();
+  bool isLoading = false;
+  String? error;
+
+  await showDialog(
+    context: context,
+    barrierDismissible: false,
+    builder: (context) {
+      return StatefulBuilder(
+        builder: (context, setState) => AlertDialog(
+          title: const Text("Izmijeni email"),
+          content: Form(
+            key: _formKey,
+            child: TextFormField(
+              controller: emailController,
+              keyboardType: TextInputType.emailAddress,
+              decoration: const InputDecoration(
+                labelText: "Email",
+                prefixIcon: Icon(Icons.email),
+                border: OutlineInputBorder(),
+              ),
+              validator: (value) {
+                if (value == null || value.isEmpty) {
+                  return "Unesite email";
+                }
+                if (!RegExp(r'^[^@]+@[^@]+\.[^@]+').hasMatch(value)) {
+                  return "Neispravan email format";
+                }
+                return null;
+              },
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: isLoading ? null : () => Navigator.of(context).pop(),
+              child: const Text("Otkaži"),
+            ),
+            ElevatedButton(
+              onPressed: isLoading
+                  ? null
+                  : () async {
+                      if (!_formKey.currentState!.validate()) return;
+                      setState(() {
+                        isLoading = true;
+                        error = null;
+                      });
+                      try {
+                        final korisnikProvider = Provider.of<KorisnikProvider>(context, listen: false);
+                        await korisnikProvider.update(korisnik.id!, {
+                          "email": emailController.text.trim(),
+                        });
+                        setState(() {
+                          isLoading = false;
+                        });
+                        if (mounted) {
+                          Navigator.of(context).pop();
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(content: Text("Email je uspješno ažuriran.")),
+                          );
+                          // REFRESH SCREEN after saving
+                          setState(() {});
+                        }
+                        // Pozovi setState na parent widgetu da se profil odmah osvježi
+                        if (this.mounted) {
+                          this.setState(() {
+                            final korisnikId = AuthProvider.korisnikId;
+                            if (korisnikId != null) {
+                              _korisnikFuture = Provider.of<KorisnikProvider>(
+                                context,
+                                listen: false,
+                              ).getById(korisnikId);
+                            }
+                          });
+                        }
+                      } catch (e) {
+                        setState(() {
+                          isLoading = false;
+                          error = "Greška: $e";
+                        });
+                      }
+                    },
+              child: isLoading
+                  ? const SizedBox(
+                      width: 20,
+                      height: 20,
+                      child: CircularProgressIndicator(strokeWidth: 2),
+                    )
+                  : const Text("Sačuvaj"),
+            ),
+          ],
+          contentPadding: const EdgeInsets.fromLTRB(24, 20, 24, 10),
+          actionsPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+          insetPadding: const EdgeInsets.symmetric(horizontal: 30, vertical: 24),
+          contentTextStyle: const TextStyle(color: Colors.black87),
+        ),
+      );
+    },
+  );
+}
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -253,10 +357,31 @@ class _ProfilScreenState extends State<ProfilScreen> {
                             icon: Icons.badge,
                           ),
                           const SizedBox(height: 16),
-                          _buildDisabledInput(
-                            label: "Email",
-                            value: korisnik.email ?? "",
-                            icon: Icons.email_outlined,
+                          // Email - editable
+                          GestureDetector(
+                            onTap: () => _showEditEmailDialog(korisnik),
+                            child: AbsorbPointer(
+                              child: TextFormField(
+                                initialValue: korisnik.email ?? "",
+                                enabled: false,
+                                decoration: InputDecoration(
+                                  labelText: "Email",
+                                  prefixIcon: const Icon(Icons.email_outlined, color: Colors.blueAccent),
+                                  suffixIcon: const Icon(Icons.edit, color: Colors.blueAccent),
+                                  filled: true,
+                                  fillColor: const Color(0xFFF2F6FF),
+                                  disabledBorder: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(16),
+                                    borderSide: const BorderSide(color: Colors.blueAccent, width: 1.5),
+                                  ),
+                                  labelStyle: const TextStyle(color: Colors.blueAccent),
+                                ),
+                                style: const TextStyle(
+                                  color: Colors.black87,
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              ),
+                            ),
                           ),
                           const SizedBox(height: 16),
                           _buildDisabledInput(
