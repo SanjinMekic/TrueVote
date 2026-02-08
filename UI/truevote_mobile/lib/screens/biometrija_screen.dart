@@ -35,6 +35,7 @@ class _BiometrijaScreenState extends State<BiometrijaScreen> {
   }
 
   Future<void> _authenticateWithBiometrics() async {
+    if (_isAuthenticating) return; // spriječi višestruke pozive
     bool authenticated = false;
     try {
       setState(() {
@@ -42,7 +43,7 @@ class _BiometrijaScreenState extends State<BiometrijaScreen> {
         _authorized = 'Authenticating';
       });
       authenticated = await auth.authenticate(
-        localizedReason: 'Potvrdite identitet otiskom prsta ili licem',
+        localizedReason: 'Potvrdite identitet otiskom prsta, licem, uzorkom ili PIN-om',
         biometricOnly: false,
       );
       setState(() {
@@ -85,14 +86,14 @@ class _BiometrijaScreenState extends State<BiometrijaScreen> {
                     const CircularProgressIndicator()
                   else if (_supportState == _SupportState.unsupported)
                     const Text(
-                      'Ovaj uređaj ne podržava autentifikaciju otiskom prsta.',
+                      'Ovaj uređaj ne podržava biometrijsku autentifikaciju.',
                       style: TextStyle(fontSize: 18, color: Colors.red),
                     )
                   else ...[
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 12),
                       child: Text(
-                        "Radi vaše sigurnosti i zaštite integriteta glasanja, potrebno je da potvrdite svoj identitet putem biometrijske autentifikacije (otiska prsta ili prepoznavanje lica). Ova provjera osigurava da samo vi možete pristupiti i glasati sa svog uređaja.",
+                        "Radi vaše sigurnosti i zaštite integriteta glasanja, potrebno je da potvrdite svoj identitet putem biometrijske autentifikacije (otisak prsta, lice, uzorak ili PIN). Ova provjera osigurava da samo vi možete pristupiti i glasati sa svog uređaja.",
                         style: const TextStyle(
                           fontSize: 16,
                           color: Colors.black87,
@@ -105,27 +106,40 @@ class _BiometrijaScreenState extends State<BiometrijaScreen> {
               )
             ],
           ),
-          Positioned(
+               Positioned(
             left: 0,
             right: 0,
             bottom: 24,
-            child: Center(
-              child: ElevatedButton.icon(
-                icon: const Icon(Icons.fingerprint),
-                label: const Text(
-                  "Autentifikuj se",
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                ),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.blueAccent,
-                  foregroundColor: Colors.white,
-                  padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 14),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 24),
+              child: SizedBox(
+                width: double.infinity,
+                child: ElevatedButton.icon(
+                  icon: _isAuthenticating
+                      ? const SizedBox(
+                          width: 22,
+                          height: 22,
+                          child: CircularProgressIndicator(
+                            color: Colors.white,
+                            strokeWidth: 2,
+                          ),
+                        )
+                      : const Icon(Icons.fingerprint),
+                  label: Text(
+                    _isAuthenticating ? "Autentifikacija..." : "Autentifikuj se",
+                    style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                   ),
-                  elevation: 3,
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.blueAccent,
+                    foregroundColor: Colors.white,
+                    padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 14),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    elevation: 3,
+                  ),
+                  onPressed: _isAuthenticating ? null : _authenticateWithBiometrics,
                 ),
-                onPressed: _authenticateWithBiometrics,
               ),
             ),
           ),
