@@ -140,14 +140,14 @@ class _ProfilScreenState extends State<ProfilScreen> {
                 border: OutlineInputBorder(),
               ),
               validator: (value) {
-                if (value == null || value.isEmpty) {
-                  return "Unesite email";
-                }
-                if (!RegExp(r'^[^@]+@[^@]+\.[^@]+').hasMatch(value)) {
-                  return "Neispravan email format";
-                }
-                return null;
-              },
+  if (value == null || value.trim().isEmpty) {
+    return "Email je obavezan";
+  }
+  if (!RegExp(r'^[\w\-\.]+@([\w\-]+\.)+[\w\-]{2,4}$').hasMatch(value.trim())) {
+    return "Unesite validan email!";
+  }
+  return null;
+},
             ),
           ),
           actions: [
@@ -177,10 +177,8 @@ class _ProfilScreenState extends State<ProfilScreen> {
                           ScaffoldMessenger.of(context).showSnackBar(
                             const SnackBar(content: Text("Email je uspješno ažuriran.")),
                           );
-                          // REFRESH SCREEN after saving
                           setState(() {});
                         }
-                        // Pozovi setState na parent widgetu da se profil odmah osvježi
                         if (this.mounted) {
                           this.setState(() {
                             final korisnikId = AuthProvider.korisnikId;
@@ -357,7 +355,6 @@ class _ProfilScreenState extends State<ProfilScreen> {
                             icon: Icons.badge,
                           ),
                           const SizedBox(height: 16),
-                          // Email - editable
                           GestureDetector(
                             onTap: () => _showEditEmailDialog(korisnik),
                             child: AbsorbPointer(
