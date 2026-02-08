@@ -43,7 +43,7 @@ class _BiometrijaScreenState extends State<BiometrijaScreen> {
         _authorized = 'Authenticating';
       });
       authenticated = await auth.authenticate(
-        localizedReason: 'Potvrdite identitet otiskom prsta, licem, uzorkom ili PIN-om',
+        localizedReason: 'Potvrdite svoj identitet',
         biometricOnly: false,
       );
       setState(() {
