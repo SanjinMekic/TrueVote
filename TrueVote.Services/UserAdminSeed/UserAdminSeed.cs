@@ -26,7 +26,8 @@ namespace TrueVote.Services.UserAdminSeed
                     Email = "admin@gmail.com",
                     KorisnickoIme = "admin",
                     UlogaId = 1,
-                    OpstinaId = 4
+                    OpstinaId = 4,
+                    SistemAdministrator = true
                 };
 
                 var password = "admin";
