@@ -35,7 +35,7 @@ class _BiometrijaScreenState extends State<BiometrijaScreen> {
   }
 
   Future<void> _authenticateWithBiometrics() async {
-    if (_isAuthenticating) return; // spriječi višestruke pozive
+    if (_isAuthenticating) return;
     bool authenticated = false;
     try {
       setState(() {
@@ -58,11 +58,33 @@ class _BiometrijaScreenState extends State<BiometrijaScreen> {
         _authorized = 'Unexpected Error - ${e.message}';
         _biometricPassed = false;
       });
+      if (e.code == 'NotEnrolled' || e.code == 'PasscodeNotSet' || e.code == 'NotAvailable') {
+        _showNoAuthDialog();
+      }
     }
     if (!mounted) return;
     if (authenticated) {
       widget.onSuccess();
     }
+  }
+
+  void _showNoAuthDialog() {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text("Nema postavljene zaštite"),
+        content: const Text(
+          "Na vašem uređaju nije postavljen nijedan sigurnosni metod. "
+          "Molimo vas da postavite PIN, uzorak, lozinku, otisak prsta ili prepoznavanje lica u postavkama uređaja, pa se vratite u aplikaciju.",
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(),
+            child: const Text("U redu"),
+          ),
+        ],
+      ),
+    );
   }
 
   @override
@@ -85,9 +107,23 @@ class _BiometrijaScreenState extends State<BiometrijaScreen> {
                   if (_supportState == _SupportState.unknown)
                     const CircularProgressIndicator()
                   else if (_supportState == _SupportState.unsupported)
-                    const Text(
-                      'Ovaj uređaj ne podržava biometrijsku autentifikaciju.',
-                      style: TextStyle(fontSize: 18, color: Colors.red),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 12),
+                      child: Column(
+                        children: [
+                          const Text(
+                            'Vaš uređaj nema postavljenu nikakvu vrstu zaštite.',
+                            style: TextStyle(fontSize: 18, color: Colors.red),
+                            textAlign: TextAlign.center,
+                          ),
+                          const SizedBox(height: 16),
+                          const Text(
+                            "Molimo vas da postavite PIN, uzorak, lozinku, otisak prsta ili prepoznavanje lica u postavkama uređaja, pa se vratite u aplikaciju.",
+                            style: TextStyle(fontSize: 16, color: Colors.black87),
+                            textAlign: TextAlign.center,
+                          ),
+                        ],
+                      ),
                     )
                   else ...[
                     Padding(
@@ -106,43 +142,44 @@ class _BiometrijaScreenState extends State<BiometrijaScreen> {
               )
             ],
           ),
-               Positioned(
-            left: 0,
-            right: 0,
-            bottom: 24,
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 24),
-              child: SizedBox(
-                width: double.infinity,
-                child: ElevatedButton.icon(
-                  icon: _isAuthenticating
-                      ? const SizedBox(
-                          width: 22,
-                          height: 22,
-                          child: CircularProgressIndicator(
-                            color: Colors.white,
-                            strokeWidth: 2,
-                          ),
-                        )
-                      : const Icon(Icons.fingerprint),
-                  label: Text(
-                    _isAuthenticating ? "Autentifikacija..." : "Autentifikuj se",
-                    style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                  ),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.blueAccent,
-                    foregroundColor: Colors.white,
-                    padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 14),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
+          if (_supportState == _SupportState.supported)
+            Positioned(
+              left: 0,
+              right: 0,
+              bottom: 24,
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 24),
+                child: SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton.icon(
+                    icon: _isAuthenticating
+                        ? const SizedBox(
+                            width: 22,
+                            height: 22,
+                            child: CircularProgressIndicator(
+                              color: Colors.white,
+                              strokeWidth: 2,
+                            ),
+                          )
+                        : const Icon(Icons.fingerprint),
+                    label: Text(
+                      _isAuthenticating ? "Autentifikacija..." : "Autentifikuj se",
+                      style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                     ),
-                    elevation: 3,
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.blueAccent,
+                      foregroundColor: Colors.white,
+                      padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 14),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      elevation: 3,
+                    ),
+                    onPressed: _isAuthenticating ? null : _authenticateWithBiometrics,
                   ),
-                  onPressed: _isAuthenticating ? null : _authenticateWithBiometrics,
                 ),
               ),
             ),
-          ),
         ],
       ),
     );
