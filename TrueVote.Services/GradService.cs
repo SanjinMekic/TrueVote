@@ -25,11 +25,11 @@ namespace TrueVote.Services
 
             if (!string.IsNullOrEmpty(search.Naziv))
             {
-                return query.Where(g => g.Naziv.Contains(search.Naziv)).Include(g => g.Drzava);
+                query = query.Where(g => g.Naziv.Contains(search.Naziv)).Include(g => g.Drzava);
             }
             if (!string.IsNullOrEmpty(search.DrzavaNaziv))
             {
-                return query.Include(g => g.Drzava).Where(g => g.Drzava.Naziv.Contains(search.DrzavaNaziv));
+                query = query.Include(g => g.Drzava).Where(g => g.Drzava.Naziv.Contains(search.DrzavaNaziv));
             }
             return query.Include(g => g.Drzava);
         }
