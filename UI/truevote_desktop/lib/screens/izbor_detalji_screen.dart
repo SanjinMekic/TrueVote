@@ -24,7 +24,7 @@ class IzborDetaljiScreen extends StatefulWidget {
 
 class _IzborDetaljiScreenState extends State<IzborDetaljiScreen> {
   late Future<List<dynamic>> _kandidatiFuture;
-  final GlobalKey _chartKey = GlobalKey();
+  final GlobalKey _reportKey = GlobalKey();
   bool _showPdfButton = false;
 
   @override
@@ -374,142 +374,139 @@ class _IzborDetaljiScreenState extends State<IzborDetaljiScreen> {
         ? glasovi.values.reduce((a, b) => a > b ? a : b)
         : 1;
 
-    return RepaintBoundary(
-      key: _chartKey,
-      child: Card(
-        elevation: 6,
-        margin: const EdgeInsets.only(top: 32),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        child: Padding(
-          padding: const EdgeInsets.all(24),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              _buildIzborInfo(widget.izbor),
-              const SizedBox(height: 18),
-              const Text(
-                "Poređenje kandidata po broju glasova",
-                style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.blueAccent,
-                ),
+    return Card(
+      elevation: 6,
+      margin: const EdgeInsets.only(top: 32),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      child: Padding(
+        padding: const EdgeInsets.all(24),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            _buildIzborInfo(widget.izbor),
+            const SizedBox(height: 18),
+            const Text(
+              "Poređenje kandidata po broju glasova",
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+                color: Colors.blueAccent,
               ),
-              const SizedBox(height: 16),
-              Wrap(
-                spacing: 18,
-                runSpacing: 8,
-                children: List.generate(kandidati.length, (idx) {
-                  final kandidat = kandidati[idx];
-                  final ime = (kandidat['ime'] ?? '').toString();
-                  final prezime = (kandidat['prezime'] ?? '').toString();
-                  return Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Container(
-                        width: 18,
-                        height: 18,
-                        decoration: BoxDecoration(
-                          color: _generateColor(idx, kandidati.length),
-                          borderRadius: BorderRadius.circular(4),
-                        ),
-                      ),
-                      const SizedBox(width: 6),
-                      Text(
-                        "$ime $prezime",
-                        style: const TextStyle(
-                          fontSize: 14,
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
-                    ],
-                  );
-                }),
-              ),
-              const SizedBox(height: 24),
-              SizedBox(
-                width: width,
-                height: 360,
-                child: BarChart(
-                  BarChartData(
-                    alignment: BarChartAlignment.spaceAround,
-                    maxY: (maxGlasova + 2).toDouble(),
-                    minY: 0,
-                    barTouchData: BarTouchData(enabled: true),
-                    gridData: FlGridData(
-                      show: true,
-                      drawVerticalLine: false,
-                      getDrawingHorizontalLine: (value) =>
-                          FlLine(color: Colors.grey.shade300, strokeWidth: 1),
-                    ),
-                    titlesData: FlTitlesData(
-                      leftTitles: AxisTitles(
-                        sideTitles: SideTitles(
-                          showTitles: true,
-                          reservedSize: 40,
-                          getTitlesWidget: (value, meta) {
-                            if (value % 1 != 0) return const SizedBox();
-                            return Text(
-                              value.toInt().toString(),
-                              style: const TextStyle(fontSize: 13),
-                            );
-                          },
-                          interval: 1,
-                        ),
-                      ),
-                      bottomTitles: AxisTitles(
-                        sideTitles: SideTitles(
-                          showTitles: true,
-                          reservedSize: 40,
-                          getTitlesWidget: (value, meta) {
-                            final idx = value.toInt();
-                            if (idx < 0 || idx >= kandidati.length)
-                              return const SizedBox();
-                            final kandidat = kandidati[idx];
-                            final prezime = (kandidat['prezime'] ?? '')
-                                .toString();
-                            return Padding(
-                              padding: const EdgeInsets.only(top: 8.0),
-                              child: Text(
-                                prezime,
-                                textAlign: TextAlign.center,
-                                style: const TextStyle(
-                                  fontSize: 13,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                            );
-                          },
-                        ),
-                      ),
-                      rightTitles: AxisTitles(
-                        sideTitles: SideTitles(showTitles: false),
-                      ),
-                      topTitles: AxisTitles(
-                        sideTitles: SideTitles(showTitles: false),
+            ),
+            const SizedBox(height: 16),
+            Wrap(
+              spacing: 18,
+              runSpacing: 8,
+              children: List.generate(kandidati.length, (idx) {
+                final kandidat = kandidati[idx];
+                final ime = (kandidat['ime'] ?? '').toString();
+                final prezime = (kandidat['prezime'] ?? '').toString();
+                return Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Container(
+                      width: 18,
+                      height: 18,
+                      decoration: BoxDecoration(
+                        color: _generateColor(idx, kandidati.length),
+                        borderRadius: BorderRadius.circular(4),
                       ),
                     ),
-                    borderData: FlBorderData(show: false),
-                    barGroups: List.generate(kandidati.length, (idx) {
-                      final kandidat = kandidati[idx];
-                      final broj = glasovi[kandidat['id']] ?? 0;
-                      return BarChartGroupData(
-                        x: idx,
-                        barRods: [
-                          BarChartRodData(
-                            toY: broj.toDouble(),
-                            color: _generateColor(idx, kandidati.length),
-                            width: 28,
-                            borderRadius: BorderRadius.circular(6),
-                          ),
-                        ],
-                      );
-                    }),
+                    const SizedBox(width: 6),
+                    Text(
+                      "$ime $prezime",
+                      style: const TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ],
+                );
+              }),
+            ),
+            const SizedBox(height: 24),
+            SizedBox(
+              width: width,
+              height: 360,
+              child: BarChart(
+                BarChartData(
+                  alignment: BarChartAlignment.spaceAround,
+                  maxY: (maxGlasova + 2).toDouble(),
+                  minY: 0,
+                  barTouchData: BarTouchData(enabled: true),
+                  gridData: FlGridData(
+                    show: true,
+                    drawVerticalLine: false,
+                    getDrawingHorizontalLine: (value) =>
+                        FlLine(color: Colors.grey.shade300, strokeWidth: 1),
                   ),
+                  titlesData: FlTitlesData(
+                    leftTitles: AxisTitles(
+                      sideTitles: SideTitles(
+                        showTitles: true,
+                        reservedSize: 40,
+                        getTitlesWidget: (value, meta) {
+                          if (value % 1 != 0) return const SizedBox();
+                          return Text(
+                            value.toInt().toString(),
+                            style: const TextStyle(fontSize: 13),
+                          );
+                        },
+                        interval: 1,
+                      ),
+                    ),
+                    bottomTitles: AxisTitles(
+                      sideTitles: SideTitles(
+                        showTitles: true,
+                        reservedSize: 40,
+                        getTitlesWidget: (value, meta) {
+                          final idx = value.toInt();
+                          if (idx < 0 || idx >= kandidati.length)
+                            return const SizedBox();
+                          final kandidat = kandidati[idx];
+                          final prezime = (kandidat['prezime'] ?? '')
+                              .toString();
+                          return Padding(
+                            padding: const EdgeInsets.only(top: 8.0),
+                            child: Text(
+                              prezime,
+                              textAlign: TextAlign.center,
+                              style: const TextStyle(
+                                fontSize: 13,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          );
+                        },
+                      ),
+                    ),
+                    rightTitles: AxisTitles(
+                      sideTitles: SideTitles(showTitles: false),
+                    ),
+                    topTitles: AxisTitles(
+                      sideTitles: SideTitles(showTitles: false),
+                    ),
+                  ),
+                  borderData: FlBorderData(show: false),
+                  barGroups: List.generate(kandidati.length, (idx) {
+                    final kandidat = kandidati[idx];
+                    final broj = glasovi[kandidat['id']] ?? 0;
+                    return BarChartGroupData(
+                      x: idx,
+                      barRods: [
+                        BarChartRodData(
+                          toY: broj.toDouble(),
+                          color: _generateColor(idx, kandidati.length),
+                          width: 28,
+                          borderRadius: BorderRadius.circular(6),
+                        ),
+                      ],
+                    );
+                  }),
                 ),
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );
@@ -532,16 +529,18 @@ class _IzborDetaljiScreenState extends State<IzborDetaljiScreen> {
     return glasovi;
   }
 
-  Future<Uint8List> _captureChart() async {
-    final boundary = _chartKey.currentContext!.findRenderObject() as RenderRepaintBoundary;
-    final image = await boundary.toImage(pixelRatio: 3.0);
-    final byteData = await image.toByteData(format: ui.ImageByteFormat.png);
+  Future<Uint8List> _captureReport() async {
+    final RenderRepaintBoundary boundary =
+        _reportKey.currentContext!.findRenderObject() as RenderRepaintBoundary;
+    final ui.Image image = await boundary.toImage(pixelRatio: 3.0);
+    final ByteData? byteData =
+        await image.toByteData(format: ui.ImageByteFormat.png);
     return byteData!.buffer.asUint8List();
   }
 
-  Future<void> _saveChartToDesktop(BuildContext context) async {
+  Future<void> _savePdfToDesktop(BuildContext context) async {
     try {
-      final imageBytes = await _captureChart();
+      final imageBytes = await _captureReport();
       final doc = pw.Document();
       final image = pw.MemoryImage(imageBytes);
 
@@ -554,11 +553,11 @@ class _IzborDetaljiScreenState extends State<IzborDetaljiScreen> {
       final desktopDir = Directory(
         "${(await getApplicationDocumentsDirectory()).parent.path}\\Desktop",
       );
-      final file = File("${desktopDir.path}\\izbor_graf.pdf");
+      final file = File("${desktopDir.path}\\izbor_report.pdf");
       await file.writeAsBytes(await doc.save());
 
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('PDF je sačuvan na Desktopu kao izbor_graf.pdf')),
+        const SnackBar(content: Text('PDF je sačuvan na Desktopu kao izbor_report.pdf')),
       );
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -590,8 +589,8 @@ class _IzborDetaljiScreenState extends State<IzborDetaljiScreen> {
             ? [
                 IconButton(
                   icon: const Icon(Icons.picture_as_pdf, color: Colors.white),
-                  tooltip: "Spasi graf kao PDF",
-                  onPressed: () => _saveChartToDesktop(context),
+                  tooltip: "Spasi report kao PDF",
+                  onPressed: () => _savePdfToDesktop(context),
                 ),
               ]
             : [],
@@ -599,129 +598,131 @@ class _IzborDetaljiScreenState extends State<IzborDetaljiScreen> {
       backgroundColor: const Color(0xFFF2F6FF),
       body: Padding(
         padding: const EdgeInsets.all(24),
-        child: SingleChildScrollView(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const Text(
-                "Kandidati",
-                style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
+        child: FutureBuilder<List<dynamic>>(
+          future: _kandidatiFuture,
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              if (_showPdfButton) {
+                WidgetsBinding.instance.addPostFrameCallback((_) {
+                  setState(() {
+                    _showPdfButton = false;
+                  });
+                });
+              }
+              return const Center(
+                child: CircularProgressIndicator(
                   color: Colors.blueAccent,
                 ),
-              ),
-              const SizedBox(height: 12),
-              FutureBuilder<List<dynamic>>(
-                future: _kandidatiFuture,
-                builder: (context, snapshot) {
-                  if (snapshot.connectionState == ConnectionState.waiting) {
-                    if (_showPdfButton) {
-                      setState(() {
-                        _showPdfButton = false;
-                      });
-                    }
-                    return const Center(
-                      child: CircularProgressIndicator(
-                        color: Colors.blueAccent,
-                      ),
-                    );
-                  }
-                  if (snapshot.hasError) {
-                    if (_showPdfButton) {
-                      setState(() {
-                        _showPdfButton = false;
-                      });
-                    }
-                    return const Center(
-                      child: Text(
-                        "Greška pri učitavanju kandidata.",
-                        style: TextStyle(
-                          color: Colors.red,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    );
-                  }
-                  final kandidati = snapshot.data ?? [];
-                  final hasKandidati = kandidati.isNotEmpty;
-                  if (_showPdfButton != hasKandidati) {
-                    WidgetsBinding.instance.addPostFrameCallback((_) {
-                      setState(() {
-                        _showPdfButton = hasKandidati;
-                      });
-                    });
-                  }
-                  if (!hasKandidati) {
-                    return const Center(
-                      child: Text(
-                        "Nema kandidata za ovaj izbor.",
-                        style: TextStyle(fontSize: 16, color: Colors.grey),
-                      ),
-                    );
-                  }
-                  return LayoutBuilder(
-                    builder: (context, constraints) {
-                      final minWidth = kandidati.length * 70.0;
-                      final width = constraints.maxWidth > minWidth
-                          ? constraints.maxWidth
-                          : minWidth;
-                      return Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          ListView.builder(
-                            shrinkWrap: true,
-                            physics: const NeverScrollableScrollPhysics(),
-                            itemCount: kandidati.length,
-                            itemBuilder: (context, index) =>
-                                _buildKandidatCard(kandidati[index]),
+              );
+            }
+            if (snapshot.hasError) {
+              if (_showPdfButton) {
+                WidgetsBinding.instance.addPostFrameCallback((_) {
+                  setState(() {
+                    _showPdfButton = false;
+                  });
+                });
+              }
+              return const Center(
+                child: Text(
+                  "Greška pri učitavanju kandidata.",
+                  style: TextStyle(
+                    color: Colors.red,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              );
+            }
+            final kandidati = snapshot.data ?? [];
+            final hasKandidati = kandidati.isNotEmpty;
+            if (_showPdfButton != hasKandidati) {
+              WidgetsBinding.instance.addPostFrameCallback((_) {
+                setState(() {
+                  _showPdfButton = hasKandidati;
+                });
+              });
+            }
+            if (!hasKandidati) {
+              return const Center(
+                child: Text(
+                  "Nema kandidata za ovaj izbor.",
+                  style: TextStyle(fontSize: 16, color: Colors.grey),
+                ),
+              );
+            }
+            return LayoutBuilder(
+              builder: (context, constraints) {
+                final minWidth = kandidati.length * 70.0;
+                final width = constraints.maxWidth > minWidth
+                    ? constraints.maxWidth
+                    : minWidth;
+                return SingleChildScrollView(
+                  child: RepaintBoundary(
+                    key: _reportKey,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Text(
+                          "Kandidati",
+                          style: TextStyle(
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.blueAccent,
                           ),
-                          FutureBuilder<Map<int, int>>(
-                            future: _fetchGlasoviZaKandidate(kandidati),
-                            builder: (context, glasSnapshot) {
-                              if (glasSnapshot.connectionState ==
-                                  ConnectionState.waiting) {
-                                return const Padding(
-                                  padding: EdgeInsets.only(top: 32.0),
-                                  child: Center(
-                                    child: CircularProgressIndicator(
-                                      color: Colors.blueAccent,
-                                    ),
+                        ),
+                        const SizedBox(height: 12),
+                        ListView.builder(
+                          shrinkWrap: true,
+                          physics: const NeverScrollableScrollPhysics(),
+                          itemCount: kandidati.length,
+                          itemBuilder: (context, index) =>
+                              _buildKandidatCard(kandidati[index]),
+                        ),
+                        FutureBuilder<Map<int, int>>(
+                          future: _fetchGlasoviZaKandidate(kandidati),
+                          builder: (context, glasSnapshot) {
+                            if (glasSnapshot.connectionState ==
+                                ConnectionState.waiting) {
+                              return const Padding(
+                                padding: EdgeInsets.only(top: 32.0),
+                                child: Center(
+                                  child: CircularProgressIndicator(
+                                    color: Colors.blueAccent,
                                   ),
-                                );
-                              }
-                              if (glasSnapshot.hasError) {
-                                return const Padding(
-                                  padding: EdgeInsets.only(top: 32.0),
-                                  child: Center(
-                                    child: Text(
-                                      "Greška pri učitavanju glasova.",
-                                      style: TextStyle(
-                                        color: Colors.red,
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                    ),
-                                  ),
-                                );
-                              }
-                              return SingleChildScrollView(
-                                scrollDirection: Axis.horizontal,
-                                child: _buildBarChart(
-                                  kandidati,
-                                  glasSnapshot.data ?? {},
-                                  width,
                                 ),
                               );
-                            },
-                          ),
-                        ],
-                      );
-                    },
-                  );
-                },
-              ),
-            ],
-          ),
+                            }
+                            if (glasSnapshot.hasError) {
+                              return const Padding(
+                                padding: EdgeInsets.only(top: 32.0),
+                                child: Center(
+                                  child: Text(
+                                    "Greška pri učitavanju glasova.",
+                                    style: TextStyle(
+                                      color: Colors.red,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ),
+                              );
+                            }
+                            return SingleChildScrollView(
+                              scrollDirection: Axis.horizontal,
+                              child: _buildBarChart(
+                                kandidati,
+                                glasSnapshot.data ?? {},
+                                width,
+                              ),
+                            );
+                          },
+                        ),
+                      ],
+                    ),
+                  ),
+                );
+              },
+            );
+          },
         ),
       ),
     );
