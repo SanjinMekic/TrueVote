@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
@@ -130,6 +131,30 @@ class _GlasanjeScreenState extends State<GlasanjeScreen> {
     }
   }
 
+  Widget _buildKandidatSlika(String? slika) {
+    if (slika == null || slika.isEmpty) {
+      return const CircleAvatar(
+        backgroundColor: Colors.blueAccent,
+        child: Icon(Icons.person, color: Colors.white),
+      );
+    }
+    try {
+      return CircleAvatar(
+        backgroundImage: MemoryImage(
+          Uri.parse(slika).data != null
+              ? Uri.parse(slika).data!.contentAsBytes()
+              : base64Decode(slika),
+        ),
+        backgroundColor: Colors.grey[200],
+      );
+    } catch (_) {
+      return const CircleAvatar(
+        backgroundColor: Colors.blueAccent,
+        child: Icon(Icons.person, color: Colors.white),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final kandidati = widget.kandidati;
@@ -174,46 +199,43 @@ class _GlasanjeScreenState extends State<GlasanjeScreen> {
                       "Stranka: ${kandidat['stranka']?['naziv'] ?? '-'}",
                       style: const TextStyle(fontSize: 15),
                     ),
-                    secondary: CircleAvatar(
-                      backgroundColor: Colors.blueAccent,
-                      child: const Icon(Icons.person, color: Colors.white),
-                    ),
+                    secondary: _buildKandidatSlika(kandidat['slika']),
                   );
                 },
               ),
             ),
             const SizedBox(height: 18),
             _isLoading
-    ? const Center(child: CircularProgressIndicator())
-    : SizedBox(
-  width: double.infinity,
-  child: ElevatedButton(
-    style: ElevatedButton.styleFrom(
-      backgroundColor: Colors.green,
-      foregroundColor: Colors.white,
-      padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 14),
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12),
-      ),
-      elevation: 3,
-    ),
-    onPressed: (_brojOdabranih > 0 && !_pinValidan)
-        ? _provjeriPinIPotvrdiGlasanje
-        : null,
-    child: Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      mainAxisSize: MainAxisSize.min,
-      children: const [
-        Icon(Icons.check),
-        SizedBox(width: 10),
-        Text(
-          "Potvrdi glasanje",
-          style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-        ),
-      ],
-    ),
-  ),
-),
+                ? const Center(child: CircularProgressIndicator())
+                : SizedBox(
+                    width: double.infinity,
+                    child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.green,
+                        foregroundColor: Colors.white,
+                        padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 14),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        elevation: 3,
+                      ),
+                      onPressed: (_brojOdabranih > 0 && !_pinValidan)
+                          ? _provjeriPinIPotvrdiGlasanje
+                          : null,
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        mainAxisSize: MainAxisSize.min,
+                        children: const [
+                          Icon(Icons.check),
+                          SizedBox(width: 10),
+                          Text(
+                            "Potvrdi glasanje",
+                            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
           ],
         ),
       ),
