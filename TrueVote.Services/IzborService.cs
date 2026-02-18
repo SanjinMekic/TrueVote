@@ -116,7 +116,7 @@ namespace TrueVote.Services
                     (
                         (datumPocetka >= x.DatumPocetka && datumPocetka <= x.DatumKraja) ||
                         (datumKraja >= x.DatumPocetka && datumKraja <= x.DatumKraja)
-                    )
+                    ) && (x.Obrisan == false)
                  ).Any();
 
             if (conflicting)
