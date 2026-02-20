@@ -91,7 +91,7 @@ class _BiometrijaScreenState extends State<BiometrijaScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Biometrijska autentifikacija", style: TextStyle(color: Colors.white)),
+        title: const Text("Autentifikacija", style: TextStyle(color: Colors.white)),
         backgroundColor: Colors.blueAccent,
         iconTheme: const IconThemeData(color: Colors.white),
       ),
@@ -129,7 +129,7 @@ class _BiometrijaScreenState extends State<BiometrijaScreen> {
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 12),
                       child: Text(
-                        "Radi vaše sigurnosti i zaštite integriteta glasanja, potrebno je da potvrdite svoj identitet putem biometrijske autentifikacije (otisak prsta, lice, uzorak ili PIN). Ova provjera osigurava da samo vi možete pristupiti i glasati sa svog uređaja.",
+                        "Radi vaše sigurnosti i zaštite integriteta glasanja, potrebno je da potvrdite svoj identitet putem biometrijske autentifikacije (otisak prsta ili lice) ili uzorak/PIN. Ova provjera osigurava da samo vi možete pristupiti i glasati sa svog uređaja.",
                         style: const TextStyle(
                           fontSize: 16,
                           color: Colors.black87,
