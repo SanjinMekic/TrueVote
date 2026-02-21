@@ -151,7 +151,7 @@ INSERT INTO Drzava (Naziv) VALUES
 ('Albanija'),
 ('Bugarska'),
 ('Rumunija'),
-('Grčka'),
+(N'Grčka'),
 ('Kosovo');
 
 -- Bosna i Hercegovina
@@ -166,7 +166,7 @@ INSERT INTO Grad (Naziv, DrzavaId) VALUES
 INSERT INTO Grad (Naziv, DrzavaId) VALUES
 ('Beograd', 2),
 ('Novi Sad', 2),
-('Niš', 2);
+(N'Niš', 2);
 
 -- Hrvatska
 INSERT INTO Grad (Naziv, DrzavaId) VALUES
@@ -177,7 +177,7 @@ INSERT INTO Grad (Naziv, DrzavaId) VALUES
 -- Crna Gora
 INSERT INTO Grad (Naziv, DrzavaId) VALUES
 ('Podgorica', 4),
-('Nikšić', 4);
+(N'Nikšić', 4);
 
 -- Slovenija
 INSERT INTO Grad (Naziv, DrzavaId) VALUES
@@ -201,8 +201,8 @@ INSERT INTO Grad (Naziv, DrzavaId) VALUES
 
 -- Rumunija
 INSERT INTO Grad (Naziv, DrzavaId) VALUES
-('Bukurešt', 9),
-('Kluž', 9);
+(N'Bukurešt', 9),
+(N'Kluž', 9);
 
 -- Grčka
 INSERT INTO Grad (Naziv, DrzavaId) VALUES
@@ -211,8 +211,8 @@ INSERT INTO Grad (Naziv, DrzavaId) VALUES
 
 -- Kosovo
 INSERT INTO Grad (Naziv, DrzavaId) VALUES
-('Priština', 11),
-('Peć', 11);
+(N'Priština', 11),
+(N'Peć', 11);
 
 ----------------------------
 -- OPSTINE
@@ -222,10 +222,10 @@ INSERT INTO Opstina (Naziv, GradId) VALUES
 ('Stari Grad', 1),
 ('Novo Sarajevo', 1),
 ('Novi Grad', 1),
-('Ilidža', 1),
-('Hadžići', 1),
-('Ilijaš', 1),
-('Vogošća', 1),
+(N'Ilidža', 1),
+(N'Hadžići', 1),
+(N'Ilijaš', 1),
+(N'Vogošća', 1),
 ('Trnovo', 1);
 
 -- Mostar (GradId = 2)
@@ -262,7 +262,7 @@ INSERT INTO Opstina (Naziv, GradId) VALUES
 INSERT INTO Stranka (Naziv, Opis, DatumOsnivanja, BrojClanova, Sjediste, WebUrl) VALUES
 (
 'SDA',
-'Stranka demokratske akcije je politička stranka desnog centra koja djeluje u Bosni i Hercegovini
+N'Stranka demokratske akcije je politička stranka desnog centra koja djeluje u Bosni i Hercegovini
 od početka višestranačkog političkog sistema. Njeno djelovanje zasniva se na očuvanju suvereniteta
 i teritorijalnog integriteta države, jačanju institucionalnog sistema, zaštiti nacionalnog identiteta
 Bošnjaka, te razvoju demokratskog društva zasnovanog na vladavini prava. SDA posebnu pažnju posvećuje
@@ -272,7 +272,7 @@ socijalne i razvojne politike, uz aktivno zalaganje za evropske i euroatlantske 
 ),
 (
 'SDP BiH',
-'Socijaldemokratska partija Bosne i Hercegovine je multietnička, lijevo orijentisana politička stranka
+N'Socijaldemokratska partija Bosne i Hercegovine je multietnička, lijevo orijentisana politička stranka
 koja zagovara principe socijalne pravde, jednakosti svih građana i solidarnosti u društvu. Fokus njenog
 političkog djelovanja usmjeren je na zaštitu radničkih prava, jačanje javnog sektora, borbu protiv
 socijalne nejednakosti i diskriminacije, te izgradnju funkcionalne i pravne države. SDP BiH se zalaže
@@ -282,7 +282,7 @@ Hercegovine ka članstvu u Evropskoj uniji.',
 ),
 (
 'Narod i Pravda',
-'Narod i Pravda je politička stranka desnog centra koja je nastala kao odgovor na potrebu za snažnijom
+N'Narod i Pravda je politička stranka desnog centra koja je nastala kao odgovor na potrebu za snažnijom
 borbom protiv korupcije i zloupotrebe javnih resursa. Program stranke temelji se na jačanju pravne
 države, nezavisnosti pravosuđa i odgovornosti nosilaca javnih funkcija. Poseban fokus stavlja se na
 reformu javne uprave, unapređenje transparentnosti institucija, ekonomski razvoj i stvaranje jednakih
@@ -290,8 +290,8 @@ uslova za sve građane. Stranka se zalaže za moderne demokratske vrijednosti i 
 '2018-03-12', 15000, 'Sarajevo', 'https://www.narodipravda.ba'
 ),
 (
-'Naša Stranka',
-'Naša Stranka je liberalna i građanski orijentisana politička organizacija koja djeluje s ciljem
+N'Naša Stranka',
+N'Naša Stranka je liberalna i građanski orijentisana politička organizacija koja djeluje s ciljem
 izgradnje otvorenog, inkluzivnog i pravednog društva. Poseban akcenat stavlja na zaštitu ljudskih
 prava, slobodu pojedinca, ravnopravnost spolova i prava manjinskih grupa. Program stranke uključuje
 jačanje institucija, borbu protiv korupcije, održivi razvoj i unapređenje javnih politika u oblastima
@@ -301,7 +301,7 @@ transparentno upravljanje.',
 ),
 (
 'SBB',
-'Savez za bolju budućnost je politička stranka koja svoje djelovanje temelji na principima ekonomskog
+N'Savez za bolju budućnost je politička stranka koja svoje djelovanje temelji na principima ekonomskog
 razvoja, modernizacije društva i jačanja medijskih sloboda. Program stranke usmjeren je na unapređenje
 poslovnog ambijenta, podsticanje investicija, otvaranje novih radnih mjesta i razvoj infrastrukture.
 SBB zagovara efikasnu i racionalnu javnu administraciju, borbu protiv korupcije i jačanje uloge
@@ -311,7 +311,7 @@ informisanju građana.',
 ),
 (
 'DF',
-'Demokratska fronta je lijevo orijentisana politička stranka koja promoviše antifašizam, socijalnu
+N'Demokratska fronta je lijevo orijentisana politička stranka koja promoviše antifašizam, socijalnu
 pravdu i zaštitu državnih institucija Bosne i Hercegovine. Njen politički program fokusiran je na
 jačanje suvereniteta države, ravnopravnost svih naroda i građana, te borbu protiv nacionalizma i
 diskriminacije. DF se zalaže za snažne javne institucije, socijalno odgovorne politike, zaštitu
@@ -321,25 +321,25 @@ integracije.',
 );
 
 INSERT INTO Kategorija (Naziv, Opis) VALUES
-('Glasanje', 'Pitanja o procesu glasanja i validnosti glasa'),
-('Sigurnost', 'Pitanja vezana za sigurnost, anonimnost i zaštitu podataka'),
-('Tehnički problemi', 'Pitanja o greškama i tehničkim poteškoćama'),
-('Registracija', 'Pitanja o korisničkim nalozima i prijavi'),
-('Opće informacije', 'Opšte informacije o izbornom sistemu');
+(N'Glasanje', N'Pitanja o procesu glasanja i validnosti glasa'),
+(N'Sigurnost', N'Pitanja vezana za sigurnost, anonimnost i zaštitu podataka'),
+(N'Tehnički problemi', N'Pitanja o greškama i tehničkim poteškoćama'),
+(N'Registracija', N'Pitanja o korisničkim nalozima i prijavi'),
+(N'Opšte informacije', N'Opšte informacije o izbornom sistemu');
 
 INSERT INTO Pitanje (KategorijaId, PitanjeText, OdgovorText) VALUES
-(1, 'Kako mogu glasati?', 'Korisnik se prijavljuje u sistem i bira jednog ili više kandidata u skladu s pravilima izbora.'),
-(1, 'Mogu li glasati više puta?', 'Ne. Sistem dozvoljava glasanje samo jednom po izboru.'),
-(1, 'Da li mogu promijeniti glas?', 'Ne, nakon potvrde glasanja glas se trajno evidentira.'),
+(1, N'Kako mogu glasati?', N'Korisnik se prijavljuje u sistem i bira jednog ili više kandidata u skladu s pravilima izbora.'),
+(1, N'Mogu li glasati više puta?', N'Ne. Sistem dozvoljava glasanje samo jednom po izboru.'),
+(1, N'Da li mogu promijeniti glas?', N'Ne, nakon potvrde glasanja glas se trajno evidentira.'),
 
-(2, 'Da li je moje glasanje anonimno?', 'Da. Glas je kriptografski odvojen od identiteta korisnika.'),
-(2, 'Kako se štite moji podaci?', 'Podaci su zaštićeni hashiranjem, enkripcijom i kontrolom pristupa.'),
+(2, N'Da li je moje glasanje anonimno?', N'Da. Vaš glas možete samo Vi vidjeti kroz historiju glasanja, dok je za ostale korisnike anoniman.'),
+(2, N'Kako se štite moji podaci?', N'Podaci su zaštićeni hashiranjem, enkripcijom i kontrolom pristupa.'),
 
-(3, 'Šta ako mi se aplikacija ugasi tokom glasanja?', 'Ako glas nije potvrđen, neće biti evidentiran.'),
-(3, 'Kome da se obratim za tehničku podršku?', 'Administratorskoj službi putem zvaničnih kanala.'),
+(3, N'Šta ako mi se aplikacija ugasi tokom glasanja?', N'Ako glas nije potvrđen, neće biti evidentiran.'),
+(3, N'Kome da se obratim za tehničku podršku?', N'Administratorskoj službi putem zvaničnih kanala.'),
 
-(4, 'Ko kreira korisničke naloge?', 'Korisničke naloge kreira administrator sistema.'),
-(4, 'Kako dobijam PIN?', 'PIN se dodjeljuje prilikom prve prijave od strane administratora.'),
+(4, N'Ko kreira korisničke naloge?', N'Korisničke naloge kreira administrator sistema.'),
+(4, N'Kako dobijam PIN?', N'PIN kreirate prilikom prve prijave u aplikaciju, te isti koristite neposredno prije glasanja.'),
 
-(5, 'Ko može koristiti sistem?', 'Sistem mogu koristiti registrovani birači sa važećim pravom glasa.'),
-(5, 'Zašto koristiti elektronsko glasanje?', 'Radi povećanja transparentnosti, sigurnosti i smanjenja izbornih nepravilnosti.');
+(5, N'Ko može koristiti sistem?', N'Sistem mogu koristiti registrovani birači sa važećim pravom glasa.'),
+(5, N'Zašto koristiti elektronsko glasanje?', N'Radi povećanja transparentnosti, sigurnosti i smanjenja izbornih nepravilnosti.');
