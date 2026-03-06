@@ -61,7 +61,6 @@ CREATE TABLE Stranka (
     Naziv NVARCHAR(100) NOT NULL,
     Opis NVARCHAR(MAX) NULL,
     DatumOsnivanja DATE NULL,
-    BrojClanova INT NULL,
     Sjediste NVARCHAR(200) NULL,
     WebUrl NVARCHAR(200) NULL,
     Logo VARBINARY(MAX) NULL,
@@ -259,7 +258,7 @@ INSERT INTO Opstina (Naziv, GradId) VALUES
 ----------------------------
 -- STANKE
 
-INSERT INTO Stranka (Naziv, Opis, DatumOsnivanja, BrojClanova, Sjediste, WebUrl) VALUES
+INSERT INTO Stranka (Naziv, Opis, DatumOsnivanja, Sjediste, WebUrl) VALUES
 (
 'SDA',
 N'Stranka demokratske akcije je politička stranka desnog centra koja djeluje u Bosni i Hercegovini
@@ -268,7 +267,7 @@ i teritorijalnog integriteta države, jačanju institucionalnog sistema, zaštit
 Bošnjaka, te razvoju demokratskog društva zasnovanog na vladavini prava. SDA posebnu pažnju posvećuje
 ekonomskom razvoju, jačanju javnih institucija, obrazovanju, kao i unapređenju položaja građana kroz
 socijalne i razvojne politike, uz aktivno zalaganje za evropske i euroatlantske integracije.',
-'1990-05-26', 200000, 'Sarajevo', 'https://www.sda.ba'
+'1990-05-26', 'Sarajevo', 'https://www.sda.ba'
 ),
 (
 'SDP BiH',
@@ -278,7 +277,7 @@ političkog djelovanja usmjeren je na zaštitu radničkih prava, jačanje javnog
 socijalne nejednakosti i diskriminacije, te izgradnju funkcionalne i pravne države. SDP BiH se zalaže
 za demokratske reforme, transparentnost vlasti, poštivanje ljudskih prava i ubrzani put Bosne i
 Hercegovine ka članstvu u Evropskoj uniji.',
-'1999-04-22', 50000, 'Sarajevo', 'https://www.sdp.ba'
+'1999-04-22', 'Sarajevo', 'https://www.sdp.ba'
 ),
 (
 'Narod i Pravda',
@@ -287,7 +286,7 @@ borbom protiv korupcije i zloupotrebe javnih resursa. Program stranke temelji se
 države, nezavisnosti pravosuđa i odgovornosti nosilaca javnih funkcija. Poseban fokus stavlja se na
 reformu javne uprave, unapređenje transparentnosti institucija, ekonomski razvoj i stvaranje jednakih
 uslova za sve građane. Stranka se zalaže za moderne demokratske vrijednosti i evropske integracije.',
-'2018-03-12', 15000, 'Sarajevo', 'https://www.narodipravda.ba'
+'2018-03-12', 'Sarajevo', 'https://www.narodipravda.ba'
 ),
 (
 N'Naša Stranka',
@@ -297,7 +296,7 @@ prava, slobodu pojedinca, ravnopravnost spolova i prava manjinskih grupa. Progra
 jačanje institucija, borbu protiv korupcije, održivi razvoj i unapređenje javnih politika u oblastima
 obrazovanja, kulture i zaštite okoliša. Naša Stranka se dosljedno zalaže za evropske vrijednosti i
 transparentno upravljanje.',
-'2008-04-10', 12000, 'Sarajevo', 'https://www.nasastranka.ba'
+'2008-04-10', 'Sarajevo', 'https://www.nasastranka.ba'
 ),
 (
 'SBB',
@@ -307,7 +306,7 @@ poslovnog ambijenta, podsticanje investicija, otvaranje novih radnih mjesta i ra
 SBB zagovara efikasnu i racionalnu javnu administraciju, borbu protiv korupcije i jačanje uloge
 privatnog sektora u ekonomskom razvoju. Posebnu pažnju posvećuje savremenim komunikacijama i
 informisanju građana.',
-'2009-09-15', 30000, 'Sarajevo', 'https://www.sbb.ba'
+'2009-09-15', 'Sarajevo', 'https://www.sbb.ba'
 ),
 (
 'DF',
@@ -317,7 +316,7 @@ jačanje suvereniteta države, ravnopravnost svih naroda i građana, te borbu pr
 diskriminacije. DF se zalaže za snažne javne institucije, socijalno odgovorne politike, zaštitu
 radničkih prava i unapređenje sistema obrazovanja i zdravstva, uz jasno opredjeljenje za evropske
 integracije.',
-'2013-04-07', 25000, 'Sarajevo', 'https://www.df.ba'
+'2013-04-07', 'Sarajevo', 'https://www.df.ba'
 );
 
 INSERT INTO Kategorija (Naziv, Opis) VALUES

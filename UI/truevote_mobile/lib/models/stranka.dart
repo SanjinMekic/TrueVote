@@ -8,7 +8,6 @@ class Stranka {
   String? naziv;
   String? opis;
   DateTime? datumOsnivanja;
-  int? brojClanova;
   String? sjediste;
   String? webUrl;
   String? logo;
@@ -18,7 +17,6 @@ class Stranka {
     this.naziv,
     this.opis,
     this.datumOsnivanja,
-    this.brojClanova,
     this.sjediste,
     this.webUrl,
     this.logo,

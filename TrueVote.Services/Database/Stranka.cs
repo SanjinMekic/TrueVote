@@ -13,8 +13,6 @@ public partial class Stranka
 
     public DateTime? DatumOsnivanja { get; set; }
 
-    public int? BrojClanova { get; set; }
-
     public string? Sjediste { get; set; }
 
     public string? WebUrl { get; set; }

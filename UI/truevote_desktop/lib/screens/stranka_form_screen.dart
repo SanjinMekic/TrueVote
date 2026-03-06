@@ -36,7 +36,6 @@ class _StrankaFormScreenState extends State<StrankaFormScreen> {
       _datumController.text = widget.stranka!.datumOsnivanja != null
           ? DateFormat('dd.MM.yyyy').format(widget.stranka!.datumOsnivanja!)
           : '';
-      _brojClanovaController.text = widget.stranka!.brojClanova?.toString() ?? '';
       _sjedisteController.text = widget.stranka!.sjediste ?? '';
       _webUrlController.text = widget.stranka!.webUrl ?? '';
       _logoPath = widget.stranka!.logo;

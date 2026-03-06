@@ -19,6 +19,10 @@ public partial class Korisnik
 
     public string? PasswordHash { get; set; }
 
+    public string? PinSalt { get; set; }
+
+    public string? PinHash { get; set; }
+
     public int UlogaId { get; set; }
 
     public int OpstinaId { get; set; }
@@ -26,10 +30,6 @@ public partial class Korisnik
     public byte[]? Slika { get; set; }
 
     public bool Obrisan { get; set; }
-
-    public string? PinSalt { get; set; }
-
-    public string? PinHash { get; set; }
 
     public bool SistemAdministrator { get; set; }
 

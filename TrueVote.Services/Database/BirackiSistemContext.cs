@@ -47,7 +47,7 @@ public partial class BirackiSistemContext : DbContext
     {
         modelBuilder.Entity<Drzava>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__Drzava__3214EC07D3A348C0");
+            entity.HasKey(e => e.Id).HasName("PK__Drzava__3214EC078EB8C050");
 
             entity.ToTable("Drzava");
 
@@ -56,24 +56,24 @@ public partial class BirackiSistemContext : DbContext
 
         modelBuilder.Entity<Glas>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__Glas__3214EC0761FC752D");
+            entity.HasKey(e => e.Id).HasName("PK__Glas__3214EC079FAB51C5");
 
             entity.Property(e => e.VrijemeGlasanja).HasColumnType("datetime");
 
             entity.HasOne(d => d.Kandidat).WithMany(p => p.Glas)
                 .HasForeignKey(d => d.KandidatId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK__Glas__KandidatId__5BE2A6F2");
+                .HasConstraintName("FK__Glas__KandidatId__5CD6CB2B");
 
             entity.HasOne(d => d.Korisnik).WithMany(p => p.Glas)
                 .HasForeignKey(d => d.KorisnikId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK__Glas__KorisnikId__5AEE82B9");
+                .HasConstraintName("FK__Glas__KorisnikId__5BE2A6F2");
         });
 
         modelBuilder.Entity<Grad>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__Grad__3214EC0725F67DAB");
+            entity.HasKey(e => e.Id).HasName("PK__Grad__3214EC073BEE43A0");
 
             entity.ToTable("Grad");
 
@@ -87,7 +87,7 @@ public partial class BirackiSistemContext : DbContext
 
         modelBuilder.Entity<Izbor>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__Izbor__3214EC07E7122481");
+            entity.HasKey(e => e.Id).HasName("PK__Izbor__3214EC07B7DEB6FE");
 
             entity.ToTable("Izbor");
 
@@ -98,12 +98,12 @@ public partial class BirackiSistemContext : DbContext
             entity.HasOne(d => d.TipIzbora).WithMany(p => p.Izbors)
                 .HasForeignKey(d => d.TipIzboraId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK__Izbor__TipIzbora__52593CB8");
+                .HasConstraintName("FK__Izbor__TipIzbora__534D60F1");
         });
 
         modelBuilder.Entity<Kandidat>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__Kandidat__3214EC077A586614");
+            entity.HasKey(e => e.Id).HasName("PK__Kandidat__3214EC07FCB3C9EC");
 
             entity.ToTable("Kandidat");
 
@@ -113,16 +113,16 @@ public partial class BirackiSistemContext : DbContext
             entity.HasOne(d => d.Izbor).WithMany(p => p.Kandidats)
                 .HasForeignKey(d => d.IzborId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK__Kandidat__IzborI__571DF1D5");
+                .HasConstraintName("FK__Kandidat__IzborI__5812160E");
 
             entity.HasOne(d => d.Stranka).WithMany(p => p.Kandidats)
                 .HasForeignKey(d => d.StrankaId)
-                .HasConstraintName("FK__Kandidat__Strank__5629CD9C");
+                .HasConstraintName("FK__Kandidat__Strank__571DF1D5");
         });
 
         modelBuilder.Entity<Kategorija>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__Kategori__3214EC07806C5647");
+            entity.HasKey(e => e.Id).HasName("PK__Kategori__3214EC07100BFC18");
 
             entity.ToTable("Kategorija");
 
@@ -132,11 +132,11 @@ public partial class BirackiSistemContext : DbContext
 
         modelBuilder.Entity<Korisnik>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__Korisnik__3214EC07B017AC1D");
+            entity.HasKey(e => e.Id).HasName("PK__Korisnik__3214EC079401CB2F");
 
             entity.ToTable("Korisnik");
 
-            entity.HasIndex(e => e.KorisnickoIme, "UQ__Korisnik__992E6F92CF86A28D").IsUnique();
+            entity.HasIndex(e => e.KorisnickoIme, "UQ__Korisnik__992E6F929C4DF7C9").IsUnique();
 
             entity.Property(e => e.Email).HasMaxLength(200);
             entity.Property(e => e.Ime).HasMaxLength(100);
@@ -150,17 +150,17 @@ public partial class BirackiSistemContext : DbContext
             entity.HasOne(d => d.Opstina).WithMany(p => p.Korisniks)
                 .HasForeignKey(d => d.OpstinaId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK__Korisnik__Opstin__47DBAE45");
+                .HasConstraintName("FK__Korisnik__Opstin__48CFD27E");
 
             entity.HasOne(d => d.Uloga).WithMany(p => p.Korisniks)
                 .HasForeignKey(d => d.UlogaId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK__Korisnik__UlogaI__46E78A0C");
+                .HasConstraintName("FK__Korisnik__UlogaI__47DBAE45");
         });
 
         modelBuilder.Entity<Opstina>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__Opstina__3214EC070BB467F5");
+            entity.HasKey(e => e.Id).HasName("PK__Opstina__3214EC07C721C05D");
 
             entity.ToTable("Opstina");
 
@@ -174,37 +174,35 @@ public partial class BirackiSistemContext : DbContext
 
         modelBuilder.Entity<Pitanje>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__Pitanje__3214EC0717452671");
+            entity.HasKey(e => e.Id).HasName("PK__Pitanje__3214EC074A33B84B");
 
             entity.ToTable("Pitanje");
 
             entity.Property(e => e.DatumKreiranja)
                 .HasDefaultValueSql("(getdate())")
                 .HasColumnType("datetime");
-            entity.Property(e => e.PitanjeText).HasMaxLength(1000);
 
             entity.HasOne(d => d.Kategorija).WithMany(p => p.Pitanjes)
                 .HasForeignKey(d => d.KategorijaId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK__Pitanje__Kategor__6383C8BA");
+                .HasConstraintName("FK__Pitanje__Kategor__6477ECF3");
         });
 
         modelBuilder.Entity<Stranka>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__Stranka__3214EC07D434D0BD");
+            entity.HasKey(e => e.Id).HasName("PK__Stranka__3214EC0714194469");
 
             entity.ToTable("Stranka");
 
             entity.Property(e => e.DatumOsnivanja).HasColumnType("date");
             entity.Property(e => e.Naziv).HasMaxLength(100);
-            entity.Property(e => e.Opis).HasMaxLength(500);
             entity.Property(e => e.Sjediste).HasMaxLength(200);
             entity.Property(e => e.WebUrl).HasMaxLength(200);
         });
 
         modelBuilder.Entity<TipIzbora>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__TipIzbor__3214EC076193DE3C");
+            entity.HasKey(e => e.Id).HasName("PK__TipIzbor__3214EC07E550EF61");
 
             entity.ToTable("TipIzbora");
 
@@ -213,12 +211,12 @@ public partial class BirackiSistemContext : DbContext
             entity.HasOne(d => d.Opstina).WithMany(p => p.TipIzboras)
                 .HasForeignKey(d => d.OpstinaId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK__TipIzbora__Opsti__4E88ABD4");
+                .HasConstraintName("FK__TipIzbora__Opsti__4F7CD00D");
         });
 
         modelBuilder.Entity<Uloga>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__Uloga__3214EC07822282DD");
+            entity.HasKey(e => e.Id).HasName("PK__Uloga__3214EC07ADE88EAF");
 
             entity.ToTable("Uloga");
 

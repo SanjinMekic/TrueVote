@@ -387,12 +387,6 @@ class _StrankaScreenState extends State<StrankaScreen> {
                                                   "Osnovan",
                                                   DateFormat('dd.MM.yyyy.').format(stranka.datumOsnivanja!),
                                                 ),
-                                              if (stranka.brojClanova != null)
-                                                _buildInfoRow(
-                                                  Icons.people,
-                                                  "Članovi",
-                                                  "${stranka.brojClanova}",
-                                                ),
                                               if (stranka.sjediste != null && stranka.sjediste!.isNotEmpty)
                                                 _buildInfoRow(
                                                   Icons.location_on,
