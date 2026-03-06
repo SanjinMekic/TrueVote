@@ -21,7 +21,6 @@ class _StrankaFormScreenState extends State<StrankaFormScreen> {
   final _nazivController = TextEditingController();
   final _opisController = TextEditingController();
   final _datumController = TextEditingController();
-  final _brojClanovaController = TextEditingController();
   final _sjedisteController = TextEditingController();
   final _webUrlController = TextEditingController();
 
@@ -47,7 +46,6 @@ class _StrankaFormScreenState extends State<StrankaFormScreen> {
     _nazivController.dispose();
     _opisController.dispose();
     _datumController.dispose();
-    _brojClanovaController.dispose();
     _sjedisteController.dispose();
     _webUrlController.dispose();
     super.dispose();
@@ -130,7 +128,6 @@ class _StrankaFormScreenState extends State<StrankaFormScreen> {
       "naziv": _nazivController.text,
       "opis": _opisController.text,
       "datumOsnivanja": parsedDate?.toIso8601String(),
-      "brojClanova": _brojClanovaController.text.isNotEmpty ? int.parse(_brojClanovaController.text) : null,
       "sjediste": _sjedisteController.text,
       "webUrl": _webUrlController.text.isNotEmpty ? _webUrlController.text : null,
       "logoBase64": logoBase64,
@@ -213,26 +210,6 @@ class _StrankaFormScreenState extends State<StrankaFormScreen> {
                       ),
                       const SizedBox(height: 14),
                       TextFormField(
-                        controller: _brojClanovaController,
-                        decoration: const InputDecoration(
-                          labelText: "Broj članova",
-                          border: OutlineInputBorder(),
-                        ),
-                        keyboardType: TextInputType.number,
-                        validator: (value) {
-                          if (value != null && value.isNotEmpty) {
-                            if (int.tryParse(value) == null) {
-                              return "Broj članova mora biti valjan broj.";
-                            }
-                            if (int.parse(value) <= 0) {
-                              return "Broj članova mora biti veći od 0.";
-                            }
-                          }
-                          return null;
-                        },
-                      ),
-                      const SizedBox(height: 14),
-                      TextFormField(
                         controller: _sjedisteController,
                         decoration: const InputDecoration(
                           labelText: "Sjedište *",
@@ -272,18 +249,12 @@ class _StrankaFormScreenState extends State<StrankaFormScreen> {
                                   label: const Text("Odaberi logo"),
                                   style: ElevatedButton.styleFrom(
                                     backgroundColor: Colors.blueAccent,
-                                    foregroundColor: Colors.white
+                                    foregroundColor: Colors.white,
+                                    minimumSize: const Size(double.infinity, 40),
                                   ),
                                   onPressed: _pickLogo,
                                 ),
                                 const SizedBox(height: 4),
-                                const Text(
-                                  "Logo je opcionalan",
-                                  style: TextStyle(
-                                    fontSize: 12,
-                                    color: Colors.grey,
-                                  ),
-                                ),
                               ],
                             ),
                           ),
@@ -303,7 +274,7 @@ class _StrankaFormScreenState extends State<StrankaFormScreen> {
                             label: Text(widget.stranka == null ? "Sačuvaj" : "Izmijeni"),
                             style: ElevatedButton.styleFrom(
                               backgroundColor: Colors.blueAccent,
-                                foregroundColor: Colors.white
+                              foregroundColor: Colors.white,
                             ),
                             onPressed: _save,
                           ),
