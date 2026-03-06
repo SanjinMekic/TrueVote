@@ -20,10 +20,12 @@ class KandidatFormScreen extends StatefulWidget {
 }
 
 class _KandidatFormScreenState extends State<KandidatFormScreen> {
+  static const int _nezavisniSentinel = -1;
+
   final _formKey = GlobalKey<FormState>();
   final _imeController = TextEditingController();
   final _prezimeController = TextEditingController();
-  int? _strankaId;
+  int? _strankaId; // null = ništa nije odabrano, -1 = Nezavisni kandidat, >0 = ID stranke
   int? _izborId;
   String? _slikaPath;
 
@@ -36,7 +38,8 @@ class _KandidatFormScreenState extends State<KandidatFormScreen> {
     if (widget.kandidat != null) {
       _imeController.text = widget.kandidat!.ime ?? '';
       _prezimeController.text = widget.kandidat!.prezime ?? '';
-      _strankaId = widget.kandidat!.strankaId;
+      // Ako kandidat nema stranku, prikaži "Nezavisni kandidat" kao odabrano
+      _strankaId = widget.kandidat!.strankaId ?? _nezavisniSentinel;
       _izborId = widget.kandidat!.izborId;
       _slikaPath = widget.kandidat!.slika;
     }
@@ -119,10 +122,13 @@ class _KandidatFormScreenState extends State<KandidatFormScreen> {
     final provider = Provider.of<KandidatProvider>(context, listen: false);
     final slikaBase64 = await _getSlikaBase64();
 
+    // Sentinel -1 znači Nezavisni kandidat → šalji null na backend
+    final int? strankaIdZaSlanje = (_strankaId == _nezavisniSentinel) ? null : _strankaId;
+
     final Map<String, dynamic> request = {
       "ime": _imeController.text,
       "prezime": _prezimeController.text,
-      "strankaId": _strankaId,
+      "strankaId": strankaIdZaSlanje,
       "izborId": _izborId,
       "slikaBase64": slikaBase64,
     };
@@ -183,12 +189,18 @@ class _KandidatFormScreenState extends State<KandidatFormScreen> {
                           labelText: "Stranka *",
                           border: OutlineInputBorder(),
                         ),
-                        items: _stranke
-                            .map((s) => DropdownMenuItem<int>(
-                                  value: s.id,
-                                  child: Text(s.naziv ?? ""),
-                                ))
-                            .toList(),
+                        items: [
+                          const DropdownMenuItem<int>(
+                            value: _nezavisniSentinel,
+                            child: Text("Nezavisni kandidat"),
+                          ),
+                          ..._stranke
+                              .map((s) => DropdownMenuItem<int>(
+                                    value: s.id,
+                                    child: Text(s.naziv ?? ""),
+                                  ))
+                              .toList(),
+                        ],
                         onChanged: (value) => setState(() => _strankaId = value),
                         validator: (value) =>
                             value == null ? "Stranka je obavezna." : null,

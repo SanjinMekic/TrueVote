@@ -187,7 +187,7 @@ class _AdministracijaKandidataScreenState extends State<AdministracijaKandidataS
                   ),
                   const SizedBox(height: 6),
                   Text(
-                    "Stranka: ${kandidat.stranka?.naziv ?? ''}",
+                    "Stranka: ${kandidat.stranka?.naziv ?? 'Nezavisan kandidat'}",
                     style: const TextStyle(fontSize: 16, color: Colors.black87),
                   ),
                   const SizedBox(height: 2),

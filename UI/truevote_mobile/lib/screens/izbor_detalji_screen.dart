@@ -328,7 +328,7 @@ class _IzborDetaljiScreenState extends State<IzborDetaljiScreen> {
                             ),
                           ),
                           subtitle: Text(
-                            "Stranka: ${kandidat['stranka']?['naziv'] ?? '-'}",
+                            "Stranka: ${kandidat['stranka']?['naziv'] ?? 'nezavisan kandidat'}",
                             style: const TextStyle(fontSize: 15),
                           ),
                           onTap: () {

@@ -218,7 +218,7 @@ class _IzborStatistikaScreenState extends State<IzborStatistikaScreen> {
                                 ),
                               ),
                               subtitle: Text(
-                                "Stranka: ${kandidat['stranka']?['naziv'] ?? '-'}",
+                                "Stranka: ${kandidat['stranka']?['naziv'] ?? 'nezavisan kandidat'}",
                                 style: const TextStyle(fontSize: 15),
                               ),
                               trailing: Container(

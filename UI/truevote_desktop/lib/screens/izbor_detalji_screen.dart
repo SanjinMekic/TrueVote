@@ -86,251 +86,254 @@ class _IzborDetaljiScreenState extends State<IzborDetaljiScreen> {
     );
   }
 
-  Widget _buildKandidatCard(dynamic kandidat) {
-    final stranka = kandidat['stranka'];
-    Widget slikaWidget;
-    if (kandidat['slika'] != null && kandidat['slika'].toString().isNotEmpty) {
-      try {
-        final bytes = base64Decode(kandidat['slika']);
-        slikaWidget = ClipRRect(
-          borderRadius: BorderRadius.circular(12),
-          child: Image.memory(bytes, width: 70, height: 70, fit: BoxFit.cover),
-        );
-      } catch (_) {
-        slikaWidget = _defaultAvatar();
-      }
-    } else {
+ Widget _buildKandidatCard(dynamic kandidat) {
+  final stranka = kandidat['stranka'];
+  Widget slikaWidget;
+  if (kandidat['slika'] != null && kandidat['slika'].toString().isNotEmpty) {
+    try {
+      final bytes = base64Decode(kandidat['slika']);
+      slikaWidget = ClipRRect(
+        borderRadius: BorderRadius.circular(12),
+        child: Image.memory(bytes, width: 70, height: 70, fit: BoxFit.cover),
+      );
+    } catch (_) {
       slikaWidget = _defaultAvatar();
     }
+  } else {
+    slikaWidget = _defaultAvatar();
+  }
 
-    Widget logoWidget;
-    if (stranka != null &&
-        stranka['logo'] != null &&
-        stranka['logo'].toString().isNotEmpty &&
-        stranka['logo'] != "System.Byte[]") {
-      try {
-        final bytes = base64Decode(stranka['logo']);
-        logoWidget = ClipRRect(
-          borderRadius: BorderRadius.circular(8),
-          child: Image.memory(bytes, width: 40, height: 40, fit: BoxFit.cover),
-        );
-      } catch (_) {
-        logoWidget = _defaultLogo();
-      }
-    } else {
+  Widget logoWidget;
+  if (stranka != null &&
+      stranka['logo'] != null &&
+      stranka['logo'].toString().isNotEmpty &&
+      stranka['logo'] != "System.Byte[]") {
+    try {
+      final bytes = base64Decode(stranka['logo']);
+      logoWidget = ClipRRect(
+        borderRadius: BorderRadius.circular(8),
+        child: Image.memory(bytes, width: 40, height: 40, fit: BoxFit.cover),
+      );
+    } catch (_) {
       logoWidget = _defaultLogo();
     }
+  } else {
+    logoWidget = _defaultLogo();
+  }
 
-    return FutureBuilder<int>(
-      future: Provider.of<GlasProvider>(
-        context,
-        listen: false,
-      ).getBrojGlasovaZaKandidata(kandidat['id']),
-      builder: (context, snapshot) {
-        final brojGlasova = snapshot.hasData ? snapshot.data : null;
-        return Card(
-          elevation: 4,
-          margin: const EdgeInsets.symmetric(vertical: 10, horizontal: 4),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(16),
-          ),
-          child: Padding(
-            padding: const EdgeInsets.all(18),
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                slikaWidget,
-                const SizedBox(width: 18),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
-                        children: [
-                          Expanded(
-                            child: Text(
-                              "${kandidat['ime'] ?? ''} ${kandidat['prezime'] ?? ''}",
-                              style: const TextStyle(
-                                fontSize: 20,
-                                fontWeight: FontWeight.bold,
+  return FutureBuilder<int>(
+    future: Provider.of<GlasProvider>(
+      context,
+      listen: false,
+    ).getBrojGlasovaZaKandidata(kandidat['id']),
+    builder: (context, snapshot) {
+      final brojGlasova = snapshot.hasData ? snapshot.data : null;
+      return Card(
+        elevation: 4,
+        margin: const EdgeInsets.symmetric(vertical: 10, horizontal: 4),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(16),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.all(18),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              slikaWidget,
+              const SizedBox(width: 18),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        Expanded(
+                          child: Text(
+                            "${kandidat['ime'] ?? ''} ${kandidat['prezime'] ?? ''}",
+                            style: const TextStyle(
+                              fontSize: 20,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.blueAccent,
+                            ),
+                          ),
+                        ),
+                        if (brojGlasova != null)
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 12,
+                              vertical: 6,
+                            ),
+                            decoration: BoxDecoration(
+                              color: Colors.blueAccent.withOpacity(0.08),
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            child: Row(
+                              children: [
+                                const Icon(
+                                  Icons.how_to_vote,
+                                  size: 18,
+                                  color: Colors.blueAccent,
+                                ),
+                                const SizedBox(width: 4),
+                                Text(
+                                  "Broj glasova: $brojGlasova",
+                                  style: const TextStyle(
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.blueAccent,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        if (snapshot.connectionState == ConnectionState.waiting)
+                          const Padding(
+                            padding: EdgeInsets.only(left: 8.0),
+                            child: SizedBox(
+                              width: 18,
+                              height: 18,
+                              child: CircularProgressIndicator(
+                                strokeWidth: 2,
                                 color: Colors.blueAccent,
                               ),
                             ),
                           ),
-                          if (brojGlasova != null)
-                            Container(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 12,
-                                vertical: 6,
-                              ),
-                              decoration: BoxDecoration(
-                                color: Colors.blueAccent.withOpacity(0.08),
-                                borderRadius: BorderRadius.circular(8),
-                              ),
-                              child: Row(
-                                children: [
-                                  const Icon(
-                                    Icons.how_to_vote,
-                                    size: 18,
-                                    color: Colors.blueAccent,
-                                  ),
-                                  const SizedBox(width: 4),
-                                  Text(
-                                    "Broj glasova: $brojGlasova",
-                                    style: const TextStyle(
-                                      fontSize: 14,
-                                      fontWeight: FontWeight.bold,
-                                      color: Colors.blueAccent,
-                                    ),
-                                  ),
-                                ],
+                      ],
+                    ),
+                    const SizedBox(height: 6),
+                    if (stranka != null)
+                      Row(
+                        children: [
+                          logoWidget,
+                          const SizedBox(width: 10),
+                          Expanded(
+                            child: Text(
+                              stranka['naziv'] ?? '',
+                              style: const TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w500,
                               ),
                             ),
-                          if (snapshot.connectionState ==
-                              ConnectionState.waiting)
-                            const Padding(
-                              padding: EdgeInsets.only(left: 8.0),
-                              child: SizedBox(
-                                width: 18,
-                                height: 18,
-                                child: CircularProgressIndicator(
-                                  strokeWidth: 2,
-                                  color: Colors.blueAccent,
+                          ),
+                        ],
+                      )
+                    else
+                      const Padding(
+                        padding: EdgeInsets.only(top: 4.0),
+                        child: Text(
+                          "Nezavisan kandidat",
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w500,
+                            color: Colors.black54,
+                          ),
+                        ),
+                      ),
+                    if (stranka != null &&
+                        stranka['opis'] != null &&
+                        stranka['opis'].toString().isNotEmpty)
+                      Padding(
+                        padding: const EdgeInsets.only(top: 8.0),
+                        child: Text(
+                          stranka['opis'],
+                          style: const TextStyle(
+                            fontSize: 14,
+                            color: Colors.black87,
+                          ),
+                          maxLines: 3,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+                    if (stranka != null)
+                      Wrap(
+                        spacing: 12,
+                        runSpacing: 6,
+                        children: [
+                          if (stranka['datumOsnivanja'] != null)
+                            Chip(
+                              avatar: const Icon(
+                                Icons.calendar_today,
+                                size: 18,
+                                color: Colors.blueAccent,
+                              ),
+                              label: Text(
+                                DateFormat('dd.MM.yyyy.').format(
+                                  DateTime.parse(stranka['datumOsnivanja']),
+                                ),
+                                style: const TextStyle(fontSize: 13),
+                              ),
+                              backgroundColor: Colors.blueAccent.withOpacity(0.08),
+                            ),
+                          if (stranka['brojClanova'] != null)
+                            Chip(
+                              avatar: const Icon(
+                                Icons.people,
+                                size: 18,
+                                color: Colors.blueAccent,
+                              ),
+                              label: Text(
+                                "${stranka['brojClanova']} članova",
+                                style: const TextStyle(fontSize: 13),
+                              ),
+                              backgroundColor: Colors.blueAccent.withOpacity(0.08),
+                            ),
+                          if (stranka['sjediste'] != null &&
+                              stranka['sjediste'].toString().isNotEmpty)
+                            Chip(
+                              avatar: const Icon(
+                                Icons.location_on,
+                                size: 18,
+                                color: Colors.blueAccent,
+                              ),
+                              label: Text(
+                                stranka['sjediste'],
+                                style: const TextStyle(fontSize: 13),
+                              ),
+                              backgroundColor: Colors.blueAccent.withOpacity(0.08),
+                            ),
+                          if (stranka['webUrl'] != null &&
+                              stranka['webUrl'].toString().isNotEmpty)
+                            ActionChip(
+                              avatar: const Icon(
+                                Icons.link,
+                                size: 18,
+                                color: Colors.blueAccent,
+                              ),
+                              label: SizedBox(
+                                width: 100,
+                                child: Text(
+                                  stranka['webUrl'],
+                                  style: const TextStyle(
+                                    fontSize: 13,
+                                    color: Colors.blueAccent,
+                                    decoration: TextDecoration.underline,
+                                  ),
+                                  overflow: TextOverflow.ellipsis,
                                 ),
                               ),
+                              onPressed: () async {
+                                final url = Uri.parse(stranka['webUrl']);
+                                if (await canLaunchUrl(url)) {
+                                  await launchUrl(
+                                    url,
+                                    mode: LaunchMode.externalApplication,
+                                  );
+                                }
+                              },
+                              backgroundColor: Colors.blueAccent.withOpacity(0.08),
                             ),
                         ],
                       ),
-                      const SizedBox(height: 6),
-                      if (stranka != null)
-                        Row(
-                          children: [
-                            logoWidget,
-                            const SizedBox(width: 10),
-                            Expanded(
-                              child: Text(
-                                stranka['naziv'] ?? '',
-                                style: const TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.w500,
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      if (stranka != null &&
-                          stranka['opis'] != null &&
-                          stranka['opis'].toString().isNotEmpty)
-                        Padding(
-                          padding: const EdgeInsets.only(top: 8.0),
-                          child: Text(
-                            stranka['opis'],
-                            style: const TextStyle(
-                              fontSize: 14,
-                              color: Colors.black87,
-                            ),
-                            maxLines: 3,
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                        ),
-                      if (stranka != null)
-                        Wrap(
-                          spacing: 12,
-                          runSpacing: 6,
-                          children: [
-                            if (stranka['datumOsnivanja'] != null)
-                              Chip(
-                                avatar: const Icon(
-                                  Icons.calendar_today,
-                                  size: 18,
-                                  color: Colors.blueAccent,
-                                ),
-                                label: Text(
-                                  DateFormat('dd.MM.yyyy.').format(
-                                    DateTime.parse(stranka['datumOsnivanja']),
-                                  ),
-                                  style: const TextStyle(fontSize: 13),
-                                ),
-                                backgroundColor: Colors.blueAccent.withOpacity(
-                                  0.08,
-                                ),
-                              ),
-                            if (stranka['brojClanova'] != null)
-                              Chip(
-                                avatar: const Icon(
-                                  Icons.people,
-                                  size: 18,
-                                  color: Colors.blueAccent,
-                                ),
-                                label: Text(
-                                  "${stranka['brojClanova']} članova",
-                                  style: const TextStyle(fontSize: 13),
-                                ),
-                                backgroundColor: Colors.blueAccent.withOpacity(
-                                  0.08,
-                                ),
-                              ),
-                            if (stranka['sjediste'] != null &&
-                                stranka['sjediste'].toString().isNotEmpty)
-                              Chip(
-                                avatar: const Icon(
-                                  Icons.location_on,
-                                  size: 18,
-                                  color: Colors.blueAccent,
-                                ),
-                                label: Text(
-                                  stranka['sjediste'],
-                                  style: const TextStyle(fontSize: 13),
-                                ),
-                                backgroundColor: Colors.blueAccent.withOpacity(
-                                  0.08,
-                                ),
-                              ),
-                            if (stranka['webUrl'] != null &&
-                                stranka['webUrl'].toString().isNotEmpty)
-                              ActionChip(
-                                avatar: const Icon(
-                                  Icons.link,
-                                  size: 18,
-                                  color: Colors.blueAccent,
-                                ),
-                                label: SizedBox(
-                                  width: 100,
-                                  child: Text(
-                                    stranka['webUrl'],
-                                    style: const TextStyle(
-                                      fontSize: 13,
-                                      color: Colors.blueAccent,
-                                      decoration: TextDecoration.underline,
-                                    ),
-                                    overflow: TextOverflow.ellipsis,
-                                  ),
-                                ),
-                                onPressed: () async {
-                                  final url = Uri.parse(stranka['webUrl']);
-                                  if (await canLaunchUrl(url)) {
-                                    await launchUrl(
-                                      url,
-                                      mode: LaunchMode.externalApplication,
-                                    );
-                                  }
-                                },
-                                backgroundColor: Colors.blueAccent.withOpacity(
-                                  0.08,
-                                ),
-                              ),
-                          ],
-                        ),
-                    ],
-                  ),
+                  ],
                 ),
-              ],
-            ),
+              ),
+            ],
           ),
-        );
-      },
-    );
-  }
+        ),
+      );
+    },
+  );
+}
 
   Widget _defaultAvatar() {
     return Container(

@@ -71,17 +71,76 @@ class KandidatDetaljiScreen extends StatelessWidget {
   }
 
   void _openUrl(BuildContext context, String url) async {
-  String fixedUrl = url.trim();
-  if (!fixedUrl.startsWith('http://') && !fixedUrl.startsWith('https://')) {
-    fixedUrl = 'https://$fixedUrl';
+    String fixedUrl = url.trim();
+    if (!fixedUrl.startsWith('http://') && !fixedUrl.startsWith('https://')) {
+      fixedUrl = 'https://$fixedUrl';
+    }
+    final uri = Uri.parse(fixedUrl);
+    if (!await launchUrl(uri, mode: LaunchMode.externalApplication)) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Nije moguće otvoriti link.")),
+      );
+    }
   }
-  final uri = Uri.parse(fixedUrl);
-  if (!await launchUrl(uri, mode: LaunchMode.externalApplication)) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text("Nije moguće otvoriti link.")),
+
+  Widget _buildNezavisanKandidat() {
+    return Card(
+      elevation: 5,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
+      margin: const EdgeInsets.symmetric(vertical: 10),
+      child: Container(
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(18),
+          gradient: LinearGradient(
+            colors: [Colors.orange.shade50, Colors.deepOrange.shade50],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+          ),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.all(22),
+          child: Column(
+            children: [
+              const SizedBox(height: 14),
+              const Text(
+                "Nezavisan kandidat",
+                style: TextStyle(
+                  fontSize: 22,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.deepOrange,
+                ),
+              ),
+              const SizedBox(height: 10),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                decoration: BoxDecoration(
+                  color: Colors.orange.shade100,
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: const [
+                    Icon(Icons.info_outline, color: Colors.deepOrange, size: 20),
+                    SizedBox(width: 8),
+                    Flexible(
+                      child: Text(
+                        "Ovaj kandidat ne pripada nijednoj političkoj stranci.",
+                        style: TextStyle(
+                          fontSize: 15,
+                          color: Colors.deepOrange,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
     );
   }
-}
 
   @override
   Widget build(BuildContext context) {
@@ -215,7 +274,9 @@ class KandidatDetaljiScreen extends StatelessWidget {
                     ],
                   ),
                 ),
-              ),
+              )
+            else
+              _buildNezavisanKandidat(),
           ],
         ),
       ),
