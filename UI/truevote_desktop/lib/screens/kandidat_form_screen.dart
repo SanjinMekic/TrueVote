@@ -25,7 +25,7 @@ class _KandidatFormScreenState extends State<KandidatFormScreen> {
   final _formKey = GlobalKey<FormState>();
   final _imeController = TextEditingController();
   final _prezimeController = TextEditingController();
-  int? _strankaId; // null = ništa nije odabrano, -1 = Nezavisni kandidat, >0 = ID stranke
+  int? _strankaId;
   int? _izborId;
   String? _slikaPath;
 
@@ -38,7 +38,6 @@ class _KandidatFormScreenState extends State<KandidatFormScreen> {
     if (widget.kandidat != null) {
       _imeController.text = widget.kandidat!.ime ?? '';
       _prezimeController.text = widget.kandidat!.prezime ?? '';
-      // Ako kandidat nema stranku, prikaži "Nezavisni kandidat" kao odabrano
       _strankaId = widget.kandidat!.strankaId ?? _nezavisniSentinel;
       _izborId = widget.kandidat!.izborId;
       _slikaPath = widget.kandidat!.slika;
@@ -122,7 +121,6 @@ class _KandidatFormScreenState extends State<KandidatFormScreen> {
     final provider = Provider.of<KandidatProvider>(context, listen: false);
     final slikaBase64 = await _getSlikaBase64();
 
-    // Sentinel -1 znači Nezavisni kandidat → šalji null na backend
     final int? strankaIdZaSlanje = (_strankaId == _nezavisniSentinel) ? null : _strankaId;
 
     final Map<String, dynamic> request = {

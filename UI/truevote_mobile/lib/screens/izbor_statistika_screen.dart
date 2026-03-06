@@ -19,11 +19,21 @@ class _IzborStatistikaScreenState extends State<IzborStatistikaScreen> {
   List<dynamic> _kandidati = [];
   Map<int, int> _glasovi = {};
 
+  bool get _izborJeZavrsio {
+  final kraj = widget.izbor.datumKraja;
+  if (kraj == null) return false;
+  return DateTime.now().isAfter(kraj);
+}
+
   @override
-  void initState() {
-    super.initState();
+void initState() {
+  super.initState();
+  if (_izborJeZavrsio) {
     _loadStatistika();
+  } else {
+    setState(() => _isLoading = false);
   }
+}
 
   Future<void> _loadStatistika() async {
     setState(() => _isLoading = true);
@@ -103,7 +113,18 @@ class _IzborStatistikaScreenState extends State<IzborStatistikaScreen> {
       ),
       backgroundColor: const Color(0xFFF2F6FF),
       body: _isLoading
-          ? const Center(child: CircularProgressIndicator(color: Colors.blueAccent))
+    ? const Center(child: CircularProgressIndicator(color: Colors.blueAccent))
+    : !_izborJeZavrsio
+        ? const Center(
+            child: Padding(
+              padding: EdgeInsets.all(32),
+              child: Text(
+                "Statistika će biti dostupna nakon završetka izbora.",
+                style: TextStyle(fontSize: 16, color: Colors.grey),
+                textAlign: TextAlign.center,
+              ),
+            ),
+          )
           : _kandidati.isEmpty
               ? const Center(
                   child: Text(

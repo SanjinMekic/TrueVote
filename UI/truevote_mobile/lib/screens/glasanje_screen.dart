@@ -196,7 +196,7 @@ class _GlasanjeScreenState extends State<GlasanjeScreen> {
                       style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 17),
                     ),
                     subtitle: Text(
-                      "Stranka: ${kandidat['stranka']?['naziv'] ?? '-'}",
+                      "Stranka: ${kandidat['stranka']?['naziv'] ?? 'nezavisan kandidat'}",
                       style: const TextStyle(fontSize: 15),
                     ),
                     secondary: _buildKandidatSlika(kandidat['slika']),

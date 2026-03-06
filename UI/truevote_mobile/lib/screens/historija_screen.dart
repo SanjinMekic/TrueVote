@@ -117,14 +117,13 @@ class _HistorijaScreenState extends State<HistorijaScreen> {
                           color: Colors.blueAccent,
                         ),
                       ),
-                      if (kandidat?['stranka']?['naziv'] != null)
-                        Text(
-                          "Stranka: ${kandidat?['stranka']?['naziv']}",
-                          style: const TextStyle(
-                            fontSize: 15,
-                            color: Colors.black87,
-                          ),
-                        ),
+                      Text(
+  "Stranka: ${kandidat?['stranka']?['naziv'] ?? 'nezavisan kandidat'}",
+  style: const TextStyle(
+    fontSize: 15,
+    color: Colors.black87,
+  ),
+),
                     ],
                   ),
                 ),
@@ -213,19 +212,18 @@ class _HistorijaScreenState extends State<HistorijaScreen> {
                 ),
               ],
             ),
-            if (kandidat?['stranka']?['naziv'] != null)
-              Row(
-                children: [
-                  const Icon(Icons.groups, color: Colors.blueGrey, size: 20),
-                  const SizedBox(width: 6),
-                  Expanded(
-                    child: Text(
-                      "Stranka: ${kandidat?['stranka']?['naziv']}",
-                      style: const TextStyle(fontSize: 15),
-                    ),
-                  ),
-                ],
-              ),
+            Row(
+  children: [
+    const Icon(Icons.groups, color: Colors.blueGrey, size: 20),
+    const SizedBox(width: 6),
+    Expanded(
+      child: Text(
+        "Stranka: ${kandidat?['stranka']?['naziv'] ?? 'nezavisan kandidat'}",
+        style: const TextStyle(fontSize: 15),
+      ),
+    ),
+  ],
+),
             Row(
               children: [
                 const Icon(Icons.calendar_today, color: Colors.blueGrey, size: 20),
