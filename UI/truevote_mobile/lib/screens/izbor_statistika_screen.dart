@@ -194,7 +194,7 @@ void initState() {
                                   const Icon(Icons.info_outline, color: Colors.blueGrey, size: 20),
                                   const SizedBox(width: 6),
                                   Text(
-                                    "Status: ${izbor.status ?? "-"}",
+                                    "Status: Završen",
                                     style: const TextStyle(fontSize: 16),
                                   ),
                                 ],

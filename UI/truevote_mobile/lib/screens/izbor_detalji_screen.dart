@@ -151,17 +151,6 @@ class _IzborDetaljiScreenState extends State<IzborDetaljiScreen> {
         backgroundColor: Colors.blueAccent,
         iconTheme: const IconThemeData(color: Colors.white),
         actions: [
-          IconButton(
-            icon: const Icon(Icons.bar_chart, color: Colors.white),
-            tooltip: "Statistika",
-            onPressed: () {
-              Navigator.of(context).push(
-                MaterialPageRoute(
-                  builder: (context) => IzborStatistikaScreen(izbor: izbor),
-                ),
-              );
-            },
-          ),
         ],
       ),
       backgroundColor: const Color(0xFFF2F6FF),
