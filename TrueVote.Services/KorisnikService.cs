@@ -399,6 +399,24 @@ namespace TrueVote.Services
             return Convert.ToBase64String(algorithm.ComputeHash(dst));
         }
 
+        public async Task<bool> PonistiPinAsync(int korisnikId)
+        {
+            var korisnik = await Context.Korisniks
+                .FirstOrDefaultAsync(k => k.Id == korisnikId && !k.Obrisan);
+
+            if (korisnik == null)
+                throw new UserException("Korisnik nije pronađen.");
+
+            if (string.IsNullOrEmpty(korisnik.PinHash))
+                throw new UserException("Korisnik nema kreiran PIN.");
+
+            korisnik.PinHash = null;
+            korisnik.PinSalt = null;
+
+            await Context.SaveChangesAsync();
+            return true;
+        }
+
         public async Task<bool> ProvjeriStaruLozinkuAsync(int korisnikId, string staraLozinka)
         {
             if (string.IsNullOrWhiteSpace(staraLozinka))

@@ -64,6 +64,15 @@ namespace TrueVote.WebAPI.Controllers
             return Ok(new { message = "PIN uspješno promijenjen." });
         }
 
+        [HttpDelete("{id}/ponisti-pin")]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> PonistiPin(int id)
+        {
+            await _service.PonistiPinAsync(id);
+
+            return Ok(new { message = "PIN uspješno poništen." });
+        }
+
         [Authorize(Roles = "Admin")]
         public override KorisnikResponse Insert(KorisnikInsertRequest request)
         {

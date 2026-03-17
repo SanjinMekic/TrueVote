@@ -20,5 +20,6 @@ namespace TrueVote.Services
         Task<bool> ProvjeriKorisnickoIme(string korisnickoIme);
         Task<bool> PromijeniPinAsync(int korisnikId, string stariPin, string noviPin);
         Task<bool> ProvjeriStaruLozinkuAsync(int korisnikId, string staraLozinka);
+        Task<bool> PonistiPinAsync(int korisnikId);
     }
 }

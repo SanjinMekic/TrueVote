@@ -51,4 +51,15 @@ class KorisnikProvider extends BaseProvider<Korisnik> {
       throw Exception('Greška pri provjeri korisničkog imena');
     }
   }
+
+  Future<bool> ponistiPin(int id) async {
+  final url = Uri.parse('$baseUrl${endpoint}/$id/ponisti-pin');
+  final headers = createHeaders();
+  final response = await http.delete(url, headers: headers);
+  if (response.statusCode == 200) {
+    return true;
+  } else {
+    throw Exception('Greška pri poništavanju PIN-a');
+  }
+}
 }

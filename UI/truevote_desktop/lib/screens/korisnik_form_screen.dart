@@ -340,6 +340,24 @@ class _KorisnikFormScreenState extends State<KorisnikFormScreen> {
     );
   }
 
+  Future<void> _ponistiPin() async {
+    try {
+      final provider = Provider.of<KorisnikProvider>(context, listen: false);
+      await provider.ponistiPin(widget.korisnik!.id);
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text("PIN uspješno poništen.")),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text("Greška pri poništavanju PIN-a, korisnik nije postavio PIN.")),
+        );
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final isEdit = widget.korisnik != null;
@@ -507,6 +525,23 @@ class _KorisnikFormScreenState extends State<KorisnikFormScreen> {
                                 foregroundColor: Colors.white,
                               ),
                               onPressed: _showChangePasswordDialog,
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 18),
+                      ],
+                      if (isEdit) ...[
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.end,
+                          children: [
+                            ElevatedButton.icon(
+                              icon: const Icon(Icons.vpn_key),
+                              label: const Text("Ponisti PIN"),
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: Colors.orange,
+                                foregroundColor: Colors.white,
+                              ),
+                              onPressed: _ponistiPin,
                             ),
                           ],
                         ),
