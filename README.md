@@ -46,7 +46,7 @@ Swagger:
 3. Mobilna aplikacija → za birače
 
 ### 🔑 Kredencijali
-#####👤 Administrator
+##### 👤 Administrator
 
 - Username: admin
 
@@ -60,7 +60,7 @@ Swagger:
 
 - pregled statistike
 
-####🧑 Birač
+#### 🧑 Birač
 
 - Username: birac
 
@@ -74,7 +74,7 @@ Swagger:
 
 - pristup izborima
 
-###🔐 PIN (važna napomena)
+### 🔐 PIN (važna napomena)
 
 1. Prilikom prve prijave korisnik kreira 4-cifreni PIN
 
@@ -82,7 +82,7 @@ Swagger:
 
 5. PIN se čuva kao hash (sigurnosni mehanizam)
 
-####📌 Napomena
+#### 📌 Napomena
 
 1. Sistem koristi Basic Authentication
 
@@ -90,7 +90,7 @@ Swagger:
 
 5. Baza mora biti pokrenuta prije backend-a
 
-###👨‍💻 Autor
+### 👨‍💻 Autor
 
 Sanjin Mekić
 TrueVote – sistem za elektronsko glasanje
